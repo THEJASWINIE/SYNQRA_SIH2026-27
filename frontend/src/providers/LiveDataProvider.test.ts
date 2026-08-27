@@ -609,3 +609,51 @@ describe("Scenario stub transport loader", () => {
     expect(provider.currentStatus).toBe("DISCONNECTED");
   });
 });
+
+describe("M12-A Fail-Closed Enforcement (No Implicit Stub / No Masquerade)", () => {
+  it("fails closed with INITIALIZATION error when no transport or endpoint is configured", async () => {
+    const provider = new LiveDataProvider();
+    expect(provider.transportName).toBe("NONE");
+    expect(provider.currentStatus).toBe("IDLE");
+
+    const patches: ProviderPatch[] = [];
+    provider.subscribe((patch) => patches.push(patch));
+
+    const statuses: ConnectionStatus[] = [];
+    provider.onStatusChange((status) => statuses.push(status));
+
+    await expect(provider.connect()).rejects.toMatchObject({
+      kind: "INITIALIZATION",
+      retryable: false,
+    });
+
+    expect(provider.currentStatus).toBe("ERROR");
+    expect(statuses).toContain("ERROR");
+    // Emits zero patches and zero nominal data
+    expect(patches).toHaveLength(0);
+  });
+
+  it("fails closed when url is empty or whitespace", async () => {
+    const provider = new LiveDataProvider({ url: "   " });
+    expect(provider.transportName).toBe("NONE");
+
+    await expect(provider.connect()).rejects.toMatchObject({
+      kind: "INITIALIZATION",
+      retryable: false,
+    });
+    expect(provider.currentStatus).toBe("ERROR");
+  });
+
+  it("instantiates WebSocketLiveTransport when a valid URL is configured", () => {
+    const provider = new LiveDataProvider({ url: "ws://127.0.0.1:8000/ws/live" });
+    expect(provider.transportName).toBe("WEBSOCKET");
+  });
+
+  it("explicit StubLiveTransport works without ever masquerading as production live", () => {
+    const stub = new StubLiveTransport();
+    expect(stub.name).toBe("STUB");
+
+    const provider = new LiveDataProvider({ transport: stub });
+    expect(provider.transportName).toBe("STUB");
+  });
+});

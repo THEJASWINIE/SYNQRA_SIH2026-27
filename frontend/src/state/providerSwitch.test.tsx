@@ -1,12 +1,15 @@
 /**
- * Provider switching and LiveDataProvider integration tests — M12-A.
+ * Provider switching, fail-closed enforcement, and LiveDataProvider integration tests — M12-A.
  *
  * Verifies:
- *   1. Environment-driven and prop-driven provider selection (Mock vs Live)
- *   2. Provider switching Mock ↔ Live ↔ Mock without screen code changes
- *   3. Replay isolation under Live provider (recording passive observation, replay pause/scrub/resume)
- *   4. Diagnostics surfacing live validation failures read-only (M10D-B / D11)
- *   5. Screen neutrality: screens render identically under both providers
+ *   1. Fail-closed behavior: unconfigured LIVE provider emits zero data, rejects connect,
+ *      and sets typed ProviderError ("INITIALIZATION").
+ *   2. Screen protection: unconfigured LIVE provider shows "Provider error", zero vehicles,
+ *      empty panels, and never masquerades as "Live Feed".
+ *   3. Truthful identity: injected StubLiveTransport renders as "Stub Feed — Test Only".
+ *   4. LiveDataProvider feeds live Task 2 payloads through AppStateStore into screens.
+ *   5. Diagnostics surfaces live validation failures read-only (M10D-B / D11).
+ *   6. Full scenario stream plays through LiveDataProvider into screens without regression.
  */
 
 import { renderToString } from "react-dom/server";
@@ -25,7 +28,79 @@ import { testHmiContext } from "./testHmiContext";
 const T0 = 1_700_000_000_000;
 const T0_ISO = new Date(T0).toISOString();
 
-describe("Provider switching and LiveDataProvider integration (M12-A)", () => {
+describe("M12-A Fail-Closed Integration & Provider Switching", () => {
+  it("fails closed when LIVE provider has no configured endpoint or transport", async () => {
+    // Unconfigured live provider without injected transport or URL
+    const live = new LiveDataProvider();
+    expect(live.transportName).toBe("NONE");
+
+    const store = new AppStateStore(T0_ISO);
+    store.setProvider("LIVE");
+
+    live.onStatusChange((status, error) => {
+      store.setStatus(status, error ? error.message : null);
+    });
+
+    await expect(live.connect()).rejects.toMatchObject({
+      kind: "INITIALIZATION",
+      retryable: false,
+    });
+
+    const snapshot = store.getSnapshot();
+    expect(snapshot.connection.status).toBe("ERROR");
+    expect(snapshot.connection.error).toContain("No live endpoint or transport configured");
+    expect(Object.keys(snapshot.vehicles)).toHaveLength(0);
+    expect(snapshot.alerts).toHaveLength(0);
+
+    // Render screen with unconfigured live store
+    const contextValue = testHmiContext({ store });
+    const html = renderToString(
+      <HmiContext.Provider value={contextValue}>
+        <AppShell />
+      </HmiContext.Provider>,
+    );
+
+    // Shows Provider error badge and specific error message
+    expect(html).toContain("Provider error");
+    expect(html).toContain("No live endpoint or transport configured");
+    // Displays unsupplied / unavailable empty states
+    expect(html).toContain("TOPOLOGY UNAVAILABLE");
+    expect(html).toContain("NO ACTIVE BOTTLENECK");
+    expect(html).toContain("0");
+    // Never masquerades as an active Live Feed or displays mock vehicle data
+    expect(html).not.toContain("Live Feed");
+    expect(html).not.toContain("TRK-01");
+  });
+
+  it("truthfully identifies an injected stub transport as Stub Feed — Test Only", async () => {
+    const store = new AppStateStore(T0_ISO);
+    store.setProvider("LIVE");
+    store.setScenarioName("Stub Feed — Test Only");
+
+    const stub = new StubLiveTransport({ clock: () => T0 });
+    const live = new LiveDataProvider({ transport: stub, clock: () => T0 });
+
+    expect(live.transportName).toBe("STUB");
+    live.onStatusChange((status, error) => {
+      store.setStatus(status, error ? error.message : null);
+    });
+
+    await live.connect();
+    expect(store.getSnapshot().connection.status).toBe("CONNECTED");
+
+    const contextValue = testHmiContext({ store });
+    const html = renderToString(
+      <HmiContext.Provider value={contextValue}>
+        <AppShell />
+      </HmiContext.Provider>,
+    );
+
+    expect(html).toContain("FOG-ORCHESTRATOR 2.0");
+    expect(html).toContain("LIVE");
+    expect(html).toContain("Stub Feed — Test Only");
+    await live.disconnect();
+  });
+
   it("LiveDataProvider feeds live Task 2 payloads through AppStateStore into screens", async () => {
     const store = new AppStateStore(T0_ISO);
     store.setProvider("LIVE");

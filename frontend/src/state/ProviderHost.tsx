@@ -124,6 +124,8 @@ export function ProviderHost({
   if (storeRef.current === null) storeRef.current = new AppStateStore(new Date().toISOString());
   const store = storeRef.current;
 
+  const liveWsUrl = import.meta.env.VITE_LIVE_WS_URL?.trim() || null;
+
   const mockProviderRef = useRef<MockDataProvider | null>(null);
   if (mockProviderRef.current === null)
     mockProviderRef.current = mockProviderProp ?? new MockDataProvider();
@@ -131,7 +133,7 @@ export function ProviderHost({
 
   const liveProviderRef = useRef<LiveDataProvider | null>(null);
   if (liveProviderRef.current === null)
-    liveProviderRef.current = liveProviderProp ?? new LiveDataProvider();
+    liveProviderRef.current = liveProviderProp ?? new LiveDataProvider({ url: liveWsUrl });
   const liveProvider = liveProviderRef.current;
 
   const activeProvider: DataProvider & {
@@ -210,7 +212,13 @@ export function ProviderHost({
 
       if (targetKind === "LIVE") {
         store.setProvider("LIVE");
-        store.setScenarioName("Live Feed");
+        if (liveProvider.transportName === "STUB") {
+          store.setScenarioName("Stub Feed — Test Only");
+        } else if (liveProvider.transportName === "WEBSOCKET") {
+          store.setScenarioName("Live Feed");
+        } else {
+          store.setScenarioName(null);
+        }
         setActiveScenarioId(null);
         try {
           await liveProvider.connect();
@@ -297,7 +305,13 @@ export function ProviderHost({
       store.setProvider(targetKind);
       if (targetKind === "LIVE") {
         store.reset(new Date().toISOString());
-        store.setScenarioName("Live Feed");
+        if (liveProvider.transportName === "STUB") {
+          store.setScenarioName("Stub Feed — Test Only");
+        } else if (liveProvider.transportName === "WEBSOCKET") {
+          store.setScenarioName("Live Feed");
+        } else {
+          store.setScenarioName(null);
+        }
         try {
           await liveProvider.connect();
         } catch {

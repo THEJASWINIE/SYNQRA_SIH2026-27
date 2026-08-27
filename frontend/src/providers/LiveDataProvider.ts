@@ -118,6 +118,128 @@ export interface LiveTransport {
 }
 
 /**
+ * WebSocket transport boundary for live Task 2 telemetry feeds.
+ * Connects directly to the configured endpoint URL without hardcoding any proprietary endpoint.
+ */
+export class WebSocketLiveTransport implements LiveTransport {
+  readonly name = "WEBSOCKET";
+  private socket: WebSocket | null = null;
+  private readonly url: string;
+  private readonly messageHandlers = new Set<(message: unknown) => void>();
+  private readonly statusHandlers = new Set<
+    (status: ConnectionStatus, error: ProviderError | null) => void
+  >();
+
+  constructor(url: string) {
+    this.url = url;
+  }
+
+  async connect(): Promise<void> {
+    if (typeof WebSocket === "undefined") {
+      const err = providerError(
+        "INITIALIZATION",
+        "WebSocket API is not available in this environment",
+        {
+          occurredAt: new Date().toISOString(),
+          retryable: false,
+        },
+      );
+      this.emitStatus("ERROR", err);
+      throw err;
+    }
+
+    if (
+      this.socket &&
+      (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)
+    ) {
+      return;
+    }
+
+    return new Promise((resolve, reject) => {
+      try {
+        const ws = new WebSocket(this.url);
+        this.socket = ws;
+
+        ws.onopen = () => {
+          this.emitStatus("CONNECTED", null);
+          resolve();
+        };
+
+        ws.onmessage = (event: MessageEvent) => {
+          for (const handler of this.messageHandlers) {
+            handler(event.data);
+          }
+        };
+
+        ws.onerror = () => {
+          const err = providerError("TRANSPORT", `WebSocket connection failed for ${this.url}`, {
+            occurredAt: new Date().toISOString(),
+            cause: "WebSocket onerror fired",
+            retryable: true,
+          });
+          this.emitStatus("ERROR", err);
+          reject(err);
+        };
+
+        ws.onclose = () => {
+          this.emitStatus("DISCONNECTED", null);
+        };
+      } catch (err) {
+        const pErr = providerError(
+          "INITIALIZATION",
+          `Failed to initialize WebSocket for ${this.url}`,
+          {
+            occurredAt: new Date().toISOString(),
+            cause: err instanceof Error ? err.message : String(err),
+            retryable: false,
+          },
+        );
+        this.emitStatus("ERROR", pErr);
+        reject(pErr);
+      }
+    });
+  }
+
+  async disconnect(): Promise<void> {
+    if (this.socket) {
+      this.socket.onopen = null;
+      this.socket.onmessage = null;
+      this.socket.onerror = null;
+      this.socket.onclose = null;
+      this.socket.close();
+      this.socket = null;
+    }
+    this.emitStatus("DISCONNECTED", null);
+  }
+
+  async send(data: string): Promise<void> {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(data);
+    }
+  }
+
+  onMessage(handler: (message: unknown) => void): Unsubscribe {
+    this.messageHandlers.add(handler);
+    return () => {
+      this.messageHandlers.delete(handler);
+    };
+  }
+
+  onStatus(handler: (status: ConnectionStatus, error: ProviderError | null) => void): Unsubscribe {
+    this.statusHandlers.add(handler);
+    return () => {
+      this.statusHandlers.delete(handler);
+    };
+  }
+
+  private emitStatus(status: ConnectionStatus, error: ProviderError | null): void {
+    for (const handler of this.statusHandlers) {
+      handler(status, error);
+    }
+  }
+}
+
+/**
  * Reconnect and exponential backoff configuration.
  */
 export interface LiveReconnectOptions {
@@ -141,8 +263,10 @@ export interface LiveDiagnostics {
 }
 
 export interface LiveDataProviderOptions {
-  /** Transport implementation. If omitted, uses a default StubLiveTransport. */
+  /** Explicit transport implementation. If omitted and url is configured, creates WebSocket transport. If both are missing, connect() fails closed with INITIALIZATION error. */
   transport?: LiveTransport;
+  /** Live WebSocket endpoint URL (e.g. from VITE_LIVE_WS_URL). */
+  url?: string | null;
   /** Injected clock for deterministic timestamping and testing. */
   clock?: Clock;
   /** Injected scheduler for deterministic timer control and testing. */
@@ -333,7 +457,7 @@ export class LiveDataProvider implements DataProvider {
 
   private readonly clock: Clock;
   private readonly scheduler: Scheduler;
-  private readonly transport: LiveTransport;
+  private readonly transport: LiveTransport | null;
   private readonly reconnectOptions: LiveReconnectOptions | null;
 
   private status: ConnectionStatus = "IDLE";
@@ -352,13 +476,16 @@ export class LiveDataProvider implements DataProvider {
   constructor(options: LiveDataProviderOptions = {}) {
     this.clock = options.clock ?? systemClock;
     this.scheduler = options.scheduler ?? realScheduler();
-    this.transport =
-      options.transport ??
-      createScenarioStubTransport("nominal", {
-        clock: this.clock,
-        scheduler: this.scheduler,
-        loop: true,
-      });
+
+    if (options.transport) {
+      this.transport = options.transport;
+    } else if (options.url && typeof options.url === "string" && options.url.trim().length > 0) {
+      this.transport = new WebSocketLiveTransport(options.url.trim());
+    } else {
+      // FAILS CLOSED: LiveDataProvider never silently defaults to a mock or stub in production.
+      this.transport = null;
+    }
+
     this.reconnectOptions =
       options.reconnect === false
         ? null
@@ -380,7 +507,7 @@ export class LiveDataProvider implements DataProvider {
   }
 
   get transportName(): string {
-    return this.transport.name;
+    return this.transport ? this.transport.name : "NONE";
   }
 
   // -- lifecycle ------------------------------------------------------------
@@ -388,6 +515,20 @@ export class LiveDataProvider implements DataProvider {
   async connect(): Promise<void> {
     this.manualDisconnect = false;
     this.clearReconnect();
+
+    if (!this.transport) {
+      const error = providerError(
+        "INITIALIZATION",
+        "No live endpoint or transport configured. Set VITE_LIVE_WS_URL or inject an explicit LiveTransport.",
+        {
+          occurredAt: this.nowIso(),
+          cause: "VITE_LIVE_WS_URL is unset and no explicit transport was provided",
+          retryable: false,
+        },
+      );
+      this.setStatus("ERROR", error);
+      throw error;
+    }
 
     this.setStatus("CONNECTING", null);
 
@@ -413,7 +554,7 @@ export class LiveDataProvider implements DataProvider {
             cause: err instanceof Error ? err.message : String(err),
             retryable: true,
           });
-      if (this.reconnectOptions && !this.manualDisconnect) {
+      if (this.reconnectOptions && !this.manualDisconnect && error.retryable) {
         this.setStatus("RECONNECTING", error);
         this.scheduleReconnect();
       } else {
@@ -434,6 +575,11 @@ export class LiveDataProvider implements DataProvider {
     if (this.unsubscribeTransportStatus) {
       this.unsubscribeTransportStatus();
       this.unsubscribeTransportStatus = null;
+    }
+
+    if (!this.transport) {
+      this.setStatus("DISCONNECTED", null);
+      return;
     }
 
     try {
@@ -481,7 +627,7 @@ export class LiveDataProvider implements DataProvider {
     const known = this.lastAlerts.find((a) => a.alertId === alertId);
 
     // Forward over transport if transport provides send capability
-    if (this.transport.send) {
+    if (this.transport?.send) {
       try {
         await this.transport.send(
           JSON.stringify({
@@ -694,7 +840,7 @@ export class LiveDataProvider implements DataProvider {
 
     this.reconnectCancel = this.scheduler.schedule(delayMs, async () => {
       this.reconnectCancel = null;
-      if (this.manualDisconnect) return;
+      if (this.manualDisconnect || !this.transport) return;
 
       try {
         await this.transport.connect();
