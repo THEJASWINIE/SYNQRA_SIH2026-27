@@ -1,0 +1,690 @@
+FOG-ORCHESTRATOR 2.0
+Task 2 — Digital Twin Complete Onboarding, System Model, Simulation Configuration & Antigravity Build Specification
+Single-source handover document for teammates building the mine + vehicle + environment digital twin
+READ THIS FIRSTThis document is the authoritative engineering handover for Task 2. It assumes the reader knows nothing about FOG-ORCHESTRATOR, NMDC mines, heavy haul vehicles, fog physics, or our previous discussions. Feed this document to Antigravity together with the separate Task 2 Requirements and Task 2 Verification Plan. Do not invent mine facts. Every parameter must carry a status: VERIFIED, MODEL PARAMETER, ASSUMPTION, SIMULATION SCENARIO, or UNKNOWN.
+
+Item
+Value
+Problem statement
+Safe and Efficient Operation of Mine Vehicles in Fog and Low-Visibility Conditions in Open Cast Iron Ore Mines
+Organization
+Ministry of Steel, Government of India
+Operational context
+NMDC Limited — BIOM-Kirandul, BIOM-Bacheli, Donimalai
+System
+FOG-ORCHESTRATOR 2.0
+Task 2 role
+Build the predictive digital twin that links mine state, vehicle state, weather/road state, capacity, queues, bottlenecks and dispatch decisions.
+Core outcome
+A reproducible software twin that can run standalone simulation and later ingest real Task-3 robot telemetry without rewriting the model.
+
+Document Map
+What the project is and why the digital twin exists
+Mine and operational context
+Heavy-mining vehicle model
+Environment and fog model
+Full FOG-ORCHESTRATOR architecture
+Mathematical model and equations
+Simulation parameter catalogue
+Digital-twin data structures and interfaces
+Scenario library and required experiments
+Task-2 build requirements
+Verification and validation logic
+Antigravity master build prompt
+Definition of Done and handoff package
+
+1. PROJECT ORIENTATION — WHAT ARE WE ACTUALLY BUILDING?
+FOG-ORCHESTRATOR is not a fog detector and not merely a vehicle speed controller. It is a mine-traffic decision system that predicts how degraded visibility and road condition change the safe operating capacity of haul-road segments, propagates that degradation through queues and bottlenecks, and coordinates fleet releases, routes and road slots while each vehicle independently enforces a physics-based safety floor.
+WEATHER / VISIBILITY / ROAD CONDITION                 ↓        VEHICLE + ROAD PHYSICS                 ↓       SAFE SPEED / SAFE HEADWAY                 ↓          ROAD CAPACITY C_r                 ↓       QUEUE / BOTTLENECK STATE                 ↓        FLEET DISPATCH / SLOTS                 ↓        VEHICLE COMMAND TARGET                 ↓       REAL / SIMULATED VEHICLES                 ↓            TELEMETRY LOOP
+Core architectural ruleTier 3 decides where/when vehicles should be dispatched. Tier 2 coordinates conflicts on constrained road sections. Tier 1 decides whether a requested movement is physically safe. Central optimization must never override the local physics safety governor.
+
+1.1 Three-tier architecture
+Tier
+Question answered
+Key functions
+Task-2 responsibility
+Tier 3 — Central
+What should the fleet do over the next 15–30 min?
+Digital twin, prediction, road capacity, queues, bottlenecks, MPC/dispatch, arrival-rate shaping
+Primary
+Tier 2 — Road/Infrastructure
+How should conflicting traffic share constrained road space?
+Switchback/intersection slots, RSU state, conflict scheduling
+Primary
+Tier 1 — Vehicle
+Can this vehicle physically execute the movement safely?
+v_safe, H_safe, braking/retarder/traction, local fallback
+Model interface; Task 3 executes hardware
+
+2. MINE & OPERATIONAL CONTEXT
+The SIH problem is framed for large mechanized open-cast iron-ore mines. Our digital twin uses three NMDC complexes as operational reference contexts, but the MVP must not pretend to reproduce their exact private road geometries or fleet schedules unless such data are supplied.
+Complex
+Location
+Use in twin
+What is NOT assumed
+BIOM-Kirandul
+South Bastar Dantewada, Chhattisgarh
+Representative steep, high-rainfall, fog-prone iron-ore haulage scenario
+Exact live road graph, exact friction logs, exact visibility distribution
+BIOM-Bacheli
+South Bastar Dantewada, Chhattisgarh
+Primary reference for Bacheli-like haul-road operations and fog/monsoon stress
+Exact current fleet, exact current FMS state, exact road telemetry
+Donimalai
+Ballari district, Karnataka
+Alternative operating environment with drier/abrasive conditions
+Exact mine-specific weather/road dataset
+
+2.1 Environmental operating picture
+Variable
+Meaning in twin
+Typical scenario values for testing
+Status
+Visibility V
+Effective awareness/perception range used by safety model
+50, 30, 20, 15, 10, 5 m
+SIMULATION SCENARIOS
+Grade θ
+Longitudinal road slope
+0%, 4%, 6.25%, 8%, 10%
+SIMULATION SCENARIOS; not a mine-wide survey
+Friction μ
+Effective tire-road longitudinal adhesion parameter
+0.15–0.65 across dry/wet stress scenarios; direct NMDC value unknown
+MODEL / ASSUMPTION
+Road wetness
+Condition modifier correlated with fog/monsoon
+dry / damp / wet / saturated
+SCENARIO STATE
+Fog propagation
+Spatial-temporal visibility disturbance
+50→10 m over 30 min; 60 min event
+VALIDATION SCENARIO
+Forecast uncertainty
+Error distribution on predicted visibility
+0–50% stress sweep
+SIMULATION SCENARIO
+
+Important evidence boundaryOpen research found no public continuous NMDC friction or visibility telemetry sufficient to treat a single μ or fog-hour statistic as field truth. The twin must therefore separate site facts from engineering scenarios. Any number not explicitly verified for the target mine is a parameter, not a claim.
+
+3. REFERENCE HAUL VEHICLE MODEL
+The baseline vehicle is a representative BEML BH100-class rigid mining dumper. It is used because it provides a realistic heavy-vehicle scale for physics and queue simulation. It is not a claim that every truck at every NMDC complex is a BH100.
+Parameter
+Reference
+Use
+Rated payload
+≈91–91.5 t
+Tonnage moved per loaded cycle
+Tare/empty mass
+≈74 t
+Vehicle inertia when empty
+Gross mass
+≈165–165.5 t
+Loaded vehicle dynamics
+Overall length
+≈10.52 m
+Minimum physical headway / road packing
+Overall width
+≈5.52 m
+Road geometry / conflict model
+Wheelbase
+≈5.25 m
+Weight transfer / dynamics model
+Reference payload class
+100-t class
+Simulation label
+Reference service strategy
+Brake + retarder
+Separate emergency stopping from continuous downhill control
+
+3.1 Vehicle state vector
+VehicleState_i = {  id,  timestamp,  position_s,  road_edge,  lane_or_direction,  speed_v,  acceleration_a,  grade_theta,  mass_m,  payload,  friction_est_mu,  friction_sigma,  visibility_R,  comm_confidence,  brake_state,  retarder_state,  risk_state,  availability_state,  target_speed,  target_slot}
+4. PHYSICS MODEL — THE FOUNDATION OF THE TWIN
+The digital twin must not use a visually convenient kinematic model alone. It must expose the same physics quantities used by the FOG-SAFE safety governor so that later Task-3 hardware telemetry can replace simulated signals.
+4.1 Longitudinal force balance
+m * dv/dt = F_drive + m*g*sin(theta) - F_roll - F_aero - F_retarder - F_brake
+Term
+Equation
+Meaning
+Grade force
+F_grade = m g sin(theta)
+Gravity component along downhill direction
+Rolling resistance
+F_roll = C_rr m g cos(theta)
+Road/tire rolling resistance
+Aerodynamic drag
+F_aero = 0.5 rho C_D A v^2
+Air drag; can be neglected in conservative stopping calculation
+Tire traction limit
+F_mu = μ m g cos(theta)
+Maximum longitudinal tire-road force before slip
+
+4.2 Braking / deceleration model
+F_available = min(F_hardware_max, mu * m * g * cos(theta))m*a_x = m*g*sin(theta) - C_rr*m*g*cos(theta) - F_aero - F_retarder - F_brake
+For conservative emergency stopping, aerodynamic drag is not credited as a constant braking force all the way to zero speed; the current validated implementation evaluates stopping deceleration conservatively without relying on full-entry-speed aero drag. Hydraulic/brake buildup latency is explicitly included in total reaction latency.
+4.3 Stopping distance
+d_reaction = v * tau_totald_brake    = v^2 / (2*a_dec)S_stop    = d_reaction + d_brakeSafety condition:S_stop + S_margin <= R_effective
+4.4 Total latency
+tau_total = tau_sensor + tau_communication + tau_decision + tau_human + tau_hydraulic
+Current audit configuration increased the ECU/hydraulic component to approximately 0.25 s as a conservative prototype parameter. The exact hardware value must be replaced by measurement during Task 3.
+4.5 Safe-speed solution
+v_safe = min(v_stop, v_retarder, v_traction, v_curve, v_mine)v_command = min(v_dispatch, v_safe)
+The dispatch system is never allowed to request a speed above the local physics ceiling. This separation is mandatory.
+4.6 Downhill retarder constraint
+For continuous downhill operation:P_ret_required = F_ret_required * vRequire:P_ret_required <= P_ret_max
+Emergency stopping and continuous downhill sustainability are separate constraints. Do not substitute one for the other.
+4.7 Friction estimation boundary
+Normal steady-state micro-slip operation does not fully identify peak friction. The research recommends using an environmental prior, coasting to separate rolling resistance, and informative braking/retarding events to update μ. The safety engine uses a conservative lower confidence bound rather than an optimistic mean.
+mu_safe = max(mu_floor, mu_hat - k_sigma * sigma_mu)Research reference configuration:mu_floor ≈ 0.18k_sigma ≈ 1.645 for a 95% one-sided bound
+These are configuration values from the current research model, not measured NMDC field values.
+5. FROM VEHICLE PHYSICS TO MINE PRODUCTIVITY
+This is the key innovation bridge. The digital twin transforms vehicle-level constraints into road capacity, then into queues, bottlenecks and fleet actions.
+Vehicle physics    ↓v_safe, H_safe    ↓Road capacity C_r    ↓Arrival rate lambda, service rate mu    ↓Queue Q    ↓Bottleneck score    ↓Dispatch / departure slots / route choices    ↓Production
+5.1 Initial road-capacity model
+First-order analytical model:C_r ≈ v_safe / H_safe   [vehicles/second]Convert to vehicles/hour:C_r_h = 3600 * v_safe / H_safe
+The model must enforce physical headway. Current validation uses a minimum center-to-center spacing of approximately vehicle length + standstill margin = 15.5 m for the BH100-class reference configuration. This prevents impossible packing. The team should keep the capacity model modular so it can later incorporate directionality, road width, opposing traffic and conflict zones.
+5.2 Queue dynamics
+Q_j(t + dt) = max(0, Q_j(t) + A_j(t) - D_j(t))D_j(t) <= service_rate_j(t)rho_j = lambda_j / mu_jrho_j > 1  -> unstable queue growth
+5.3 Bottleneck score
+BottleneckScore_j = f(utilization, queue, criticality)Prototype form:B_j = (w1*rho_j) * (1 + w2*Q_j) * (w3*Criticality_j)
+Do not treat the numerical weights as truth. Make them configuration values and verify by ablation. The current hierarchy used for prototyping is crusher > shovel > intersection > haul road, but the twin must be able to discover bottleneck migration rather than permanently forcing a ranking.
+5.4 Arrival-rate shaping
+lambda_arrival(t) <= mu_node(t) - delta_buffer
+The optimizer controls truck release timing, assignment and route so that downstream service nodes are not flooded. Holding a truck at a shovel or buffer can be preferable to creating a downstream queue that blocks the network.
+6. DIGITAL TWIN WORLD MODEL
+The twin is a graph-first operational model. A 3D view may be rendered later for HMI, but the computational core must not depend on 3D graphics.
+G = (V, E)Nodes V:  SHOVEL  CRUSHER  DUMP_POINT  INTERSECTION  SWITCHBACK  BUFFER/PARKINGEdges E:  haul-road segment with length, grade, geometry, condition,  visibility, friction, capacity, directionality, traffic state
+6.1 Road-segment object
+RoadSegment = {  id,  length_m,  grade_pct,  curve_radius_m,  width_m,  direction_mode,  speed_limit_mps,  surface_state,  visibility_m,  friction_mu,  friction_sigma,  safe_speed_mps,  safe_headway_m,  capacity_vph,  queue_count,  bottleneck_score,  active_slot_state}
+6.2 Service-node object
+ServiceNode = {  id,  type: shovel | crusher | dump,  service_rate_vph,  queue_length,  queue_max,  utilization,  blocked,  criticality,  forecast_state}
+7. ENVIRONMENT MODEL
+State
+Required fields
+Examples
+Task-2 rule
+Fog
+visibility_m, spatial extent, onset, duration
+50→10 m over 30 min
+Smooth transitions; no instant jumps
+Rain/wetness
+wetness_state, optional water depth proxy
+dry/damp/wet/saturated
+Correlate with friction in stress tests
+Road condition
+surface, friction prior, roughness proxy
+BHJ, lateritic/wet, loose
+Keep μ uncertain
+Grade
+theta_rad / grade_pct
+0, 4, 6.25, 8, 10%
+Configurable per edge
+Traffic
+vehicle count, arrivals, direction
+2–60 vehicles
+Driven by scenario/controller
+Forecast uncertainty
+mean, sigma, bias, delay
+0–50% stress range
+Used by robust/chance tests
+
+7.1 Fog scenarios
+Clear baseline: visibility >= 50 m.
+Moderate fog: 30–50 m.
+Dense fog: 10–30 m.
+Extreme fog: 5–10 m.
+Moving fog front: spatially propagating region.
+Fog + wet road: visibility and friction degrade together.
+False fog forecast.
+Missed fog forecast.
+Fog clearing / recovery event.
+8. FLEET OPTIMIZATION MODEL
+The Tier-3 optimizer is a receding-horizon decision layer. It does not directly command motor PWM. It assigns routes, departure times, slots and target operating states while Tier 1 enforces local physical feasibility.
+8.1 Objective
+maximize expected production over horizon H      - bottleneck penalty      - queue/delay penalty      - risk penalty
+8.2 Chance-constrained form
+P(v_i(t) <= v_safe_i(t)) >= 0.99P(flow_r(t) <= C_r(t)) >= 0.95P(Q_j(t) <= Q_max_j) >= 0.95
+These probabilities are model constraints, not field safety guarantees. If the chance-constrained solver becomes impractical, use scenario-based robust MPC or deterministic MPC with conservative bounds.
+8.3 Candidate algorithms to implement and compare
+Method
+Use
+Status
+Deterministic MILP / RH optimization
+Baseline optimization reference
+MUST BENCHMARK
+Robust/scenario MPC
+Uncertainty-aware alternative
+MUST BENCHMARK
+Chance-constrained RH-MPC
+Preferred research method
+TARGET CORE
+Deep RL / MARL
+Not preferred due to explainability/data/safety
+REJECT FOR CORE
+Auction / GA
+Possible research alternatives
+NOT CORE
+
+9. SWITCHBACK / INTERSECTION MODEL
+A switchback/intersection is a shared conflict resource. Vehicles announce ETA; an RSU/tactical controller allocates non-overlapping occupancy windows. The slot system is a traffic-coordination mechanism, not a replacement for the local safety governor.
+Vehicle A: ETA_A, clearance_AVehicle B: ETA_B, clearance_BAllocate:slot_A = [tA_start, tA_end]slot_B = [tB_start, tB_end]Constraint:slot_A ∩ slot_B = ∅ for conflicting movements
+The exact priority policy must be configurable. Do not hard-code “downhill always wins” as a universal safety law; use a testable priority rule based on stopping difficulty, vehicle state and conflict geometry.
+10. DIGITAL TWIN LAYERS
+Layer
+What it does
+Core?
+A — Data ingestion
+Scenario inputs and future telemetry ingestion
+YES
+B — State estimation
+Vehicle/road/queue/environment state
+YES
+C — Physics propagation
+v_safe, H_safe, capacity
+YES
+D — Prediction
+queues, bottlenecks, production
+YES
+E — Optimization
+dispatch, slots, arrival shaping
+YES
+F — Prescription
+commands/targets to HMI and Task 3
+YES
+G — 3D visualization
+optional terrain/vehicle visual
+ADVANCED/FUTURE
+
+11. INTERFACES TO TASK 1 AND TASK 3
+11.1 Task 2 → Task 1 HMI
+HMI_State = {  timestamp,  mode,  mine_summary,  fleet_summary,  road_segments[],  bottlenecks[],  alerts[],  vehicle_cards[],  dispatch_recommendations[],  slot_reservations[],  forecast_summary,  model_confidence}
+11.2 Task 3 physical telemetry → Task 2
+VehicleTelemetry = {  vehicle_id,  timestamp,  speed_mps,  acceleration_mps2,  position_local_or_gps,  heading_rad,  grade_rad,  wheel_speed_left,  wheel_speed_right,  imu_ax,  brake_state,  retarder_state,  obstacle_range_m,  comm_confidence,  battery_state}
+11.3 Task 2 → Task 3 command interface
+VehicleCommand = {  vehicle_id,  timestamp,  target_speed_mps,  target_headway_m,  slot_start,  slot_end,  route_id,  risk_mode,  timeout_ms}
+The physical ESP32 should never receive raw motor PWM from the digital twin. Task 2 outputs decisions/targets; Task 3 performs low-level control and local fallback.
+12. MASTER SIMULATION PARAMETER CATALOGUE
+This table is intentionally explicit so the teammate does not invent values. Put all values into configuration files and tag them.
+Parameter
+Initial value / range
+Status
+Notes
+BH100 gross mass
+165–165.5 t
+REFERENCE
+Use for scaled virtual HEMM model
+BH100 payload
+≈91–91.5 t
+REFERENCE
+Used for tonnage output
+BH100 tare
+≈74 t
+REFERENCE
+Empty travel dynamics
+Vehicle length
+10.52 m
+REFERENCE
+Used in minimum center-to-center headway
+Vehicle width
+5.52 m
+REFERENCE
+Road/conflict geometry
+Minimum headway
+15.5 m
+CURRENT MODEL CONFIG
+Vehicle length + 5 m standstill margin
+Visibility scenarios
+50/30/20/15/10/5 m
+SIMULATION
+Stress sweep
+Grade scenarios
+0/4/6.25/8/10%
+SIMULATION
+Road-section stress sweep
+Friction
+0.15–0.65
+SIMULATION/ASSUMPTION
+Site-specific direct value UNKNOWN
+Friction floor
+0.18
+MODEL CONFIG
+Conservative safety floor
+Friction confidence factor
+1.645
+MODEL CONFIG
+95% one-sided lower bound
+ECU/hydraulic latency
+0.25 s
+MODEL CONFIG
+Replace with measurement later
+Fog event
+50→10 m over 30 min
+SIMULATION
+60 min event
+Fleet sizes
+4,10,20,30,40,60; 50 in killer experiment
+SIMULATION
+Use sweep + fixed benchmark
+Crusher service rate
+18 vph
+SIMULATION BASELINE
+≈1638 tph at 91 t payload; not mine fact
+Shovel service rate
+15 vph
+SIMULATION BASELINE
+≈1365 tph at 91 t payload; not mine fact
+Forecast error sweep
+0–50%
+SIMULATION
+Measure break-even
+Forecast lead time
+1/5/10/15/20/30/45/60 min
+SIMULATION
+Find T*
+LoRa latency
+CONFIGURABLE
+HARDWARE TO MEASURE
+Do not assume <50 ms
+Packet loss
+0–100%
+SIMULATION
+Fallback test
+
+13. CURRENT VALIDATION BENCHMARK — USE ONLY AS A REPRODUCTION TARGET
+The following numbers are from the post-audit simulation report. They are not field results. The teammate must reproduce them independently before using them as project results.
+Metric
+Current audit result
+Classification
+Monte Carlo mean safe speed
+17.26 km/h
+SIMULATION
+5th percentile safe speed
+4.84 km/h
+SIMULATION
+95th percentile stopping distance
+42.82 m
+SIMULATION
+Physical safety rate
+100% in tested scenarios
+MODEL/SIMULATION
+Human-perception baseline, 10-min run
+1,820 t; 14 violations
+SIMULATION
+Fixed 10 km/h baseline
+1,450 t; 0 violations
+SIMULATION
+Vehicle-only
+2,150 t; 0 violations
+SIMULATION
+Fleet-only
+2,300 t; 38 violations
+SIMULATION
+FOG-ORCHESTRATOR CC-MPC
+2,740 t; 0 violations
+SIMULATION
+Route chatter
+Suppressed with 30 s commitment timer
+MODEL CONFIG
+Fog forecast error handling
+Fallback above 50% error; tested within model
+SIMULATION
+Recovery optimization
+15 s staged release; 42% queue overshoot reduction
+SIMULATION
+
+Do not copy headline performanceNumbers such as +50.5% throughput or 2,740 t are not guaranteed and are not NMDC field measurements. They are a benchmark configuration that the new digital twin must either reproduce or explain why not.
+
+14. REQUIRED SCENARIO LIBRARY
+ID
+Scenario
+Configuration
+Purpose
+S01
+Clear baseline
+Visibility 50 m; dry; 0–4% grade
+Validate normal model
+S02
+Moderate fog
+30–40 m; dry
+Visibility effect
+S03
+Dense fog
+10–20 m; wet correlation
+Core stress
+S04
+Extreme fog
+5–10 m; wet; 8% downhill
+Worst local physics
+S05
+Moving fog front
+Spatial-temporal propagation
+Forecast usefulness
+S06
+False fog
+Forecast says fog; actual clear
+Overreaction test
+S07
+Missed fog
+Forecast clear; fog arrives
+Underreaction test
+S08
+Crusher bottleneck
+λ approaches/exceeds μ_crusher
+Arrival shaping
+S09
+Shovel bottleneck
+Loading capacity constrained
+Bottleneck migration
+S10
+Switchback conflict
+Loaded downhill + empty uphill
+Slot reservation
+S11
+Multiple bottlenecks
+Crusher + switchback + shovel
+Global balancing
+S12
+Communication degraded
+Latency + packet loss
+Graceful fallback
+S13
+Central optimizer unavailable
+Task 2 down
+Tier-1 local fallback
+S14
+Sensor failure
+Radar/IMU/visibility failure
+Graceful degradation
+S15
+Fog clearing
+Visibility recovers
+Controlled recovery
+S16
+Sparse fleet
+2–5 vehicles
+Check if fleet layer still adds value
+S17
+Dense fleet
+20–60 vehicles
+Network control benefit
+S18
+Parameter uncertainty
+Mass/grade/friction varied
+Monte Carlo
+S19
+Long horizon forecast
+30–60 min uncertain
+Forecast value decay
+S20
+Baseline comparison
+All six controller variants
+Final head-to-head
+
+15. REQUIRED OUTPUTS & KPIs
+KPI
+Definition
+Why it matters
+Throughput
+tonnes/hour delivered
+Primary productivity outcome
+Cycle time
+min/truck
+Operational efficiency
+Queue length
+trucks at node/segment
+Bottleneck visibility
+Shovel utilization
+% time productive
+Avoid loader starvation
+Crusher utilization
+% time productive
+Avoid crusher starvation/overload
+Intersection wait
+min/truck
+Road coordination
+Stops
+stops/truck/hour
+Loss of momentum / safety margin
+Safety violations
+count where stopping envelope is exceeded
+Hard safety metric
+Recovery time
+time to return to stable throughput
+Fog recovery quality
+Solver latency
+seconds per optimization step
+Real-time feasibility
+Forecast error
+visibility prediction error
+Predictive layer quality
+Ablation delta
+performance change when module removed
+Evidence for novelty/value
+
+15.1 Required plots
+v_safe vs visibility
+v_safe vs friction
+v_safe vs grade
+H_safe vs latency
+road capacity vs visibility
+queue length vs time
+bottleneck score vs time
+bottleneck migration timeline
+dispatch arrival rate vs service capacity
+throughput vs fleet size
+hybrid benefit vs forecast lead time
+hybrid benefit vs forecast error
+recovery trajectory after fog clears
+optimizer solve time vs fleet size
+Monte Carlo safe-speed and queue distributions
+baseline vs vehicle-only vs fleet-only vs hybrid
+16. RECOMMENDED SOFTWARE ARCHITECTURE
+task2_digital_twin/├── config/│   ├── vehicle.yaml│   ├── roads.yaml│   ├── nodes.yaml│   ├── weather.yaml│   └── scenarios.yaml├── models/│   ├── vehicle_physics.py│   ├── braking.py│   ├── retarder.py│   ├── friction.py│   ├── road_capacity.py│   ├── queue_model.py│   ├── bottleneck.py│   └── switchback.py├── weather/│   ├── fog_model.py│   ├── forecast_model.py│   └── uncertainty.py├── optimizer/│   ├── baseline_dispatch.py│   ├── milp_dispatch.py│   ├── robust_mpc.py│   └── chance_mpc.py├── twin/│   ├── state.py│   ├── network.py│   ├── simulator.py│   └── telemetry_adapter.py├── interfaces/│   ├── task1_hmi.py│   └── task3_vehicle_io.py├── validation/│   ├── unit_tests.py│   ├── physics_tests.py│   ├── scenario_tests.py│   └── monte_carlo.py└── main.py
+Technology
+Recommended role
+Python + NumPy/SciPy
+Physics + simulation core
+Pandas
+Experiment result processing
+Matplotlib/Plotly
+Validation plots
+NetworkX or custom graph model
+Mine graph representation
+MILP solver (open-source preferred)
+Baseline / optimization benchmark
+FastAPI/WebSocket or MQTT
+Interface to Task 1 / live state
+Optional WebGL
+Only for visualization after numerical core works
+
+17. IMPLEMENTATION ORDER — DO NOT BUILD OUT OF ORDER
+Build graph + static roads + service nodes.
+Build one vehicle longitudinal physics model.
+Validate v_safe, H_safe, stopping distance and retarder behavior independently.
+Add road-capacity calculation with physical headway bound.
+Add queue dynamics and finite buffers.
+Add bottleneck scoring and migration detection.
+Add arrival-rate shaping.
+Add switchback slot reservation.
+Add fleet baseline and deterministic optimization.
+Add receding-horizon optimization.
+Add forecast uncertainty and chance constraints only after deterministic system works.
+Run the entire scenario library.
+Run Monte Carlo and ablation tests.
+Connect Task 1 HMI.
+Expose telemetry adapter for Task 3.
+Only then add optional fog nowcasting ML or visualization.
+Build disciplineDo not start by importing a 3D mine asset or training an LSTM. If the physics model, graph, queue model and interfaces are not correct, the visualization will only hide errors.
+
+18. ANTIGRAVITY MASTER BUILD PROMPT
+Paste the following prompt into Antigravity after attaching this document, the separate Task 2 Requirements document, the Task 2 Verification Plan, and the Task 1 HMI requirements. Antigravity should treat this document as the onboarding specification and the other two documents as normative requirements/verification companions.
+You are the lead developer and simulation engineer for FOG-ORCHESTRATOR 2.0.READ ALL ATTACHED MATERIALS FIRST. Do not begin coding until you can explain:1) the NMDC mine context,2) the BH100-class reference vehicle,3) the three-tier FOG-ORCHESTRATOR architecture,4) the physics equations,5) road capacity and queue logic,6) bottleneck migration,7) arrival-rate shaping,8) switchback slots,9) chance-constrained dispatch,10) the Task-1 HMI and Task-3 telemetry interfaces.PRIMARY OBJECTIVE:Build a graph-first digital twin of an open-cast iron-ore haul network that converts weather/road/vehicle state into safe vehicle behavior, road capacity, queue dynamics, bottleneck state and fleet dispatch decisions.AUTHORITATIVE RULES:- Do not invent mine facts.- Every parameter must be tagged VERIFIED, REFERENCE, MODEL CONFIG, ASSUMPTION, SIMULATION SCENARIO or UNKNOWN.- Do not present simulation results as field results.- Keep all parameters in config files.- Keep the safety governor independent from the optimizer.- Tier 3 must never command raw motor PWM.- If the optimizer fails, Tier 1 must continue local-safe behavior.- Use simulation first; HIL interfaces must be designed from the beginning.IMPLEMENT THE FOLLOWING MODEL:1. Vehicle dynamics:m dv/dt = F_drive + m g sin(theta) - F_roll - F_aero - F_retarder - F_brakeF_roll = C_rr m g cos(theta)F_aero = 0.5 rho C_D A v^2F_mu = mu m g cos(theta)F_available = min(F_hardware_max, F_mu)2. Stopping:d_reaction = v*tau_totald_brake = v^2/(2*a_dec)S_stop = d_reaction + d_brakeS_stop + S_margin <= R_effective3. Safe speed:v_safe = min(v_stop, v_retarder, v_traction, v_curve, v_mine)v_command = min(v_dispatch, v_safe)4. Road capacity:Start with C_r = 3600*v_safe/H_safe.Enforce H_safe >= 15.5 m for BH100-class reference configuration. Keep the capacity model modular.5. Queue:Q(t+dt)=max(0,Q(t)+A(t)-D(t))D<=service_rate.6. Bottleneck:Implement configurable BottleneckScore and prove by ablation whether it matters.7. Arrival shaping:lambda_arrival <= mu_node - delta_buffer.8. Switchback slots:conflicting intervals must not overlap.9. Optimizers:benchmark deterministic MILP, robust/scenario MPC, chance-constrained RH-MPC.10. Uncertainty:P(vehicle safety)>=0.99; P(flow<=capacity)>=0.95; P(queue<=limit)>=0.95 when the chosen solver supports it.BUILD THE GRAPH:Nodes: shovel, crusher, dump point, intersection, switchback, buffer.Edges: haul-road segments with length, grade, width, curvature, direction, surface, visibility, friction, capacity.REFERENCE VEHICLE:BEML BH100-class: tare ~74 t, payload ~91–91.5 t, gross ~165–165.5 t, length ~10.52 m, width ~5.52 m.These are reference parameters, not proof that every NMDC truck is identical.SIMULATION CONFIGURATION TO REPRODUCE:Visibility: 50,30,20,15,10,5 m.Grades: 0,4,6.25,8,10%.Fleet sizes: 4,10,20,30,40,60; 50-truck benchmark.Fog event: 50->10 m over 30 min, 60 min duration.Friction: 0.15-0.65 stress sweep; floor 0.18.Latencies: include 0.25 s hydraulic/ECU prototype setting; sweep communication separately.Crusher baseline: 18 vph for simulation only.Shovel baseline: 15 vph for simulation only.SCENARIOS:clear, moderate fog, dense fog, extreme fog, fog+wet, fog+downhill, false forecast, missed forecast, crusher bottleneck, shovel bottleneck, switchback conflict, multiple bottlenecks, communication loss, central failure, sensor failure, fog recovery, sparse fleet, dense fleet.VALIDATION:Run unit tests, dimensional checks, monotonicity checks, Monte Carlo, ablation, baseline comparison and hostile safety audit.REQUIRED BASELINES:Human-like, fixed-speed, vehicle-only, fleet-only, deterministic optimizer, robust optimizer, full chance-constrained hybrid.REQUIRED OUTPUT:- source code- config files- scenario files- results CSVs- plots- validation report- results.json- Task1 HMI API schema- Task3 telemetry API schema- reproducible run commandCRITICAL:Do not copy benchmark output values from this document into the results. Reproduce them from code. If the reproduced results differ, explain why.FINAL REPORT MUST STATE:what is mathematically proven,what is simulation-demonstrated,what is still an assumption,what requires Task-3 hardware validation,and whether the twin is READY / NEEDS CORRECTION / NOT READY.
+19. TASK-2 DEFINITION OF DONE
+Gate
+Pass condition
+G1 — Environment
+Mine graph, grades, road states, fog and wetness scenarios run reproducibly
+G2 — Vehicle
+BH100-class longitudinal model passes physics sanity/monotonicity checks
+G3 — Capacity
+Road capacity respects physical headway and responds correctly to visibility/friction/grade
+G4 — Queueing
+Queues grow when arrival rate exceeds service rate and dissipate when capacity recovers
+G5 — Bottleneck
+System detects and reacts to bottleneck migration
+G6 — Arrival shaping
+Departure timing can stabilize a downstream constrained node
+G7 — Switchback
+Conflicting virtual slots never overlap; safety constraints dominate schedule
+G8 — Optimization
+At least deterministic + robust/chance approaches are benchmarked
+G9 — Uncertainty
+Forecast error and communication loss produce graceful conservative behavior
+G10 — Recovery
+Post-fog recovery avoids uncontrolled queue overshoot
+G11 — HMI
+Task-1 dashboard consumes the defined state/command outputs
+G12 — Hardware interface
+Task-3 telemetry can replace simulated vehicle state through the same schema
+G13 — Reproducibility
+A clean machine can reproduce the core experiments from configuration files
+G14 — Audit
+Final validation report separates proof, simulation, assumption and unknown
+
+20. TEAMMATE QUICK BRIEF — 2-MINUTE EXPLANATION
+If your teammate needs to explain the project before coding, use this exact mental model:
+Imagine a mine with many dump trucks moving ore from shovels to crushers.Fog does not only make one truck slower. It reduces safe speed and increasessafe headway, which reduces the number of trucks a road can safely carry.If truck arrivals keep coming faster than a crusher or road can serve them,queues grow and eventually block upstream operations.FOG-ORCHESTRATOR predicts that capacity loss, finds the bottleneck, changeswhen and where trucks are released, reserves narrow switchbacks/intersections,and still lets each vehicle enforce its own physics safety limit.Digital twin = virtual mine + virtual trucks + weather + road physics + queues              + prediction + optimization.
+21. SOURCE LINEAGE & EVIDENCE CLASSES
+The numbers and concepts in this handover are derived from the team's prior NMDC mine research, vehicle/physics research, architecture-freeze reports, and the post-audit simulation. They are intentionally classified so the teammate does not mistake a simulation parameter for a mine fact.
+Evidence class
+Meaning
+How to use
+VERIFIED / PRIMARY
+Direct official or measured fact
+May be treated as fact with source
+REFERENCE
+Representative vehicle/OEM parameter
+Use for model initialization
+PEER-REVIEWED
+Published engineering finding
+Supports method, not automatically site truth
+MODEL CONFIG
+Chosen equation/parameter setting
+Must be configurable
+SIMULATION SCENARIO
+Stress-test input
+Never call field evidence
+SIMULATION RESULT
+Output produced by our code
+Reproduce before publication
+ASSUMPTION
+Temporary engineering assumption
+Must be replaced or validated
+UNKNOWN
+Not publicly established
+Must not be silently filled
+
+22. FINAL BUILD RULE
+DO NOT BUILD A GRAPHICS DEMO FIRSTThe teammate must first make the numerical twin pass the physics, capacity, queue and control verification tests. Only after the model is correct should visual rendering and dashboard integration be treated as completion polish.
+
+Task 2 is complete only when the digital twin can reproduce the required cause-and-effect chain and expose its state cleanly to Task 1 and Task 3. Once this gate passes, we move to Task 3 physical hardware integration.

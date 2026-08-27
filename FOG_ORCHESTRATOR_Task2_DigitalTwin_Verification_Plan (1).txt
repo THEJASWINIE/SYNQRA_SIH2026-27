@@ -1,0 +1,344 @@
+FOG-ORCHESTRATOR 2.0
+Task 2 — Digital Twin Verification & Validation Plan
+Requirements Verification, Validation & Acceptance Plan (V&V)
+Document ID
+Version
+Status
+Owner
+Scope
+FOG-T2-VVP-001
+1.0
+INTERNAL / SIH MVP
+Task 2 Team
+Digital twin of mine + vehicles + environmental conditions
+1. Purpose
+This plan verifies that the Task 2 Digital Twin correctly represents the approved FOG-ORCHESTRATOR architecture, preserves physical consistency, reproduces expected cause-and-effect relationships, and provides trustworthy interfaces to Task 1 HMI and Task 3 hardware-in-the-loop.
+2. Verification philosophy
+Verification asks: “Did we implement the model correctly?”
+Validation asks: “Does the model behave credibly for the intended operational use?”
+Every major result must be classified as mathematical proof, simulation demonstration, HIL validation or field validation.
+Simulation output shall not be presented as NMDC field performance.
+Critical safety-model defects require correction and re-execution before acceptance.
+3. Verification methods
+Method
+Use
+Inspection
+Configuration, units, interfaces, architecture and traceability.
+Analysis
+Equation checks, dimensional analysis, boundary conditions, monotonicity.
+Test
+Automated unit/subsystem/system tests.
+Comparison
+Baseline and alternative-controller comparison.
+Stress test
+Extreme fog, friction, grade, fleet density, failure conditions.
+Monte Carlo
+Uncertainty propagation and robustness.
+Replay
+Deterministic reproduction of benchmark runs.
+HIL
+Replace simulated vehicle state with Task 3 measured telemetry.
+4. Requirement traceability matrix
+Requirement
+Verification ID
+Acceptance evidence
+FTR-001
+T2-FT-1
+Pass/Fail + evidence
+FTR-002
+T2-FT-2
+Pass/Fail + evidence
+FTR-003
+T2-FT-3
+Pass/Fail + evidence
+FTR-004
+T2-FT-4
+Pass/Fail + evidence
+FTR-005
+T2-FT-5
+Pass/Fail + evidence
+FTR-006
+T2-FT-6
+Pass/Fail + evidence
+FTR-007
+T2-FT-7
+Pass/Fail + evidence
+FTR-008
+T2-FT-8
+Pass/Fail + evidence
+FTR-009
+T2-FT-9
+Pass/Fail + evidence
+FTR-010
+T2-FT-10
+Pass/Fail + evidence
+FTR-011
+T2-FT-11
+Pass/Fail + evidence
+FTR-012
+T2-FT-12
+Pass/Fail + evidence
+FTR-013
+T2-FT-13
+Pass/Fail + evidence
+FTR-014
+T2-FT-14
+Pass/Fail + evidence
+FTR-015
+T2-FT-15
+Pass/Fail + evidence
+FTR-016
+T2-FT-16
+Pass/Fail + evidence
+FTR-017
+T2-FT-17
+Pass/Fail + evidence
+FTR-018
+T2-FT-18
+Pass/Fail + evidence
+FTR-019
+T2-FT-19
+Pass/Fail + evidence
+FTR-020
+T2-FT-20
+Pass/Fail + evidence
+FTR-021
+T2-FT-21
+Pass/Fail + evidence
+FTR-022
+T2-FT-22
+Pass/Fail + evidence
+FTR-023
+T2-FT-23
+Pass/Fail + evidence
+FTR-024
+T2-FT-24
+Pass/Fail + evidence
+FTR-025
+T2-FT-25
+Pass/Fail + evidence
+FTR-026
+T2-FT-26
+Pass/Fail + evidence
+FTR-027
+T2-FT-27
+Pass/Fail + evidence
+FTR-028
+T2-FT-28
+Pass/Fail + evidence
+FTR-029
+T2-FT-29
+Pass/Fail + evidence
+FTR-030
+T2-FT-30
+Pass/Fail + evidence
+5. Mathematical verification tests
+ID
+Test
+Method
+Pass criterion
+TV-MATH-001
+Dimensional consistency
+All force, distance, speed, time and capacity equations
+No dimensional mismatch
+TV-MATH-002
+Flat-road force balance
+theta=0; verify gravity longitudinal component is zero
+Within numerical tolerance
+TV-MATH-003
+Downhill monotonicity
+Increase grade with all else fixed
+v_safe non-increasing
+TV-MATH-004
+Friction monotonicity
+Decrease μ with all else fixed
+v_safe non-increasing; stopping distance non-decreasing
+TV-MATH-005
+Visibility monotonicity
+Decrease R_effective
+v_safe non-increasing
+TV-MATH-006
+Latency monotonicity
+Increase total latency
+stopping distance non-decreasing; v_safe non-increasing
+TV-MATH-007
+Retarder separation
+Compare continuous descent and emergency braking modes
+No double-counting
+TV-MATH-008
+Capacity bound
+Verify H_safe >= vehicle length + standstill margin
+No physical overlap
+TV-MATH-009
+Queue conservation
+Controlled arrival/service test
+Q_new = Q_old + arrivals - departures, bounded at zero
+TV-MATH-010
+Mass/state transitions
+Loaded↔empty
+No discontinuous invalid states; mass changes propagate correctly
+6. System validation scenarios
+ID
+Scenario
+Stimulus
+Acceptance
+TV-SYS-001
+Clear dry
+Normal network flow
+No artificial queue growth
+TV-SYS-002
+Dense fog
+V decreases smoothly
+capacity and safe speed degrade smoothly
+TV-SYS-003
+Fog + wet + 8% downhill
+Worst combined state
+safe speed becomes conservative; no physics violations
+TV-SYS-004
+Crusher bottleneck
+λ > μ stress
+queue grows; arrival shaping stabilizes it
+TV-SYS-005
+Bottleneck migration
+Free one bottleneck, constrain another
+optimizer identifies new bottleneck; no oscillatory chasing
+TV-SYS-006
+Switchback conflict
+Two opposing vehicles
+no simultaneous occupancy of conflict zone
+TV-SYS-007
+Post-fog recovery
+Capacity rises
+staged recovery avoids queue overshoot
+TV-SYS-008
+Communication loss
+packet loss/latency
+local safety remains active; system becomes conservative
+TV-SYS-009
+Forecast error
+biased/spatially shifted fog forecast
+no unsafe central command; graceful fallback
+TV-SYS-010
+High fleet density
+N=50+
+no state corruption; queues remain bounded if capacity allows
+7. Optimizer verification
+ID
+Test
+Configuration
+Acceptance evidence
+TV-OPT-001
+Static baseline
+Fixed speed/rule dispatch
+Reference result recorded
+TV-OPT-002
+Vehicle-only
+Tier 1 only
+Reference result recorded
+TV-OPT-003
+Fleet-only
+Tier 3 without vehicle governor
+Any safety violation is recorded, not hidden
+TV-OPT-004
+Deterministic MPC
+Fixed forecast
+Solve time, throughput, queue recorded
+TV-OPT-005
+Robust/scenario MPC
+Forecast uncertainty scenarios
+Result and compute recorded
+TV-OPT-006
+Chance-constrained MPC
+Probabilistic capacity constraints
+Violation rate within declared bound
+TV-OPT-007
+Ablation—no arrival shaping
+Remove λ shaping
+Quantify impact
+TV-OPT-008
+Ablation—no slot reservation
+Remove Tier 2
+Quantify impact
+TV-OPT-009
+Ablation—no bottleneck scoring
+Remove score
+Quantify impact
+8. Uncertainty / Monte Carlo plan
+At least 1,000 runs for initial stress tests; increase when computationally practical.
+Randomize mass, grade, friction, visibility, forecast error, latency, packet loss, service rates and fleet size.
+Use fixed random seeds for benchmark reproducibility.
+Report mean, median, P5, P95, worst-case, standard deviation and safety-violation probability.
+Do not claim field distributions unless source-backed.
+Include correlated fog/friction scenarios; also run independence as a sensitivity baseline.
+9. Performance verification
+Metric
+Target / acceptance
+Method
+Simulation step
+Configurable <=1 s for HIL-facing scenarios
+Timed execution
+Fleet scale
+>=50 vehicles mandatory benchmark
+Run N=10,20,30,50,75,100
+Optimizer latency
+Target <10 s prototype; report measured result
+100 repeated solves
+State update
+No lost/duplicate vehicle states in normal operation
+Telemetry consistency test
+Determinism
+Same seed -> identical benchmark
+Replay test
+Data logging
+100% of benchmark signals recoverable
+Log completeness audit
+10. Interface verification
+Task 1 HMI receives road, vehicle, queue, bottleneck, safe speed, risk, dispatch and slot state with valid timestamps.
+Task 3 telemetry packet can replace simulated state without breaking the digital-twin API.
+Stale telemetry triggers timeout/confidence reduction.
+Units are consistent: m, s, m/s, kg, N, W, vehicles/hour.
+Every command has timestamp, source, validity interval and mode.
+11. Failure-mode tests
+Failure
+Expected twin response
+Central optimizer unavailable
+Continue Tier-1/local safety model; no stale dispatch persistence
+Fog forecast wrong
+Receding horizon corrects; safety remains local
+Visibility sensor invalid
+Confidence reduced; conservative visibility state
+Friction estimate invalid
+Use conservative lower bound / safe fallback
+LoRa/V2V lost
+Increase uncertainty; local safety continues
+Queue measurement stale
+Mark state stale; prevent aggressive dispatch
+Invalid scenario parameter
+Reject configuration; do not simulate silently
+Numerical NaN/Inf
+Fail test and halt affected run
+12. Acceptance gates
+Gate A — Mathematical: all critical equations pass dimensional, sign and monotonicity tests.
+Gate B — Network: queues, buffers and bottlenecks behave as intended.
+Gate C — Optimization: baseline comparisons and ablations are reproducible.
+Gate D — Safety: no modeled safety-envelope violations in accepted hybrid scenarios.
+Gate E — Performance: 50-vehicle benchmark completes with measured timing.
+Gate F — Interface: Task 1 and Task 3 interfaces pass integration tests.
+Gate G — Reproducibility: benchmark result regenerated from saved scenario/config/seed.
+Gate H — HIL readiness: simulated vehicle telemetry can be swapped for real Task 3 telemetry.
+13. Evidence package required from Task 2 team
+Source code + version/commit ID
+Configuration files
+Scenario library
+Golden benchmark datasets/results
+Automated test logs
+Plots for mathematical monotonicity
+Monte Carlo CSV + seed list
+Optimizer benchmark table
+Failure-mode test report
+Interface/API schema
+Known limitations and assumptions register
+Final V&V traceability matrix
+Short demo recording showing one full scenario replay
+14. Exit criterion
+Task 2 is COMPLETE only when all mandatory requirements are mapped to passed verification evidence, all critical defects are closed, the benchmark results are reproducible, and the digital twin can exchange state/commands with Task 1 HMI and the future Task 3 HIL interface.

@@ -1,0 +1,62 @@
+{
+    "scenario": "DEMO_06_FULL_VERTICAL_SLICE",
+    "optimizers": {
+        "Baseline (Shaping OFF)": {
+            "throughput_tonnes": 364.0,
+            "max_crusher_queue": 3,
+            "max_shovel_queue": 4,
+            "safety_violations": 0
+        },
+        "Baseline (Shaping ON)": {
+            "throughput_tonnes": 364.0,
+            "max_crusher_queue": 3,
+            "max_shovel_queue": 4,
+            "safety_violations": 0
+        },
+        "Deterministic MPC": {
+            "throughput_tonnes": 364.0,
+            "max_crusher_queue": 2,
+            "max_shovel_queue": 4,
+            "safety_violations": 0
+        },
+        "Robust MPC": {
+            "throughput_tonnes": 364.0,
+            "max_crusher_queue": 2,
+            "max_shovel_queue": 4,
+            "safety_violations": 0
+        },
+        "Chance-Constrained MPC": {
+            "throughput_tonnes": 364.0,
+            "max_crusher_queue": 2,
+            "max_shovel_queue": 4,
+            "safety_violations": 0
+        }
+    },
+    "ablation": {
+        "Full CC-MPC": {
+            "throughput_tonnes": 364.0,
+            "max_crusher_queue": 2,
+            "max_shovel_queue": 4,
+            "safety_violations": 0
+        },
+        "CC-MPC (No Slot Reservation)": {
+            "throughput_tonnes": 364.0,
+            "max_crusher_queue": 2,
+            "max_shovel_queue": 4,
+            "safety_violations": 0
+        },
+        "CC-MPC (No Arrival Shaping)": {
+            "throughput_tonnes": 364.0,
+            "max_crusher_queue": 3,
+            "max_shovel_queue": 4,
+            "safety_violations": 0
+        }
+    },
+    "monte_carlo": {
+        "runs": 50,
+        "mean_throughput": 332.7610900092692,
+        "p5_throughput": 269.6344665357212,
+        "p95_throughput": 373.8225702207367,
+        "violations": 0
+    }
+}

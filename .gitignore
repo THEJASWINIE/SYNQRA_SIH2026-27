@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.vscode/
+.idea/
+*.log
+ui_headless_render.png
+
+# Old backup code
+legacy_backup/
+
+# Python cache anywhere in the project
+**/__pycache__/
+**/*.pyc
