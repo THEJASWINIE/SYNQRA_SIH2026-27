@@ -27,10 +27,10 @@ This report documents the final verification and validation (V&V) results for th
 | --- | --- | --- | --- | --- | --- |
 | baseline | 364.0 t | 3 | 0 | 0.000 ms | 0.000 ms |
 | vehicle_only_tier1 | 364.0 t | 3 | 0 | 0.000 ms | 0.000 ms |
-| fleet_only_tier3 | 364.0 t | 2 | 3615 | 2.780 ms | 4.602 ms |
-| deterministic_mpc | 364.0 t | 2 | 0 | 2.996 ms | 4.951 ms |
-| robust_mpc | 364.0 t | 2 | 0 | 2.688 ms | 3.327 ms |
-| chance_mpc | 364.0 t | 2 | 0 | 2.685 ms | 3.643 ms |
+| fleet_only_tier3 | 364.0 t | 2 | 3615 | 2.226 ms | 2.996 ms |
+| deterministic_mpc | 364.0 t | 2 | 0 | 2.169 ms | 3.086 ms |
+| robust_mpc | 364.0 t | 2 | 0 | 2.644 ms | 3.597 ms |
+| chance_mpc | 364.0 t | 2 | 0 | 2.443 ms | 3.407 ms |
 
 *   **Fleet-only Tier-3 Note**: When the Tier-1 governor is bypassed, optimization algorithms command speeds above physics limits under heavy fog, producing safety violations. This validates the absolute necessity of the local physics safety governor hierarchy.
 *   **Evidence Label**: [VERIFICATION]

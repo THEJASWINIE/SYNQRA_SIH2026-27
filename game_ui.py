@@ -115,6 +115,9 @@ class SimulationUIBridge:
         self.history_safe_speed = collections.deque(maxlen=120)
         self.history_cmd_speed = collections.deque(maxlen=120)
         
+        # Car-following safety state tracking (per vehicle ID)
+        self.following_stop_state: Dict[str, bool] = {}
+        
         # Initial truck position configuration for instant visual feedback:
         # TRUCK_01 starts on ROAD_1 heading towards the downhill switchback
         t1 = self.get_truck(self.selected_truck_id)
@@ -193,20 +196,93 @@ class SimulationUIBridge:
             target_mps = 0.0 if self.e_stop_active else (self.target_speed_kmh / 3.6)
             edge.speed_limit_mps = min(nom_limit, target_mps)
 
+    def compute_car_following_limit(self, vehicle, edge) -> Tuple[float, Optional[str], float, bool]:
+        """
+        Calculates the longitudinal gap and car-following speed limit for a vehicle on a road edge.
+        Enforces a safety stop when gap <= safe_headway, with 5m hysteresis buffer before resuming.
+        
+        Returns:
+            (car_following_speed_limit_mps, lead_vehicle_id, gap_m, is_following_stopped)
+        """
+        if not edge or vehicle not in edge.vehicles:
+            self.following_stop_state[vehicle.id] = False
+            return float('inf'), None, float('inf'), False
+
+        veh_len = float(getattr(vehicle, "length", self.vehicle_cfg.get("length_m", 14.5)))
+        safe_hw = float(getattr(vehicle, "safe_headway_m", self.vehicle_cfg.get("min_static_headway_m", 15.5)))
+
+        # Find position safely
+        try:
+            curr_pos = float(getattr(vehicle, "position_s", 0.0))
+            if math.isnan(curr_pos) or math.isinf(curr_pos):
+                curr_pos = 0.0
+        except Exception:
+            curr_pos = 0.0
+
+        lead_v = None
+        min_pos_diff = float('inf')
+
+        # Find the vehicle immediately ahead on the SAME road edge
+        for other in edge.vehicles:
+            if other.id == vehicle.id:
+                continue
+            try:
+                other_pos = float(getattr(other, "position_s", 0.0))
+                if math.isnan(other_pos) or math.isinf(other_pos):
+                    continue
+            except Exception:
+                continue
+
+            pos_diff = other_pos - curr_pos
+            if 0.0 < pos_diff < min_pos_diff:
+                min_pos_diff = pos_diff
+                lead_v = other
+
+        if not lead_v:
+            self.following_stop_state[vehicle.id] = False
+            return float('inf'), None, float('inf'), False
+
+        lead_len = float(getattr(lead_v, "length", self.vehicle_cfg.get("length_m", 14.5)))
+        gap = max(0.0, min_pos_diff - lead_len)
+
+        # Hysteresis Logic:
+        # Stop when gap <= safe_headway
+        # Resume only when gap >= safe_headway + 5.0m
+        hysteresis_margin = 5.0
+        was_stopped = self.following_stop_state.get(vehicle.id, False)
+
+        if was_stopped:
+            if gap >= safe_hw + hysteresis_margin:
+                is_stopped = False
+            else:
+                is_stopped = True
+        else:
+            if gap <= safe_hw:
+                is_stopped = True
+            else:
+                is_stopped = False
+
+        self.following_stop_state[vehicle.id] = is_stopped
+
+        if is_stopped:
+            return 0.0, lead_v.id, gap, True
+        else:
+            return float('inf'), lead_v.id, gap, False
+
     def evaluate_physics(self):
         """
-        Evaluates resolve_v_safe and enforces local safety governor across all vehicles.
+        Evaluates resolve_v_safe and enforces local safety governor & car-following across all vehicles.
         
-        Local Safety Governor Architecture:
-            user_target_speed
-                   ↓
-            local UI/simulation safety governor
-                   ↓
-            commanded_speed = min(user_target_speed, v_safe, road_speed_limit)
-                   ↓
-            existing vehicle/simulation control
-                   ↓
-            actual vehicle speed
+        Strict Priority Hierarchy:
+            E-STOP (0 km/h)
+                  ↓
+            invalid / fail-safe state (0 km/h)
+                  ↓
+            truck-following safety stop (0 km/h when gap <= safe_headway)
+                  ↓
+            physical v_safe governor (visibility, friction, grade, curve)
+                  ↓
+            user commanded target speed
         """
         target_mps = 0.0 if self.e_stop_active else (self.target_speed_kmh / 3.6)
 
@@ -231,6 +307,9 @@ class SimulationUIBridge:
             )
             edge.v_safe_mps = phys_res_edge["v_safe"]
 
+            # Sort vehicles on edge by position descending (lead vehicle is first)
+            edge.vehicles.sort(key=lambda x: getattr(x, "position_s", 0.0), reverse=True)
+
             for v in edge.vehicles:
                 phys_res = resolve_v_safe(
                     mass_kg=v.mass_kg,
@@ -250,16 +329,27 @@ class SimulationUIBridge:
                 # Authoritative physical safe speed ceiling
                 v.v_safe_mps = phys_res["v_safe"]
                 
-                # User dispatch request clamped to nominal road speed limit
-                v.v_dispatch_mps = min(target_mps, nom_limit)
-                
-                # Local safety governor: commanded speed cannot exceed v_safe
-                v.v_command_mps = min(v.v_dispatch_mps, v.v_safe_mps)
-                
                 # Dynamic stopping envelope and safe headway
                 a_dec = max(0.1, phys_res["a_dec"])
                 v.stop_envelope_m = calculate_stopping_distance(v.speed_mps, a_dec, self.vehicle_cfg["ecu_hydraulic_latency_s"]) + self.vehicle_cfg["safety_stop_margin_m"]
                 v.safe_headway_m = max(v.stop_envelope_m + self.vehicle_cfg["safety_headway_margin_m"], self.vehicle_cfg["min_static_headway_m"])
+                
+                # Car-following check on same road segment
+                car_fol_limit, lead_id, gap_m, is_fol_stopped = self.compute_car_following_limit(v, edge)
+                v.lead_vehicle_id = lead_id
+                v.lead_gap_m = gap_m
+                v.is_following_stopped = is_fol_stopped
+
+                # Strict Priority Enforcement:
+                if self.e_stop_active:
+                    v.v_dispatch_mps = 0.0
+                elif is_fol_stopped:
+                    v.v_dispatch_mps = 0.0
+                else:
+                    v.v_dispatch_mps = min(target_mps, nom_limit, car_fol_limit)
+
+                # Final commanded speed cannot exceed physical v_safe
+                v.v_command_mps = min(v.v_dispatch_mps, v.v_safe_mps)
 
         # 2. Vehicles in Queues / Nodes
         for node in self.sim.network.nodes.values():
@@ -270,6 +360,9 @@ class SimulationUIBridge:
                     v.v_command_mps = 0.0
                     v.stop_envelope_m = 0.0
                     v.safe_headway_m = self.vehicle_cfg["min_static_headway_m"]
+                    v.is_following_stopped = False
+                    v.lead_vehicle_id = None
+                    v.lead_gap_m = float('inf')
 
     def set_target_speed(self, speed_kmh: float):
         """Sets commanded target speed (km/h). Local governor automatically clamps to v_safe."""
@@ -292,6 +385,16 @@ class SimulationUIBridge:
 
     def step(self):
         """Advances simulation by 1 timestep (dt) and records telemetry."""
+        # Record pre-step state of traveling vehicles
+        pre_states = {}
+        for edge in self.sim.network.edges.values():
+            for v in edge.vehicles:
+                pre_states[v.id] = {
+                    "position_s": v.position_s,
+                    "speed_mps": v.speed_mps,
+                    "is_following_stopped": self.following_stop_state.get(v.id, False)
+                }
+
         self.apply_environment_parameters()
 
         # Advance backend simulation step (preserves authoritative state machine)
@@ -301,6 +404,29 @@ class SimulationUIBridge:
         self.apply_environment_parameters()
         self.evaluate_physics()
 
+        # Enforce following stop holding and braking
+        for edge in self.sim.network.edges.values():
+            for v in edge.vehicles:
+                if getattr(v, "is_following_stopped", False):
+                    prev = pre_states.get(v.id)
+                    if prev:
+                        if prev["speed_mps"] <= 0.05:
+                            # Stationary hold
+                            v.speed_mps = 0.0
+                            v.acceleration_mps2 = 0.0
+                            v.position_s = prev["position_s"]
+                        else:
+                            # Decelerate smoothly to 0 m/s using physics braking
+                            phys_a_dec = max(1.5, getattr(v, "a_dec", 2.5))
+                            new_spd = max(0.0, prev["speed_mps"] - phys_a_dec * self.sim.dt)
+                            v.speed_mps = new_spd
+                            v.acceleration_mps2 = -phys_a_dec
+                            v.position_s = prev["position_s"] + 0.5 * (prev["speed_mps"] + new_spd) * self.sim.dt
+                    v.v_command_mps = 0.0
+                    v.v_dispatch_mps = 0.0
+
+        # Refresh evaluation and record telemetry point
+        self.evaluate_physics()
         self.record_history_point()
 
     def record_history_point(self):
@@ -397,6 +523,101 @@ class SimulationUIBridge:
 
         return {"type": "node", "node_id": "SHOVEL", "queue_index": 0, "queue_len": 0, "service_rem_s": 0.0, "service_total_s": 0.0, "desc": "SHOVEL"}
 
+    def get_fleet_telemetry(self) -> List[Dict[str, Any]]:
+        """
+        Extracts live, authoritative per-vehicle telemetry for all trucks in the fleet.
+        Derives speed, v_safe, commanded speed, location, gap, and operational status directly
+        from the Simulator state.
+        """
+        fleet_data = []
+        crusher_node = self.sim.network.nodes.get("CRUSHER")
+        shovel_node = self.sim.network.nodes.get("SHOVEL")
+        intersection_node = self.sim.network.nodes.get("INTERSECTION")
+
+        for v in self.sim.vehicles:
+            speed_mps = float(getattr(v, "speed_mps", 0.0))
+            speed_kmh = speed_mps * 3.6
+            v_safe_mps = float(getattr(v, "v_safe_mps", 13.89))
+            v_safe_kmh = v_safe_mps * 3.6
+            v_cmd_mps = float(getattr(v, "v_command_mps", 0.0))
+            v_cmd_kmh = v_cmd_mps * 3.6
+
+            loc = self.get_vehicle_location(v)
+            if loc["type"] == "edge":
+                loc_badge = loc["edge_id"]
+            else:
+                loc_badge = loc["node_id"]
+
+            lead_id = getattr(v, "lead_vehicle_id", None)
+            lead_gap_m = float(getattr(v, "lead_gap_m", float('inf')))
+            is_fol_stopped = bool(getattr(v, "is_following_stopped", False))
+
+            # Determine operational status label & color
+            if self.e_stop_active:
+                status_label = "E-STOP"
+                status_color = (255, 60, 60)
+            elif speed_mps > v_safe_mps + 0.1 or getattr(v, "warning_fault", False):
+                status_label = "UNSAFE"
+                status_color = (255, 60, 60)
+            elif crusher_node and crusher_node.queue and v in crusher_node.queue.vehicles:
+                q_idx = crusher_node.queue.vehicles.index(v)
+                if q_idx == 0:
+                    status_label = "UNLOAD"
+                    status_color = (255, 170, 60)
+                else:
+                    status_label = f"QUEUED #{q_idx+1}"
+                    status_color = (180, 150, 220)
+            elif shovel_node and shovel_node.queue and v in shovel_node.queue.vehicles:
+                q_idx = shovel_node.queue.vehicles.index(v)
+                if q_idx == 0:
+                    status_label = "LOADING"
+                    status_color = (100, 200, 255)
+                else:
+                    status_label = f"QUEUED #{q_idx+1}"
+                    status_color = (180, 150, 220)
+            elif v in getattr(self.sim, "shovel_departure_buffer", []):
+                status_label = "BUFFER"
+                status_color = (180, 150, 220)
+            elif intersection_node and intersection_node.queue and v in intersection_node.queue.vehicles:
+                q_idx = intersection_node.queue.vehicles.index(v)
+                status_label = f"QUEUED #{q_idx+1}"
+                status_color = (180, 150, 220)
+            elif is_fol_stopped:
+                status_label = "FOLLOWING"
+                status_color = (250, 180, 45)
+            elif speed_mps > 0.5:
+                if speed_mps > 0.88 * v_safe_mps or self.current_visibility_m <= 10.0:
+                    status_label = "CAUTION"
+                    status_color = (250, 180, 45)
+                else:
+                    status_label = "MOVING"
+                    status_color = (50, 225, 110)
+            else:
+                status_label = "STOPPED"
+                status_color = (160, 170, 185)
+
+            fleet_data.append({
+                "id": v.id,
+                "speed_mps": speed_mps,
+                "speed_kmh": speed_kmh,
+                "v_safe_mps": v_safe_mps,
+                "v_safe_kmh": v_safe_kmh,
+                "v_command_mps": v_cmd_mps,
+                "v_command_kmh": v_cmd_kmh,
+                "is_loaded": bool(getattr(v, "is_loaded", False)),
+                "mass_kg": float(getattr(v, "mass_kg", 74000.0)),
+                "location_id": loc_badge,
+                "location_desc": loc["desc"],
+                "lead_vehicle_id": lead_id,
+                "lead_gap_m": lead_gap_m,
+                "is_following_stopped": is_fol_stopped,
+                "status_label": status_label,
+                "status_color": status_color,
+                "is_selected": (v.id == self.selected_truck_id)
+            })
+
+        return fleet_data
+
     def get_telemetry(self) -> Dict[str, Any]:
         """
         Extracts comprehensive telemetry for UI display.
@@ -440,8 +661,11 @@ class SimulationUIBridge:
             progress_pct = 100.0
             location_label = loc["desc"]
 
-        stop_envelope_m = float(getattr(t1, "stop_envelope_m", 15.5))
-        safe_headway_m = float(getattr(t1, "safe_headway_m", 15.5))
+        stop_envelope_m = float(getattr(t1, "stop_envelope_m", 15.5)) if t1 else 15.5
+        safe_headway_m = float(getattr(t1, "safe_headway_m", 15.5)) if t1 else 15.5
+        is_fol_stopped = bool(getattr(t1, "is_following_stopped", False)) if t1 else False
+        lead_veh_id = getattr(t1, "lead_vehicle_id", None) if t1 else None
+        lead_gap_m = float(getattr(t1, "lead_gap_m", float('inf'))) if t1 else float('inf')
 
         # Safety status classification (SAFE, CAUTION, UNSAFE)
         if self.e_stop_active:
@@ -452,6 +676,11 @@ class SimulationUIBridge:
             safety_status = "UNSAFE"
             safety_color = (245, 60, 60)
             safety_desc = "SPEED EXCEEDS SAFE CEILING!"
+        elif is_fol_stopped:
+            safety_status = "CAUTION"
+            safety_color = (250, 180, 45)
+            lead_str = f"behind {lead_veh_id} (Gap: {lead_gap_m:.1f}m)" if lead_veh_id else "(Lead Truck Ahead)"
+            safety_desc = f"FOLLOWING STOP — MAINTAINING SAFE HEADWAY {lead_str}"
         elif vis_m <= 10.0 or speed_mps > 0.88 * v_safe_mps or (grade_pct < -5.0 and surface_state in ["wet", "saturated"]):
             safety_status = "CAUTION"
             safety_color = (250, 180, 45)
@@ -500,6 +729,9 @@ class SimulationUIBridge:
             "speed_limit_kmh": road_limit_mps * 3.6,
             "stop_envelope_m": stop_envelope_m,
             "safe_headway_m": safe_headway_m,
+            "is_following_stopped": is_fol_stopped,
+            "lead_vehicle_id": lead_veh_id,
+            "lead_gap_m": lead_gap_m,
             "safety_status": safety_status,
             "safety_color": safety_color,
             "safety_desc": safety_desc,
@@ -507,7 +739,8 @@ class SimulationUIBridge:
             "crusher_service_rem_s": crusher_rem_s,
             "shovel_queue_len": shovel_q.length if shovel_q else 0,
             "shovel_service_rem_s": shovel_rem_s,
-            "total_tonnes": sum(getattr(v, "total_tonnes_hauled", 0.0) for v in self.sim.vehicles)
+            "total_tonnes": sum(getattr(v, "total_tonnes_hauled", 0.0) for v in self.sim.vehicles),
+            "fleet": self.get_fleet_telemetry()
         }
 
 
@@ -910,6 +1143,22 @@ class MiningVisualizerUI:
                 for btn in self.buttons:
                     btn.handle_event(event, mouse_pos)
 
+            # Mouse click on Fleet Telemetry rows or Viewport trucks to select active truck
+            if event.type == self.pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # 1. Check click on Fleet Telemetry rows (x: 416, y: 404, w: 446, h: 220)
+                fx, fy, fw = 416, 404, 446
+                if fx + 6 <= mouse_pos[0] <= fx + fw - 6 and fy + 51 <= mouse_pos[1] <= fy + 51 + 4 * 36:
+                    row_idx = (mouse_pos[1] - (fy + 51)) // 36
+                    if 0 <= row_idx < len(self.bridge.sim.vehicles):
+                        self.bridge.selected_truck_id = self.bridge.sim.vehicles[row_idx].id
+
+                # 2. Check click near a truck in 2.5D Viewport
+                for v in self.bridge.sim.vehicles:
+                    tx, ty, _, _ = self.get_vehicle_screen_pos(v)
+                    if math.hypot(mouse_pos[0] - tx, mouse_pos[1] - ty) <= 28:
+                        self.bridge.selected_truck_id = v.id
+                        break
+
             # Keyboard Shortcuts
             if event.type == self.pygame.KEYDOWN:
                 if event.key == self.pygame.K_ESCAPE:
@@ -958,7 +1207,7 @@ class MiningVisualizerUI:
 
         # 3. Middle 4 Informational Panels
         self.draw_fog_control_panel()
-        self.draw_truck_status_panel()
+        self.draw_fleet_telemetry_panel()
         self.draw_road_environment_panel()
         self.draw_simulation_control_panel()
 
@@ -1181,19 +1430,23 @@ class MiningVisualizerUI:
         self.screen.blit(rotated_surf, (rx, ry))
 
         # Tag Badge above vehicle
-        tag_bg_col = (15, 23, 42, 220)
-        badge_w = 112
+        is_fol_stop = getattr(vehicle, "is_following_stopped", False)
+        tag_bg_col = (45, 28, 12, 230) if is_fol_stop else (15, 23, 42, 220)
+        badge_w = 126 if is_fol_stop else 112
         badge_h = 22
         bx = int(cx - badge_w // 2)
         by = int(cy - 28 * scale - badge_h)
         
         tag_surf = pygame.Surface((badge_w, badge_h), pygame.SRCALPHA)
         pygame.draw.rect(tag_surf, tag_bg_col, (0, 0, badge_w, badge_h), border_radius=4)
-        border_col = COLOR_CYAN if is_selected else COLOR_PANEL_BORDER
+        border_col = COLOR_AMBER if is_fol_stop else (COLOR_CYAN if is_selected else COLOR_PANEL_BORDER)
         pygame.draw.rect(tag_surf, border_col, (0, 0, badge_w, badge_h), 1, border_radius=4)
         
-        lbl_id = self.font_small.render(f"{vehicle.id} {vehicle.speed_mps*3.6:.0f}km/h", True, COLOR_TEXT_PRIMARY)
-        tag_surf.blit(lbl_id, (8, 4))
+        if is_fol_stop:
+            lbl_id = self.font_small.render(f"{vehicle.id} FOLLOWING STOP", True, COLOR_AMBER)
+        else:
+            lbl_id = self.font_small.render(f"{vehicle.id} {vehicle.speed_mps*3.6:.0f}km/h", True, COLOR_TEXT_PRIMARY)
+        tag_surf.blit(lbl_id, (6, 4))
         self.screen.blit(tag_surf, (bx, by))
 
     def draw_fog_effect(self, vx: int, vy: int, vw: int, vh: int):
@@ -1297,59 +1550,131 @@ class MiningVisualizerUI:
         note = self.font_small.render("● Synced with FogModel, Friction (μ) & resolve_v_safe()", True, COLOR_TEXT_MUTED)
         self.screen.blit(note, (x + 20, y + 194))
 
-    def draw_truck_status_panel(self):
-        """Panel 2: Truck Speed, Safe Speed, and SAFE/CAUTION/UNSAFE Status."""
+    def draw_fleet_telemetry_panel(self):
+        """Panel 2: Segregated Live Fleet Telemetry with Live Speed, v_safe, Commanded Speed, Gap and Status."""
         pygame = self.pygame
-        x, y, w, h = 418, 404, 444, 220
+        x, y, w, h = 416, 404, 446, 220
         pygame.draw.rect(self.screen, COLOR_PANEL_BG, (x, y, w, h), border_radius=8)
         pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, (x, y, w, h), 1, border_radius=8)
 
         tel = self.bridge.get_telemetry()
+        fleet = tel.get("fleet", [])
 
-        # Header
-        hdr = self.font_section.render("TRUCK TELEMETRY & SAFETY STATUS", True, COLOR_CYAN)
-        self.screen.blit(hdr, (x + 16, y + 14))
+        # Panel Header
+        hdr = self.font_section.render("FLEET TELEMETRY & LOCAL GOVERNOR", True, COLOR_CYAN)
+        self.screen.blit(hdr, (x + 12, y + 10))
 
-        # Speed Grid (Current Speed vs Safe Speed vs Limit)
-        # Current Speed
-        pygame.draw.rect(self.screen, (28, 34, 42), (x + 16, y + 42, 126, 68), border_radius=6)
-        pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, (x + 16, y + 42, 126, 68), 1, border_radius=6)
-        self.screen.blit(self.font_small.render("CURRENT SPEED", True, COLOR_TEXT_SECONDARY), (x + 24, y + 48))
-        spd_val = self.font_digits_large.render(f"{tel['speed_kmh']:.1f}", True, COLOR_TEXT_PRIMARY)
-        self.screen.blit(spd_val, (x + 24, y + 66))
-        self.screen.blit(self.font_small.render("km/h", True, COLOR_TEXT_MUTED), (x + 95, y + 74))
+        # Overall Status Badge / Global Callout on Top-Right
+        if tel["e_stop"]:
+            top_badge_text = "● E-STOP"
+            top_badge_col = COLOR_RED
+        elif any(trk["status_label"] == "UNSAFE" for trk in fleet):
+            top_badge_text = "● UNSAFE LIMIT"
+            top_badge_col = COLOR_RED
+        elif any(trk["status_label"] == "FOLLOWING" for trk in fleet):
+            top_badge_text = "● SAFE GAP ACTIVE"
+            top_badge_col = COLOR_AMBER
+        else:
+            top_badge_text = "● 4 UNITS ACTIVE"
+            top_badge_col = COLOR_GREEN
 
-        # Safe Speed Ceiling (Authoritative Physics)
-        pygame.draw.rect(self.screen, (34, 30, 24), (x + 152, y + 42, 136, 68), border_radius=6)
-        pygame.draw.rect(self.screen, COLOR_AMBER, (x + 152, y + 42, 136, 68), 1, border_radius=6)
-        self.screen.blit(self.font_small.render("SAFE SPEED CEILING", True, COLOR_AMBER), (x + 160, y + 48))
-        safe_val = self.font_digits_large.render(f"{tel['v_safe_kmh']:.1f}", True, COLOR_AMBER)
-        self.screen.blit(safe_val, (x + 160, y + 66))
-        self.screen.blit(self.font_small.render("km/h", True, COLOR_TEXT_MUTED), (x + 235, y + 74))
+        top_tag = self.font_small.render(top_badge_text, True, top_badge_col)
+        self.screen.blit(top_tag, (x + w - top_tag.get_width() - 14, y + 12))
 
-        # Road Speed Limit
-        pygame.draw.rect(self.screen, (28, 34, 42), (x + 298, y + 42, 130, 68), border_radius=6)
-        pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, (x + 298, y + 42, 130, 68), 1, border_radius=6)
-        self.screen.blit(self.font_small.render("ROAD SPEED LIMIT", True, COLOR_TEXT_SECONDARY), (x + 306, y + 48))
-        lim_val = self.font_digits_large.render(f"{tel['speed_limit_kmh']:.0f}", True, COLOR_TEXT_PRIMARY)
-        self.screen.blit(lim_val, (x + 306, y + 66))
-        self.screen.blit(self.font_small.render("km/h", True, COLOR_TEXT_MUTED), (x + 375, y + 74))
+        # Table Column Headers
+        col_y = y + 32
+        cols = [
+            ("TRUCK", 10),
+            ("SPEED", 82),
+            ("V_SAFE", 144),
+            ("CMD", 198),
+            ("LOC", 248),
+            ("GAP", 310),
+            ("STATUS", 362)
+        ]
+        for col_name, col_offset in cols:
+            self.screen.blit(self.font_small.render(col_name, True, COLOR_TEXT_MUTED), (x + col_offset, col_y))
 
-        # Prominent Safety Status Badge (SAFE, CAUTION, UNSAFE)
-        badge_col = tel["safety_color"]
-        badge_bg = (badge_col[0] // 5, badge_col[1] // 5, badge_col[2] // 5)
-        pygame.draw.rect(self.screen, badge_bg, (x + 16, y + 122, w - 32, 54), border_radius=6)
-        pygame.draw.rect(self.screen, badge_col, (x + 16, y + 122, w - 32, 54), 2, border_radius=6)
+        # Divider line under column headers
+        pygame.draw.line(self.screen, (36, 42, 52), (x + 8, col_y + 16), (x + w - 8, col_y + 16), 1)
 
-        st_lbl = self.font_badge.render(f"STATUS:  {tel['safety_status']}", True, badge_col)
-        self.screen.blit(st_lbl, (x + 28, y + 130))
-        desc_lbl = self.font_small.render(tel["safety_desc"], True, COLOR_TEXT_PRIMARY)
-        self.screen.blit(desc_lbl, (x + 28, y + 152))
+        # Render 4 Truck Rows (36px height each)
+        for i, truck in enumerate(fleet[:4]):
+            ry = y + 51 + i * 36
+            is_sel = truck.get("is_selected", False)
 
-        # Sub-status
-        gov_str = "Local Safety Governor: ACTIVE (Authoritative Physics Enforced)"
+            # Row Background Strip
+            if is_sel:
+                pygame.draw.rect(self.screen, (24, 38, 55), (x + 6, ry, w - 12, 33), border_radius=4)
+                pygame.draw.rect(self.screen, (0, 180, 216, 180), (x + 6, ry, w - 12, 33), 1, border_radius=4)
+            else:
+                bg_col = (19, 24, 32) if i % 2 == 0 else (15, 19, 25)
+                pygame.draw.rect(self.screen, bg_col, (x + 6, ry, w - 12, 33), border_radius=4)
+
+            # Col 0: TRUCK ID
+            truck_name_col = COLOR_CYAN if is_sel else COLOR_TEXT_PRIMARY
+            t_lbl = self.font_bold.render(truck["id"], True, truck_name_col)
+            self.screen.blit(t_lbl, (x + 10, ry + 8))
+
+            # Col 1: SPEED
+            spd_val = self.font_digits_med.render(f"{truck['speed_kmh']:4.1f}", True, COLOR_TEXT_PRIMARY)
+            self.screen.blit(spd_val, (x + 78, ry + 6))
+            self.screen.blit(self.font_small.render("kph", True, COLOR_TEXT_MUTED), (x + 118, ry + 9))
+
+            # Col 2: V_SAFE
+            safe_val = self.font_digits_med.render(f"{truck['v_safe_kmh']:4.1f}", True, COLOR_AMBER)
+            self.screen.blit(safe_val, (x + 142, ry + 6))
+
+            # Col 3: COMMAND
+            cmd_val = self.font_digits_med.render(f"{truck['v_command_kmh']:4.1f}", True, COLOR_GREEN if truck['v_command_kmh'] > 0 else (220, 70, 70))
+            self.screen.blit(cmd_val, (x + 196, ry + 6))
+
+            # Col 4: LOCATION (Short badge)
+            loc_str = truck["location_id"]
+            if loc_str == "ROAD_RETURN":
+                loc_str = "RETURN"
+            elif loc_str == "INTERSECTION":
+                loc_str = "INTER"
+            loc_lbl = self.font_small.render(loc_str, True, COLOR_TEXT_SECONDARY)
+            self.screen.blit(loc_lbl, (x + 248, ry + 9))
+
+            # Col 5: GAP
+            lead_id = truck.get("lead_vehicle_id")
+            gap_m = truck.get("lead_gap_m", float('inf'))
+            if lead_id and not math.isinf(gap_m):
+                gap_str = f"{gap_m:.1f}m"
+                gap_col = COLOR_AMBER if truck.get("is_following_stopped") else COLOR_TEXT_PRIMARY
+            else:
+                gap_str = "--"
+                gap_col = COLOR_TEXT_MUTED
+            gap_lbl = self.font_small.render(gap_str, True, gap_col)
+            self.screen.blit(gap_lbl, (x + 310, ry + 9))
+
+            # Col 6: STATUS BADGE PILL
+            st_lbl_text = truck["status_label"]
+            st_col = truck["status_color"]
+            pill_w = 74
+            pill_h = 22
+            pill_x = x + 362
+            pill_y = ry + 5
+            
+            # Pill Background & Border
+            pygame.draw.rect(self.screen, (st_col[0] // 5, st_col[1] // 5, st_col[2] // 5), (pill_x, pill_y, pill_w, pill_h), border_radius=4)
+            pygame.draw.rect(self.screen, st_col, (pill_x, pill_y, pill_w, pill_h), 1, border_radius=4)
+            
+            st_text_surf = self.font_small.render(st_lbl_text, True, st_col)
+            st_tx = pill_x + (pill_w - st_text_surf.get_width()) // 2
+            st_ty = pill_y + (pill_h - st_text_surf.get_height()) // 2
+            self.screen.blit(st_text_surf, (st_tx, st_ty))
+
+        # Bottom Sub-status Bar
+        gov_str = "● Local Safety Governor: ACTIVE (Authoritative Physics Enforced across Fleet)"
         gov_surf = self.font_small.render(gov_str, True, COLOR_GREEN if not tel["e_stop"] else COLOR_RED)
-        self.screen.blit(gov_surf, (x + 16, y + 194))
+        self.screen.blit(gov_surf, (x + 14, y + 198))
+
+    def draw_truck_status_panel(self):
+        """Legacy compatibility alias for draw_fleet_telemetry_panel."""
+        return self.draw_fleet_telemetry_panel()
 
     def draw_road_environment_panel(self):
         """Panel 3: Road & Environment Information (Grade, Friction, Surface)."""
@@ -1364,6 +1689,12 @@ class MiningVisualizerUI:
         hdr = self.font_section.render("ROAD & ENVIRONMENT CONDITIONS", True, COLOR_CYAN)
         self.screen.blit(hdr, (x + 16, y + 12))
 
+        # Safe headway formatted with gap if lead vehicle present
+        if tel.get("lead_vehicle_id"):
+            hw_str = f"{tel['safe_headway_m']:.1f}m (Gap: {tel['lead_gap_m']:.1f}m)"
+        else:
+            hw_str = f"{tel['safe_headway_m']:.1f} m"
+
         # Key-Value Grid
         items_left = [
             ("Segment / Node:", f"{tel['current_edge']}"),
@@ -1374,7 +1705,7 @@ class MiningVisualizerUI:
 
         items_right = [
             ("Stopping Margin:", f"{tel['stop_envelope_m']:.1f} m"),
-            ("Safe Headway:", f"{tel['safe_headway_m']:.1f} m"),
+            ("Safe Headway:", hw_str),
             ("Truck Progress:", f"{tel['position_m']:.0f} / {tel['road_length_m']:.0f} m ({tel['progress_pct']:.0f}%)" if tel['road_length_m'] > 0 else f"{tel['truck_state'].upper()}"),
             ("Payload Mass:", f"{tel['mass_kg']/1000.0:.0f} tonnes ({'LOADED' if tel['is_loaded'] else 'EMPTY'})")
         ]
@@ -1648,8 +1979,41 @@ def run_headless_test() -> bool:
         bridge.set_target_speed(35.0)
         bridge.set_visibility(50.0)
 
-        # 6. Test Full Circuit Progression: Crusher Queue Arrival & Return Transition
-        print("[6/7] Testing Crusher Arrival, Service Queuing & ROAD_RETURN Transition...")
+        # 6. Test Car-Following Proximity Hold & Headway Queue
+        print("[6/8] Testing Car-Following Safety Proximity & Queue Formation...")
+        # Reset and configure 2 trucks on ROAD_1 in close proximity
+        bridge.reset()
+        t1 = bridge.get_truck("TRUCK_01")
+        t1.position_s = 180.0
+        t1.speed_mps = 0.0
+
+        t2 = bridge.get_truck("TRUCK_02")
+        if t2 in bridge.sim.network.nodes["SHOVEL"].queue.vehicles:
+            bridge.sim.network.nodes["SHOVEL"].queue.vehicles.remove(t2)
+        t2.state = "traveling"
+        t2.current_edge = "ROAD_1"
+        t2.current_node = None
+        t2.position_s = 155.0  # gap = 180 - 155 - 14.5 = 10.5m <= safe_hw (~15.5m)
+        t2.speed_mps = 6.0
+        bridge.sim.network.edges["ROAD_1"].vehicles.append(t2)
+
+        bridge.evaluate_physics()
+        assert t2.is_following_stopped is True
+        assert t2.v_command_mps == 0.0
+        
+        # Advance 3 steps: Following truck must safely stop behind lead truck without overlap
+        for _ in range(3):
+            t1.speed_mps = 0.0
+            bridge.step()
+        assert t2.speed_mps == 0.0
+        assert t2.position_s < t1.position_s - 14.0
+        print(f"      Car-Following verified: TRUCK_02 stopped behind TRUCK_01 (Pos: {t2.position_s:.1f}m < {t1.position_s:.1f}m, Gap: {t2.lead_gap_m:.1f}m)")
+
+        # 7. Test Full Circuit Progression: Crusher Queue Arrival & Return Transition
+        print("[7/8] Testing Crusher Arrival, Service Queuing & ROAD_RETURN Transition...")
+        # Reset to clean circuit
+        bridge.reset()
+        bridge.running = True
         # Step through ROAD_1 and ROAD_2 until Crusher is reached
         for _ in range(120):
             bridge.step()
@@ -1672,8 +2036,8 @@ def run_headless_test() -> bool:
         assert tel_ret["is_loaded"] is False  # Ore was successfully unloaded
         print(f"      Crusher service complete: Truck transitioned to ROAD_RETURN (Empty: {tel_ret['is_loaded']==False})")
 
-        # 7. Initialize UI Engine and Render Headless Frame
-        print("[7/7] Initializing Pygame Renderer and rendering frame...")
+        # 8. Initialize UI Engine and Render Headless Frame
+        print("[8/8] Initializing Pygame Renderer and rendering frame...")
         ui = MiningVisualizerUI(bridge, headless=True)
         ui.render()
         
