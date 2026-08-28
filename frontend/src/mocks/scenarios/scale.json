@@ -1,0 +1,2424 @@
+{
+  "id": "scale",
+  "name": "Scale — 50 vehicles, 20 nodes",
+  "description": "NFR-009 scale fixture. 50 authored vehicles across the 20-node topology. Generated once by scripts/generate-scale-scenario.mjs from hand-written constants; this JSON is the authoritative artifact.",
+  "family": "test",
+  "provider": "MOCK",
+  "stepIntervalMs": 1000,
+  "steps": [
+    {
+      "index": 0,
+      "atMs": 0,
+      "emit": {
+        "MineTopology": [
+          {
+            "version": "mock-topology-1",
+            "nodes": [
+              {
+                "node_id": "N-SHOVEL-1",
+                "kind": "SHOVEL",
+                "label": "Shovel 1",
+                "x": 0,
+                "y": 0
+              },
+              {
+                "node_id": "N-SHOVEL-2",
+                "kind": "SHOVEL",
+                "label": "Shovel 2",
+                "x": 0,
+                "y": 120
+              },
+              {
+                "node_id": "N-CRUSHER-1",
+                "kind": "CRUSHER",
+                "label": "Crusher 1",
+                "x": 600,
+                "y": 60
+              },
+              {
+                "node_id": "N-CRUSHER-2",
+                "kind": "CRUSHER",
+                "label": "Crusher 2",
+                "x": 600,
+                "y": 220
+              },
+              {
+                "node_id": "N-INT-1",
+                "kind": "INTERSECTION",
+                "label": "Intersection 1",
+                "x": 150,
+                "y": 60
+              },
+              {
+                "node_id": "N-INT-2",
+                "kind": "INTERSECTION",
+                "label": "Intersection 2",
+                "x": 300,
+                "y": 60
+              },
+              {
+                "node_id": "N-INT-3",
+                "kind": "INTERSECTION",
+                "label": "Intersection 3",
+                "x": 450,
+                "y": 60
+              },
+              {
+                "node_id": "N-INT-4",
+                "kind": "INTERSECTION",
+                "label": "Intersection 4",
+                "x": 300,
+                "y": 220
+              },
+              {
+                "node_id": "N-SW-1",
+                "kind": "SWITCHBACK",
+                "label": "Switchback 1",
+                "x": 220,
+                "y": 140
+              },
+              {
+                "node_id": "N-SW-2",
+                "kind": "SWITCHBACK",
+                "label": "Switchback 2",
+                "x": 380,
+                "y": 140
+              },
+              {
+                "node_id": "N-WP-1",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 1",
+                "x": 75,
+                "y": 30
+              },
+              {
+                "node_id": "N-WP-2",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 2",
+                "x": 75,
+                "y": 90
+              },
+              {
+                "node_id": "N-WP-3",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 3",
+                "x": 225,
+                "y": 60
+              },
+              {
+                "node_id": "N-WP-4",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 4",
+                "x": 375,
+                "y": 60
+              },
+              {
+                "node_id": "N-WP-5",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 5",
+                "x": 525,
+                "y": 60
+              },
+              {
+                "node_id": "N-WP-6",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 6",
+                "x": 300,
+                "y": 140
+              },
+              {
+                "node_id": "N-WP-7",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 7",
+                "x": 450,
+                "y": 180
+              },
+              {
+                "node_id": "N-WP-8",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 8",
+                "x": 520,
+                "y": 220
+              },
+              {
+                "node_id": "N-WP-9",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 9",
+                "x": 150,
+                "y": 180
+              },
+              {
+                "node_id": "N-WP-10",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 10",
+                "x": 225,
+                "y": 220
+              }
+            ],
+            "segments": [
+              {
+                "segment_id": "S-1",
+                "from_node": "N-SHOVEL-1",
+                "to_node": "N-WP-1",
+                "length_m": 80,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-2",
+                "from_node": "N-WP-1",
+                "to_node": "N-INT-1",
+                "length_m": 80,
+                "grade_rad": 0.03,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-3",
+                "from_node": "N-SHOVEL-2",
+                "to_node": "N-WP-2",
+                "length_m": 80,
+                "grade_rad": 0.01,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-4",
+                "from_node": "N-WP-2",
+                "to_node": "N-INT-1",
+                "length_m": 80,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-5",
+                "from_node": "N-INT-1",
+                "to_node": "N-WP-3",
+                "length_m": 80,
+                "grade_rad": 0,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-6",
+                "from_node": "N-WP-3",
+                "to_node": "N-INT-2",
+                "length_m": 80,
+                "grade_rad": -0.01,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-7",
+                "from_node": "N-INT-2",
+                "to_node": "N-WP-4",
+                "length_m": 80,
+                "grade_rad": 0.04,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-8",
+                "from_node": "N-WP-4",
+                "to_node": "N-INT-3",
+                "length_m": 80,
+                "grade_rad": 0.05,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-9",
+                "from_node": "N-INT-3",
+                "to_node": "N-WP-5",
+                "length_m": 80,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-10",
+                "from_node": "N-WP-5",
+                "to_node": "N-CRUSHER-1",
+                "length_m": 80,
+                "grade_rad": -0.03,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-11",
+                "from_node": "N-INT-1",
+                "to_node": "N-SW-1",
+                "length_m": 100,
+                "grade_rad": 0.08,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-12",
+                "from_node": "N-SW-1",
+                "to_node": "N-WP-6",
+                "length_m": 100,
+                "grade_rad": 0.09,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-13",
+                "from_node": "N-WP-6",
+                "to_node": "N-SW-2",
+                "length_m": 100,
+                "grade_rad": 0.07,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-14",
+                "from_node": "N-SW-2",
+                "to_node": "N-INT-3",
+                "length_m": 100,
+                "grade_rad": 0.06,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-15",
+                "from_node": "N-INT-2",
+                "to_node": "N-WP-9",
+                "length_m": 90,
+                "grade_rad": 0.03,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-16",
+                "from_node": "N-WP-9",
+                "to_node": "N-INT-4",
+                "length_m": 90,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-17",
+                "from_node": "N-INT-4",
+                "to_node": "N-WP-10",
+                "length_m": 90,
+                "grade_rad": 0.01,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-18",
+                "from_node": "N-WP-10",
+                "to_node": "N-WP-7",
+                "length_m": 120,
+                "grade_rad": 0.04,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-19",
+                "from_node": "N-WP-7",
+                "to_node": "N-WP-8",
+                "length_m": 90,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-20",
+                "from_node": "N-WP-8",
+                "to_node": "N-CRUSHER-2",
+                "length_m": 90,
+                "grade_rad": -0.02,
+                "bidirectional": true
+              }
+            ]
+          }
+        ],
+        "SystemHealth": [
+          {
+            "timestamp": "@now",
+            "system_mode": "NORMAL",
+            "connectivity": "CONNECTED",
+            "fleet_count": 50,
+            "components": [
+              {
+                "component_id": "LINK-V2I",
+                "timestamp": "@now",
+                "state": "UP",
+                "latency_ms": 12,
+                "age_ms": 40,
+                "error_code": null,
+                "link_kind": "V2I",
+                "messages_received": 100,
+                "messages_dropped": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "atMs": 1000,
+      "emit": {
+        "VehicleState": [
+          {
+            "vehicle_id": "V-1",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-5",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-2",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-6",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-3",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-8",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-4",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-9",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-5",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-11",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-6",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-13",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-7",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-15",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-8",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-18",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-9",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-20",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-10",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-1",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-11",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-5",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-12",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-6",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-13",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-8",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-14",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-9",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-15",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-11",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-16",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-13",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-17",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-15",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-18",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-18",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-19",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-20",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-20",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-1",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-21",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-5",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-22",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-6",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-23",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-8",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-24",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-9",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-25",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-11",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-26",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-13",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-27",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-15",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-28",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-18",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-29",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-20",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-30",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-1",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-31",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-5",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-32",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-6",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-33",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-8",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-34",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-9",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-35",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-11",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-36",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-13",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-37",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-15",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-38",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-18",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-39",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-20",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-40",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-1",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-41",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-5",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-42",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-6",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-43",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-8",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-44",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-9",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-45",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-11",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-46",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-13",
+              "offset_m": 10
+            },
+            "speed_mps": 7,
+            "accel_mps2": 0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-47",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-15",
+              "offset_m": 10
+            },
+            "speed_mps": 6,
+            "accel_mps2": 0,
+            "grade_rad": 0.08,
+            "friction_est": {
+              "value": 0.58,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-48",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-18",
+              "offset_m": 10
+            },
+            "speed_mps": 5,
+            "accel_mps2": 0,
+            "grade_rad": 0.02,
+            "friction_est": {
+              "value": 0.45,
+              "sigma": 0.08
+            },
+            "mode": "CAUTION",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-49",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-20",
+              "offset_m": 10
+            },
+            "speed_mps": 9,
+            "accel_mps2": 0,
+            "grade_rad": -0.03,
+            "friction_est": {
+              "value": 0.65,
+              "sigma": 0.03
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-50",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-1",
+              "offset_m": 10
+            },
+            "speed_mps": 8,
+            "accel_mps2": 0,
+            "grade_rad": 0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          }
+        ],
+        "SafetyState": [
+          {
+            "vehicle_id": "V-1",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-2",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-3",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-4",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-5",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-6",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-7",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-8",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-9",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-10",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-11",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-12",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-13",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-14",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-15",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-16",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-17",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-18",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-19",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-20",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-21",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-22",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-23",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-24",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-25",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-26",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-27",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-28",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-29",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-30",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-31",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-32",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-33",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-34",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-35",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-36",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-37",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-38",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-39",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-40",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-41",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-42",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-43",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-44",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-45",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-46",
+            "timestamp": "@now",
+            "v_safe": 10,
+            "h_safe": 45,
+            "actual_speed": 7,
+            "headway_current": 55,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-47",
+            "timestamp": "@now",
+            "v_safe": 8,
+            "h_safe": 50,
+            "actual_speed": 6,
+            "headway_current": 48,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-48",
+            "timestamp": "@now",
+            "v_safe": 7,
+            "h_safe": 55,
+            "actual_speed": 5,
+            "headway_current": 42,
+            "lead_vehicle_id": null,
+            "active_constraint": "FRICTION",
+            "risk_level": "MODERATE",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-49",
+            "timestamp": "@now",
+            "v_safe": 12,
+            "h_safe": 40,
+            "actual_speed": 9,
+            "headway_current": 70,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-50",
+            "timestamp": "@now",
+            "v_safe": 11,
+            "h_safe": 45,
+            "actual_speed": 8,
+            "headway_current": 60,
+            "lead_vehicle_id": null,
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          }
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "atMs": 2000,
+      "emit": {
+        "RoadState": [
+          {
+            "segment_id": "S-1",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 900,
+              "sigma": 25
+            },
+            "friction": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "grade": 0.02,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-2",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 750,
+              "sigma": 30
+            },
+            "friction": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "grade": 0.03,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-3",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 500,
+              "sigma": 35
+            },
+            "friction": {
+              "value": 0.55,
+              "sigma": 0.06
+            },
+            "grade": 0.01,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "WET",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-4",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 900,
+              "sigma": 25
+            },
+            "friction": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "grade": 0.02,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-5",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 750,
+              "sigma": 30
+            },
+            "friction": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "grade": 0,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-6",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 500,
+              "sigma": 35
+            },
+            "friction": {
+              "value": 0.55,
+              "sigma": 0.06
+            },
+            "grade": -0.01,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "WET",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-7",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 900,
+              "sigma": 25
+            },
+            "friction": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "grade": 0.04,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-8",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 750,
+              "sigma": 30
+            },
+            "friction": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "grade": 0.05,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-9",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 500,
+              "sigma": 35
+            },
+            "friction": {
+              "value": 0.55,
+              "sigma": 0.06
+            },
+            "grade": 0.02,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "WET",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-10",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 900,
+              "sigma": 25
+            },
+            "friction": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "grade": -0.03,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-11",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 750,
+              "sigma": 30
+            },
+            "friction": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "grade": 0.08,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-12",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 500,
+              "sigma": 35
+            },
+            "friction": {
+              "value": 0.55,
+              "sigma": 0.06
+            },
+            "grade": 0.09,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "WET",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-13",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 900,
+              "sigma": 25
+            },
+            "friction": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "grade": 0.07,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-14",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 750,
+              "sigma": 30
+            },
+            "friction": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "grade": 0.06,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-15",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 500,
+              "sigma": 35
+            },
+            "friction": {
+              "value": 0.55,
+              "sigma": 0.06
+            },
+            "grade": 0.03,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "WET",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-16",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 900,
+              "sigma": 25
+            },
+            "friction": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "grade": 0.02,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-17",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 750,
+              "sigma": 30
+            },
+            "friction": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "grade": 0.01,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-18",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 500,
+              "sigma": 35
+            },
+            "friction": {
+              "value": 0.55,
+              "sigma": 0.06
+            },
+            "grade": 0.04,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "WET",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-19",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 900,
+              "sigma": 25
+            },
+            "friction": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "grade": 0.02,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          },
+          {
+            "segment_id": "S-20",
+            "timestamp": "@now",
+            "visibility": {
+              "value": 750,
+              "sigma": 30
+            },
+            "friction": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "grade": -0.02,
+            "capacity_vph": 60,
+            "queue": null,
+            "utilization": null,
+            "surface_state": "DRY",
+            "roughness": null
+          }
+        ]
+      }
+    }
+  ]
+}

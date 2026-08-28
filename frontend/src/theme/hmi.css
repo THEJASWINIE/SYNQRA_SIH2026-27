@@ -1,0 +1,851 @@
+/*
+ * Control-room HMI styling — M4.
+ *
+ * One stylesheet, imported once by the shell. Vite handles CSS natively, so this costs no
+ * dependency and no build configuration.
+ *
+ * Design intent: an industrial supervisory display, not a SaaS dashboard. Dense but
+ * scannable, high contrast, no decorative motion, no animation that could be mistaken for
+ * a data change. Colour is always paired with a label and a glyph in the markup — nothing
+ * here is the sole carrier of meaning (NFR-008).
+ */
+
+:root {
+  --bg: #0f1216;
+  --panel: #171b21;
+  --panel-alt: #1d222a;
+  --line: #2b323c;
+  --text: #e8ecf1;
+  --text-dim: #98a2b3;
+  --text-faint: #6b7684;
+  --ok: #3ddc84;
+  --warn: #f2a54a;
+  --hot: #ff7043;
+  --crit: #ff5d5d;
+  --info: #6aa9ff;
+  --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* -- shell ---------------------------------------------------------------- */
+
+.hmi {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hmi-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1rem;
+  background: var(--panel);
+  border-bottom: 2px solid var(--line);
+}
+
+.hmi-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.hmi-header-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 8rem;
+}
+
+.hmi-header-slot dt {
+  font-size: 0.65rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.hmi-header-slot dd {
+  margin: 0;
+  font-weight: 650;
+  font-size: 0.9rem;
+}
+
+.hmi-nav {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0 1rem;
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+
+.hmi-nav button {
+  appearance: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.hmi-nav button[aria-current="page"] {
+  color: var(--text);
+  border-bottom-color: var(--info);
+  font-weight: 650;
+}
+
+.hmi-nav button:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: -2px;
+}
+
+.hmi-main {
+  flex: 1;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* -- banner --------------------------------------------------------------- */
+
+.hmi-banner {
+  border: 1px solid var(--warn);
+  border-left: 5px solid var(--warn);
+  background: #2a2013;
+  padding: 0.6rem 0.85rem;
+}
+
+.hmi-banner-title {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+}
+
+.hmi-banner p {
+  margin: 0.35rem 0 0;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+/* -- panels --------------------------------------------------------------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-alt);
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.panel-note {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+}
+
+.panel-body {
+  padding: 0.7rem;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 0.85rem;
+}
+
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.6rem;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.6rem;
+}
+
+@media (max-width: 60rem) {
+  .grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* -- badges and empty states ---------------------------------------------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid currentColor;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  padding: 0.6rem 0;
+}
+
+.empty strong {
+  display: block;
+  color: var(--text);
+  letter-spacing: 0.08em;
+}
+
+.empty span {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  letter-spacing: normal;
+}
+
+/* -- metric card ---------------------------------------------------------- */
+
+.metric {
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.6rem;
+}
+
+.metric dt {
+  font-size: 0.65rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.metric dd {
+  margin: 0.15rem 0 0;
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.metric-unit {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  margin-left: 0.25rem;
+  font-family: system-ui, sans-serif;
+}
+
+/* -- freshness ------------------------------------------------------------ */
+
+.freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+/* -- alerts --------------------------------------------------------------- */
+
+.alert-row {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: start;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.alert-row:last-child {
+  border-bottom: 0;
+}
+
+.alert-subject {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  font-family: var(--mono);
+}
+
+/* -- vehicles ------------------------------------------------------------- */
+
+.vehicle {
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.6rem;
+}
+
+.vehicle.violation {
+  border-color: var(--crit);
+  border-left-width: 4px;
+}
+
+.vehicle-id {
+  font-family: var(--mono);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.speed-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin: 0.4rem 0;
+}
+
+.speed-cell dt {
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.speed-cell dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
+.violation-marker {
+  display: block;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--crit);
+  margin: 0.25rem 0;
+}
+
+.vehicle-meta {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.5rem;
+}
+
+/* -- map ------------------------------------------------------------------ */
+
+.map-frame {
+  width: 100%;
+  background: #0b0e12;
+  border: 1px solid var(--line);
+}
+
+.map-segment {
+  stroke: #38414d;
+  stroke-width: 3;
+  fill: none;
+}
+
+.map-node {
+  fill: #566274;
+}
+
+.map-node-label {
+  fill: var(--text-faint);
+  font-size: 9px;
+  font-family: var(--mono);
+}
+
+.map-vehicle {
+  fill: var(--ok);
+}
+
+.map-vehicle.violation {
+  fill: var(--crit);
+}
+
+.map-vehicle-label {
+  fill: var(--text);
+  font-size: 9px;
+  font-family: var(--mono);
+}
+
+/* -- scenario picker ------------------------------------------------------ */
+
+.scenario-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.scenario-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--panel-alt);
+  color: var(--text);
+  font: inherit;
+  padding: 0.4rem 0.55rem;
+  cursor: pointer;
+}
+
+.scenario-item[aria-pressed="true"] {
+  border-color: var(--info);
+  border-left-width: 4px;
+}
+
+.scenario-item:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: -2px;
+}
+
+.scenario-name {
+  font-weight: 650;
+  font-size: 0.82rem;
+}
+
+.scenario-meta {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+}
+
+.scenario-desc {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+/* -- placeholder screens -------------------------------------------------- */
+
+.placeholder {
+  padding: 2rem 0.7rem;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.placeholder strong {
+  display: block;
+  color: var(--text);
+  letter-spacing: 0.1em;
+  font-size: 0.95rem;
+}
+
+.placeholder ul {
+  display: inline-block;
+  text-align: left;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  margin-top: 0.75rem;
+}
+
+/* -- misc ----------------------------------------------------------------- */
+
+.mono {
+  font-family: var(--mono);
+}
+
+.dim {
+  color: var(--text-dim);
+}
+
+.faint {
+  color: var(--text-faint);
+  font-size: 0.72rem;
+}
+
+.unresolved {
+  font-size: 0.68rem;
+  color: var(--warn);
+  letter-spacing: 0.03em;
+}
+
+/* -- S2 Vehicle Detail — M5 ----------------------------------------------- */
+
+.link-button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: var(--info);
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+
+.link-button:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+}
+
+button.vehicle-id {
+  color: var(--text);
+  border-bottom-color: var(--line);
+}
+
+.envelope {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.6rem;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.envelope-cell {
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  padding: 0.55rem 0.7rem;
+}
+
+.envelope-cell dt {
+  font-size: 0.65rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.envelope-value {
+  margin: 0.2rem 0 0;
+  font-family: var(--mono);
+  font-size: 1.35rem;
+  font-weight: 650;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.5rem 0.9rem;
+  margin: 0 0 0.6rem;
+}
+
+.field dt {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.field dd {
+  margin: 0.1rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+/* -- data tables — M7. Referenced by S3 since M6 but never defined; added here
+      now that a second screen needs it. --------------------------------------- */
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.data-table th {
+  text-align: left;
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--line);
+  padding: 0.35rem 0.5rem;
+}
+
+.data-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+}
+
+.data-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table tr.row-conflict td {
+  background: #2a1414;
+}
+
+/* -- S4 Dispatch & Slots — M7 --------------------------------------------- */
+
+.conflict-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.conflict-row {
+  border: 1px solid var(--crit);
+  border-left: 5px solid var(--crit);
+  background: #2a1414;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.82rem;
+}
+
+.resource-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.resource-tab {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--panel-alt);
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 0.75rem;
+  font-family: var(--mono);
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+}
+
+.resource-tab[aria-pressed="true"] {
+  border-color: var(--info);
+  color: var(--text);
+}
+
+.resource-tab:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: -2px;
+}
+
+.timeline {
+  position: relative;
+  height: calc(var(--lanes, 1) * 2.4rem);
+  background: #0b0e12;
+  border: 1px solid var(--line);
+  margin-top: 0.4rem;
+}
+
+.slot-band {
+  position: absolute;
+  height: 2rem;
+  min-width: 2px;
+  box-sizing: border-box;
+  border: 1px solid var(--info);
+  background: #16283f;
+  font-size: 0.7rem;
+  line-height: 2rem;
+  padding: 0 0.35rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slot-band.conflict {
+  border-color: var(--crit);
+  border-width: 2px;
+  background: #3a1717;
+}
+
+.timeline-axis {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  margin-top: 0.2rem;
+}
+
+.dispatch-detail {
+  border-top: 1px solid var(--line);
+  padding-top: 0.7rem;
+  margin-top: 0.7rem;
+}
+
+.dispatch-detail h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+
+/* -- Alerts & system modes — M8 ------------------------------------------- */
+
+/* HMI-originated alerts are visually distinct from supplied ones, and the
+   distinction is carried by the ORIGIN text in the markup, not by this border. */
+.alert-row.hmi-origin {
+  border-left: 4px solid var(--info);
+  padding-left: 0.5rem;
+}
+
+.origin-hmi {
+  color: var(--info);
+  font-weight: 650;
+}
+
+.mode-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.severity-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* -- S5 Event & Replay — M9 ------------------------------------------------ */
+
+.replay-live {
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--ok);
+}
+
+.replay-live.replay-on {
+  color: var(--warn);
+}
+
+.replay-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.replay-button {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--panel-alt);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+}
+
+.replay-button[aria-pressed="true"] {
+  border-color: var(--info);
+}
+
+.replay-button:disabled {
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
+
+.replay-button:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: -2px;
+}
+
+.replay-scrub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.6rem;
+}
+
+.scrub-mark {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #0b0e12;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 0.15rem 0.35rem;
+  cursor: pointer;
+}
+
+.scrub-mark[aria-pressed="true"] {
+  border-color: var(--warn);
+  color: var(--text);
+}
+
+/* Category is carried by its TEXT; the border is an enhancement only (NFR-008). */
+.event-cat {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  border-left: 3px solid var(--line);
+  padding-left: 0.35rem;
+}
+
+.event-cat.cat-alert_raised {
+  border-left-color: var(--crit);
+}
+.event-cat.cat-alert_acknowledged {
+  border-left-color: var(--ok);
+}
+.event-cat.cat-mode_transition {
+  border-left-color: var(--warn);
+}
+.event-cat.cat-recovery {
+  border-left-color: var(--ok);
+}
+.event-cat.cat-command_received,
+.event-cat.cat-command_issued {
+  border-left-color: var(--info);
+}
+.event-cat.cat-fog_change {
+  border-left-color: var(--text-faint);
+}
+.event-cat.cat-queue_change {
+  border-left-color: var(--text-faint);
+}
+.event-cat.cat-violation {
+  border-left-color: var(--crit);
+}
+
+/* -- S6 Diagnostics — M10 -------------------------------------------------- */
+
+.link-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.6rem 0;
+}
+
+.link-kinds .badge {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.data-table code {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
