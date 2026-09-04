@@ -1,0 +1,19 @@
+# Representative/synthetic mine nodes
+# Tags represent the authoritative evidence classifications
+
+# SIMULATION BASELINE parameters
+nodes:
+  - id: "SHOVEL"
+    type: "SHOVEL"
+    service_rate_vph: 15.0       # Shovel service rate (15 vph)
+    criticality: 2.0
+
+  - id: "INTERSECTION"
+    type: "INTERSECTION"
+    service_rate_vph: 120.0      # Intersection passing capacity
+    criticality: 1.0
+
+  - id: "CRUSHER"
+    type: "CRUSHER"
+    service_rate_vph: 18.0       # Crusher service rate (18 vph)
+    criticality: 4.0

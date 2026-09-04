@@ -1,0 +1,26 @@
+{
+  "integration_mode": "CONTROLLED_ADAPTER_SANDBOX",
+  "version": "2.0.0",
+  "time_authority": "HOST_NTP_CLOCK",
+  "timeouts": {
+    "max_telemetry_age_seconds": 3.0,
+    "offline_threshold_seconds": 10.0,
+    "max_recommendation_age_seconds": 5.0,
+    "command_ack_timeout_seconds": 3.0
+  },
+  "kinematic_scale": {
+    "enable_scaling": true,
+    "prototype_max_speed_mps": 3.0,
+    "twin_dumper_max_speed_mps": 11.11,
+    "scale_factor_lambda": 0.27
+  },
+  "vehicle_identity_mapping": {
+    "TRUCK_01": "vehicle_1",
+    "TRUCK_02": "vehicle_2"
+  },
+  "safety_boundaries": {
+    "local_safety_authority_dominant": true,
+    "absolute_max_prototype_speed_mps": 3.0,
+    "emergency_stop_deceleration_mps2": 5.0
+  }
+}

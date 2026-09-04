@@ -1,0 +1,32 @@
+{
+  "TRUCK_01": {
+    "vehicle_id": "TRUCK_01",
+    "description": "Vehicle A - 4-wheel differential drive prototype",
+    "wheel_radius_m": 0.050,
+    "wheel_diameter_m": 0.100,
+    "pulses_per_revolution": 42.0,
+    "chassis_mass_kg": 2.20,
+    "max_physical_speed_mps": 3.00,
+    "max_physical_acceleration_mps2": 2.50,
+    "initial_pose": {
+      "x": 0.0,
+      "y": 0.0,
+      "heading_rad": 0.0
+    }
+  },
+  "TRUCK_02": {
+    "vehicle_id": "TRUCK_02",
+    "description": "Vehicle B - 2-wheel L298N drive prototype",
+    "wheel_radius_m": 0.0425,
+    "wheel_diameter_m": 0.085,
+    "pulses_per_revolution": 20.0,
+    "chassis_mass_kg": 1.85,
+    "max_physical_speed_mps": 2.50,
+    "max_physical_acceleration_mps2": 2.00,
+    "initial_pose": {
+      "x": 5.0,
+      "y": 0.0,
+      "heading_rad": 0.0
+    }
+  }
+}

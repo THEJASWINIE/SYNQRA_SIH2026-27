@@ -1,0 +1,37 @@
+# Representative/synthetic mine road segments
+# Tags represent the authoritative evidence classifications
+
+# SIMULATION SCENARIO parameters
+segments:
+  - road_id: "ROAD_1"
+    start_node: "SHOVEL"
+    end_node: "INTERSECTION"
+    length_m: 500.0
+    grade_percent: 0.0          # Flat road section
+    curve_radius_m: 0.0         # Straight
+    width_m: 15.0
+    speed_limit_mps: 13.89      # 50 km/h speed limit
+    direction: "one-way"
+    surface_state: "dry"
+
+  - road_id: "ROAD_2"
+    start_node: "INTERSECTION"
+    end_node: "CRUSHER"
+    length_m: 400.0
+    grade_percent: -8.0         # Downhill grade (-8%)
+    curve_radius_m: 50.0        # Curve radius of 50m for curve limit tests
+    width_m: 12.0
+    speed_limit_mps: 11.11      # 40 km/h speed limit on slope
+    direction: "one-way"
+    surface_state: "dry"
+
+  - road_id: "ROAD_RETURN"
+    start_node: "CRUSHER"
+    end_node: "SHOVEL"
+    length_m: 900.0
+    grade_percent: 4.0          # Uphill return grade (+4%)
+    curve_radius_m: 0.0         # Straight
+    width_m: 15.0
+    speed_limit_mps: 13.89      # 50 km/h return speed limit
+    direction: "one-way"
+    surface_state: "dry"

@@ -1,0 +1,18 @@
+{
+  "segment_id": "S-1",
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "visibility": {
+    "value": 0.0,
+    "sigma": 0.0
+  },
+  "friction": {
+    "value": 0.0,
+    "sigma": 0.0
+  },
+  "grade": 0.0,
+  "capacity_vph": null,
+  "queue": null,
+  "utilization": null,
+  "surface_state": null,
+  "roughness": null
+}

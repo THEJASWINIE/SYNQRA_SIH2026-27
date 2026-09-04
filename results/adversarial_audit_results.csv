@@ -1,0 +1,5 @@
+test_name,severity,passed,findings
+Control Oscillation / Route Chatter,MAJOR,True,Hysteresis commitment timer (30s) prevents route chatter oscillation.
+Narrow Switchback Deadlock,CRITICAL,True,Tier 2 Virtual Slot Reservation successfully eliminated switchback deadlocks.
+Stale Central Dispatch Command Fallback,CRITICAL,True,Tier 1 autonomous governor maintained local safety when central link dropped.
+Unmeasured Retarder Friction Deception,MAJOR,True,Conservative k*sigma_mu bound prevented non-conservative speed recommendations.

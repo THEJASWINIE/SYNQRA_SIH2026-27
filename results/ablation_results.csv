@@ -1,0 +1,7 @@
+ablation_id,config_name,tonnes_delivered,cycles_completed,peak_queue,safety_violations,perf_delta_pct,recommendation
+FULL_SYSTEM,Full System 6,0.0,0,10.68194444444443,0,-100.0,KEEP
+NO_BOTTLENECK_SCORING,Ablation: No Bottleneck Scoring,0.0,0,10.68194444444443,0,-100.0,KEEP
+NO_ARRIVAL_SHAPING,Ablation: No Arrival Shaping,0.0,0,10.68194444444443,0,-100.0,KEEP
+NO_SLOT_RESERVATION,Ablation: No Virtual Slot Reservation,0.0,0,10.68194444444443,0,-100.0,KEEP
+NO_CHANCE_CONSTRAINTS,Ablation: No Chance Constraints,0.0,0,10.68194444444443,0,-100.0,KEEP
+NO_TIER1_GOVERNOR,Ablation: No Tier 1 Vehicle Governor,0.0,0,10.673611111111097,0,-100.0,KEEP

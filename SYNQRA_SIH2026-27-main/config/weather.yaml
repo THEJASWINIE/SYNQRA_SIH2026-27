@@ -1,0 +1,35 @@
+# Environment and weather properties
+# Tags represent the authoritative evidence classifications
+
+# MODEL CONFIG parameters
+friction_floor: 0.18               # Safety floor for friction
+k_sigma: 1.645                     # 95% confidence one-sided bound (mu_safe = mu - k_sigma * sigma_mu)
+
+# SIMULATION SCENARIO parameters
+# Weather scenario specifications
+scenarios:
+  clear:
+    visibility_m: 50.0
+    friction_mu: 0.60
+    surface_state: "dry"
+    rolling_resistance_crr: 0.02
+    
+  dense_fog:
+    visibility_m: 15.0
+    friction_mu: 0.25
+    surface_state: "wet"
+    rolling_resistance_crr: 0.03
+    
+  extreme_fog:
+    visibility_m: 5.0
+    friction_mu: 0.15
+    surface_state: "saturated"
+    rolling_resistance_crr: 0.04
+
+  fog_recovery:
+    initial_visibility_m: 15.0
+    target_visibility_m: 50.0
+    initial_friction_mu: 0.25
+    target_friction_mu: 0.60
+    transition_start_s: 600       # starts at 10 minutes (600 seconds)
+    transition_duration_s: 900    # transitions over 15 minutes (900 seconds)

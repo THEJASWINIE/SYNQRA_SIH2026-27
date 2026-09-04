@@ -1,0 +1,18 @@
+# Simulation running properties and scenarios
+# Tags represent the authoritative evidence classifications
+
+# MODEL CONFIG parameters
+timestep_s: 1.0                    # Core simulation step
+random_seed: 42                    # Seed for reproducible runs
+
+# SIMULATION SCENARIO parameters
+fleet_size: 4                      # Number of trucks in Demo V0.1
+run_duration_s: 1800               # 30 minutes of simulation time
+delta_buffer_vph: 2.0              # Target shaping safety buffer
+
+# Extensible sweeps configuration boundaries (for future phases)
+extensible_sweeps:
+  fleet_sizes: [4, 10, 20, 30, 40, 60]
+  visibilities_m: [50.0, 30.0, 20.0, 15.0, 10.0, 5.0]
+  grades_pct: [0.0, 4.0, 6.25, 8.0, 10.0]
+  frictions_mu: [0.15, 0.25, 0.35, 0.45, 0.55, 0.65]

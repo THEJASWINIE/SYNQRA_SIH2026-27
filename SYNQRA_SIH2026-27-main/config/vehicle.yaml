@@ -1,0 +1,24 @@
+# BEML BH100-class rigid mining dumper parameters
+# Tags represent the authoritative evidence classifications
+
+# REFERENCE parameters
+tare_mass_kg: 74000.0      # ~74 t empty mass
+payload_mass_kg: 91000.0   # ~91 t rated payload capacity
+gross_mass_kg: 165000.0    # ~165 t gross mass
+length_m: 10.52            # Overall length
+width_m: 5.52              # Overall width
+wheelbase_m: 5.25          # Wheelbase
+
+# MODEL CONFIG parameters
+ecu_hydraulic_latency_s: 0.25         # ECU + brake hydraulic latency
+safety_stop_margin_m: 5.0             # Standstill safety margin (S_margin)
+safety_headway_margin_m: 5.0          # Safe distance buffer (S_margin_headway)
+min_static_headway_m: 15.5            # Vehicle length + 5m standstill headway
+hardware_max_brake_force_n: 600000.0  # Hardware max mechanical brake force
+max_retarder_power_w: 1200000.0       # Max retarder power output (1.2 MW)
+traction_speed_factor_mps: 30.0       # Traction safe speed multiplier (v_traction = factor * mu)
+
+# ASSUMPTION parameters
+drag_coefficient_cd: 0.8
+cross_sectional_area_a_m2: 30.0
+air_density_rho_kg_m3: 1.225

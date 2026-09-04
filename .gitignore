@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+**/node_modules/
+frontend/dist/
+**/dist/
+
+# Python caches and bytecode
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+**/.pytest_cache/
+.ruff_cache/
+**/.ruff_cache/
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment Variables
+.env
+.env.local
+*.env
+!.env.example
+!**/.env.example
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

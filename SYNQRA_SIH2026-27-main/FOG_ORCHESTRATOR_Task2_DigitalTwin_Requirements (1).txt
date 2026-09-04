@@ -1,0 +1,264 @@
+FOG-ORCHESTRATOR 2.0
+Task 2 — Digital Twin System Requirements
+Industry-grade Software / Simulation Requirements Specification (SRS)
+Document ID
+Version
+Status
+Owner
+Scope
+FOG-T2-SRS-001
+1.0
+INTERNAL / SIH MVP
+Task 2 Team
+Digital twin of mine + vehicles + environmental conditions
+1. Purpose
+Define the complete, testable requirements for the FOG-ORCHESTRATOR Digital Twin. The twin is the predictive operational model connecting mine-road conditions, vehicle states, weather/fog, road capacity, queues, bottlenecks, dispatch decisions and physical safety constraints. The core objective is to provide a deterministic and reproducible simulation environment that can later accept live telemetry from Task 3 hardware.
+2. Scope and boundary
+Core twin is graph-based, event/time-stepped and physics-aware; a photorealistic 3D mine is not required for the MVP.
+The twin must represent mine roads, grades, geometry, intersections/switchbacks, shovels, crushers/dump points, buffers/queues, vehicles, fog/visibility, friction/road condition and communications.
+The twin must support deterministic scenario replay and stochastic/Monte Carlo experiments.
+The twin is not a substitute for field survey data. Representative mine geometries and parameter ranges shall be explicitly labelled as assumptions.
+No safety claim shall be interpreted as field certification. Outputs are model/simulation evidence until hardware and field calibration.
+3. Design principles
+Physics first: vehicle equations remain the source of safety constraints.
+Separation of concerns: environment, vehicle, traffic, optimization and visualization are modular.
+Reproducibility: scenario files, seeds and model versions must be recorded.
+Fail-safe simulation: invalid or missing state must not create optimistic safe-speed outputs.
+Model transparency: every state variable and derived quantity must be traceable.
+HIL-ready interfaces: simulated telemetry must use the same schema expected from Task 3.
+4. System architecture
+Environment Model → Vehicle Dynamics → Perception/Uncertainty → Road Capacity → Queue/Network → Bottleneck State → Fleet Optimizer → Slot/Dispatch Commands → Vehicle State Update → Digital Twin synchronization.
+5. Functional requirements
+ID
+Area
+Requirement
+Priority
+FTR-001
+Road network
+Represent mine as graph G=(V,E) with typed nodes/edges.
+Mandatory
+FTR-002
+Road geometry
+Each road edge shall support length, grade, curve radius, width, directionality and speed limit.
+Mandatory
+FTR-003
+Mine nodes
+Support shovel, crusher, dump pocket, intersection, switchback and buffer nodes.
+Mandatory
+FTR-004
+Vehicle model
+Support multiple vehicles with mass, payload, dimensions, position, speed, acceleration, braking and retarder parameters.
+Mandatory
+FTR-005
+Loaded/empty
+Vehicle state shall distinguish loaded and empty conditions and permit configurable mass.
+Mandatory
+FTR-006
+Longitudinal dynamics
+Implement longitudinal force balance with gravity, rolling resistance, aero drag, retarder and brake forces.
+Mandatory
+FTR-007
+Friction
+Represent friction as uncertain state/parameter with configurable ground truth for simulation.
+Mandatory
+FTR-008
+Grade effect
+Grade shall alter gravity component and braking capability consistently with the frozen physics model.
+Mandatory
+FTR-009
+Fog field
+Support V(s,t) visibility maps with spatial and temporal variation.
+Mandatory
+FTR-010
+Fog scenarios
+Support clear, gradual fog entry, fog patch, dense fog, moving fog and fog clearing.
+Mandatory
+FTR-011
+Road condition
+Support wet/damp/low-friction scenarios; friction and rolling resistance shall be configurable.
+Mandatory
+FTR-012
+Weather uncertainty
+Support forecast mean and uncertainty/error distributions for visibility.
+Advanced
+FTR-013
+Vehicle safety
+Calculate v_safe, H_safe and stopping distance using the validated safety engine.
+Mandatory
+FTR-014
+Command constraint
+Vehicle target speed shall satisfy v_command=min(v_dispatch,v_safe).
+Mandatory
+FTR-015
+Road capacity
+Compute a first-order safe road capacity from safe speed/headway, with physical vehicle-length lower bounds.
+Mandatory
+FTR-016
+Queue model
+Simulate arrivals, service, finite buffers and blocking.
+Mandatory
+FTR-017
+Bottleneck score
+Calculate configurable bottleneck score using utilization, queue and criticality.
+Mandatory
+FTR-018
+Arrival shaping
+Allow departure-time and arrival-rate control at capacity-constrained nodes.
+Mandatory
+FTR-019
+Slot reservation
+Simulate switchback/intersection time-slot allocation and conflict prevention.
+Mandatory
+FTR-020
+Recovery
+Simulate controlled post-fog recovery and queue dissipation.
+Mandatory
+FTR-021
+Comms
+Simulate latency, loss, stale packets and confidence for V2V/V2I/LoRa.
+Mandatory
+FTR-022
+Failures
+Support sensor, comms, optimizer and forecast failure scenarios.
+Mandatory
+FTR-023
+Digital-twin state
+Maintain synchronized state for roads, vehicles, queues, environment and commands.
+Mandatory
+FTR-024
+Prediction
+Provide short-horizon prediction of vehicle trajectory, queue state and production.
+Mandatory
+FTR-025
+What-if
+Run scenario comparison without altering the base scenario.
+Advanced
+FTR-026
+Fleet scale
+Support at least 50 simulated vehicles in MVP benchmark.
+Mandatory
+FTR-027
+Scenario replay
+Save and replay exact scenarios using deterministic random seeds.
+Mandatory
+FTR-028
+Telemetry interface
+Expose a clean API/schema for real ESP32 telemetry ingestion.
+Mandatory
+FTR-029
+HMI interface
+Publish twin states and decisions to Task 1 HMI.
+Mandatory
+FTR-030
+Logging
+Record inputs, decisions, outputs, warnings and model version for each run.
+Mandatory
+6. Non-functional requirements
+ID
+Quality attribute
+Requirement
+NFR-001
+Determinism
+Same model + scenario + random seed produces identical results.
+NFR-002
+Time resolution
+Core physics/network simulation supports configurable step <= 1 s for HIL-facing scenarios.
+NFR-003
+Scale
+50 vehicles minimum without state corruption or dropped events.
+NFR-004
+Performance
+Scenario simulation shall run faster than real-time for normal SIH scenarios where practical; timing shall be reported rather than assumed.
+NFR-005
+Traceability
+Every computed KPI can be traced to logged inputs and model version.
+NFR-006
+Modularity
+Environment, vehicle, queue, optimizer and visualization components can be tested independently.
+NFR-007
+Units
+Internal SI units; display conversion only at interface layer.
+NFR-008
+Numerical safety
+No NaN/Inf/negative physical states may silently propagate.
+NFR-009
+Fail-safe
+Missing/stale safety-critical data forces conservative mode in the simulation.
+NFR-010
+Interoperability
+Telemetry schema supports JSON/CSV/MessagePack or equivalent documented format.
+NFR-011
+Reproducibility
+Scenario/config/seed/result bundle is sufficient to reproduce a benchmark.
+NFR-012
+Visualization independence
+Core twin shall function without 3D rendering.
+7. Required state variables
+Domain
+Minimum state
+Derived state
+Environment
+visibility V(s,t), weather mode, friction μ, Crr
+forecast uncertainty, environment confidence
+Road
+position, grade, length, geometry, width, direction
+safe speed, safe headway, capacity, risk
+Vehicle
+x, road_id, speed, acceleration, mass, payload, loaded/empty
+braking capability, stopping distance, ETA, v_safe
+Network
+arrival rate, service rate, queue, buffer
+utilization ρ, bottleneck score, predicted queue
+Communication
+latency, packet loss, confidence, timestamp
+staleness/risk state
+Control
+dispatch target, route, slot, command mode
+constraint status, fallback mode
+8. Scenario library
+Clear dry baseline
+Clear wet baseline
+Gradual fog entry
+Dense fog on flat road
+Dense fog on 8% downhill
+Fog + wet/low friction + downhill
+Moving fog front across one road only
+Crusher bottleneck
+Shovel bottleneck
+Switchback conflict
+Bottleneck migration
+Communication degradation/loss
+Forecast error
+Post-fog recovery
+High fleet density
+Low fleet density
+Multi-bottleneck case
+9. Interfaces with other tasks
+Interface
+Source
+Data
+Destination
+I-01
+Task 3
+speed, acceleration, IMU grade, encoder, position, brake/actuator state
+Digital Twin state estimator
+I-02
+Task 3 / LoRa
+vehicle ID, timestamp, speed, position, status, confidence
+V2V / fleet layer
+I-03
+Task 1 HMI
+road/vehicle/queue/bottleneck/safe-speed/alerts/commands
+HMI
+I-04
+Optimizer
+route, departure slot, target speed, mode
+vehicle command emulator / Task 3
+10. MVP completion criteria
+A 10–50 vehicle digital twin reproduces all mandatory scenario types.
+The twin produces v_safe, H_safe, C_r, queue and bottleneck state consistently.
+Arrival-rate shaping and switchback reservation can be demonstrated in simulation.
+Fog and friction changes propagate through physics → capacity → queue → dispatch.
+Task 1 HMI receives live simulation state.
+Task 3 telemetry can replace simulated vehicle state without changing the core twin model.
+All mandatory V&V tests pass with documented evidence and no unresolved critical defects.

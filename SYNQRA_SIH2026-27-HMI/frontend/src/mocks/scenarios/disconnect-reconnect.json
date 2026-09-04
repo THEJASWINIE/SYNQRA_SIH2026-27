@@ -1,0 +1,551 @@
+{
+  "id": "disconnect-reconnect",
+  "name": "Disconnect and reconnect",
+  "description": "Full recovery arc: loss, silence while data ages, reconnection, and fresh data returning quality to OK.",
+  "family": "test",
+  "provider": "MOCK",
+  "stepIntervalMs": 1000,
+  "steps": [
+    {
+      "index": 0,
+      "atMs": 0,
+      "emit": {
+        "MineTopology": [
+          {
+            "version": "mock-topology-1",
+            "nodes": [
+              {
+                "node_id": "N-SHOVEL-1",
+                "kind": "SHOVEL",
+                "label": "Shovel 1",
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "node_id": "N-SHOVEL-2",
+                "kind": "SHOVEL",
+                "label": "Shovel 2",
+                "x": 0.0,
+                "y": 120.0
+              },
+              {
+                "node_id": "N-CRUSHER-1",
+                "kind": "CRUSHER",
+                "label": "Crusher 1",
+                "x": 600.0,
+                "y": 60.0
+              },
+              {
+                "node_id": "N-CRUSHER-2",
+                "kind": "CRUSHER",
+                "label": "Crusher 2",
+                "x": 600.0,
+                "y": 220.0
+              },
+              {
+                "node_id": "N-INT-1",
+                "kind": "INTERSECTION",
+                "label": "Intersection 1",
+                "x": 150.0,
+                "y": 60.0
+              },
+              {
+                "node_id": "N-INT-2",
+                "kind": "INTERSECTION",
+                "label": "Intersection 2",
+                "x": 300.0,
+                "y": 60.0
+              },
+              {
+                "node_id": "N-INT-3",
+                "kind": "INTERSECTION",
+                "label": "Intersection 3",
+                "x": 450.0,
+                "y": 60.0
+              },
+              {
+                "node_id": "N-INT-4",
+                "kind": "INTERSECTION",
+                "label": "Intersection 4",
+                "x": 300.0,
+                "y": 220.0
+              },
+              {
+                "node_id": "N-SW-1",
+                "kind": "SWITCHBACK",
+                "label": "Switchback 1",
+                "x": 220.0,
+                "y": 140.0
+              },
+              {
+                "node_id": "N-SW-2",
+                "kind": "SWITCHBACK",
+                "label": "Switchback 2",
+                "x": 380.0,
+                "y": 140.0
+              },
+              {
+                "node_id": "N-WP-1",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 1",
+                "x": 75.0,
+                "y": 30.0
+              },
+              {
+                "node_id": "N-WP-2",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 2",
+                "x": 75.0,
+                "y": 90.0
+              },
+              {
+                "node_id": "N-WP-3",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 3",
+                "x": 225.0,
+                "y": 60.0
+              },
+              {
+                "node_id": "N-WP-4",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 4",
+                "x": 375.0,
+                "y": 60.0
+              },
+              {
+                "node_id": "N-WP-5",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 5",
+                "x": 525.0,
+                "y": 60.0
+              },
+              {
+                "node_id": "N-WP-6",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 6",
+                "x": 300.0,
+                "y": 140.0
+              },
+              {
+                "node_id": "N-WP-7",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 7",
+                "x": 450.0,
+                "y": 180.0
+              },
+              {
+                "node_id": "N-WP-8",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 8",
+                "x": 520.0,
+                "y": 220.0
+              },
+              {
+                "node_id": "N-WP-9",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 9",
+                "x": 150.0,
+                "y": 180.0
+              },
+              {
+                "node_id": "N-WP-10",
+                "kind": "WAYPOINT",
+                "label": "Waypoint 10",
+                "x": 225.0,
+                "y": 220.0
+              }
+            ],
+            "segments": [
+              {
+                "segment_id": "S-1",
+                "from_node": "N-SHOVEL-1",
+                "to_node": "N-WP-1",
+                "length_m": 80.0,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-2",
+                "from_node": "N-WP-1",
+                "to_node": "N-INT-1",
+                "length_m": 80.0,
+                "grade_rad": 0.03,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-3",
+                "from_node": "N-SHOVEL-2",
+                "to_node": "N-WP-2",
+                "length_m": 80.0,
+                "grade_rad": 0.01,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-4",
+                "from_node": "N-WP-2",
+                "to_node": "N-INT-1",
+                "length_m": 80.0,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-5",
+                "from_node": "N-INT-1",
+                "to_node": "N-WP-3",
+                "length_m": 80.0,
+                "grade_rad": 0.0,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-6",
+                "from_node": "N-WP-3",
+                "to_node": "N-INT-2",
+                "length_m": 80.0,
+                "grade_rad": -0.01,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-7",
+                "from_node": "N-INT-2",
+                "to_node": "N-WP-4",
+                "length_m": 80.0,
+                "grade_rad": 0.04,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-8",
+                "from_node": "N-WP-4",
+                "to_node": "N-INT-3",
+                "length_m": 80.0,
+                "grade_rad": 0.05,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-9",
+                "from_node": "N-INT-3",
+                "to_node": "N-WP-5",
+                "length_m": 80.0,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-10",
+                "from_node": "N-WP-5",
+                "to_node": "N-CRUSHER-1",
+                "length_m": 80.0,
+                "grade_rad": -0.03,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-11",
+                "from_node": "N-INT-1",
+                "to_node": "N-SW-1",
+                "length_m": 100.0,
+                "grade_rad": 0.08,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-12",
+                "from_node": "N-SW-1",
+                "to_node": "N-WP-6",
+                "length_m": 100.0,
+                "grade_rad": 0.09,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-13",
+                "from_node": "N-WP-6",
+                "to_node": "N-SW-2",
+                "length_m": 100.0,
+                "grade_rad": 0.07,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-14",
+                "from_node": "N-SW-2",
+                "to_node": "N-INT-3",
+                "length_m": 100.0,
+                "grade_rad": 0.06,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-15",
+                "from_node": "N-INT-2",
+                "to_node": "N-WP-9",
+                "length_m": 90.0,
+                "grade_rad": 0.03,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-16",
+                "from_node": "N-WP-9",
+                "to_node": "N-INT-4",
+                "length_m": 90.0,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-17",
+                "from_node": "N-INT-4",
+                "to_node": "N-WP-10",
+                "length_m": 90.0,
+                "grade_rad": 0.01,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-18",
+                "from_node": "N-WP-10",
+                "to_node": "N-WP-7",
+                "length_m": 120.0,
+                "grade_rad": 0.04,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-19",
+                "from_node": "N-WP-7",
+                "to_node": "N-WP-8",
+                "length_m": 90.0,
+                "grade_rad": 0.02,
+                "bidirectional": true
+              },
+              {
+                "segment_id": "S-20",
+                "from_node": "N-WP-8",
+                "to_node": "N-CRUSHER-2",
+                "length_m": 90.0,
+                "grade_rad": -0.02,
+                "bidirectional": true
+              }
+            ]
+          }
+        ],
+        "SystemHealth": [
+          {
+            "timestamp": "@now",
+            "system_mode": "NORMAL",
+            "connectivity": "CONNECTED",
+            "fleet_count": 2,
+            "components": [
+              {
+                "component_id": "LINK-V2I",
+                "timestamp": "@now",
+                "state": "UP",
+                "latency_ms": 12.0,
+                "age_ms": 40.0,
+                "error_code": null,
+                "link_kind": "V2I",
+                "messages_received": 100.0,
+                "messages_dropped": 0.0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "atMs": 1000,
+      "emit": {
+        "VehicleState": [
+          {
+            "vehicle_id": "V-1",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-5",
+              "offset_m": 10.0
+            },
+            "speed_mps": 8.0,
+            "accel_mps2": 0.0,
+            "grade_rad": 0.0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1.0,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-2",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-8",
+              "offset_m": 10.0
+            },
+            "speed_mps": 7.0,
+            "accel_mps2": 0.0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1.0,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          }
+        ],
+        "SafetyState": [
+          {
+            "vehicle_id": "V-1",
+            "timestamp": "@now",
+            "v_safe": 11.0,
+            "h_safe": 45.0,
+            "actual_speed": 8.0,
+            "headway_current": 60.0,
+            "lead_vehicle_id": "V-2",
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-2",
+            "timestamp": "@now",
+            "v_safe": 10.0,
+            "h_safe": 45.0,
+            "actual_speed": 7.0,
+            "headway_current": 70.0,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          }
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "atMs": 2000,
+      "effects": {
+        "status": "DISCONNECTED",
+        "error": {
+          "kind": "TRANSPORT",
+          "message": "backend unreachable",
+          "retryable": true
+        },
+        "haltEmission": true
+      }
+    },
+    {
+      "index": 3,
+      "atMs": 7000,
+      "effects": {
+        "status": "RECONNECTING"
+      }
+    },
+    {
+      "index": 4,
+      "atMs": 8000,
+      "effects": {
+        "status": "CONNECTED",
+        "resumeEmission": true
+      }
+    },
+    {
+      "index": 5,
+      "atMs": 9000,
+      "emit": {
+        "VehicleState": [
+          {
+            "vehicle_id": "V-1",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-5",
+              "offset_m": 10.0
+            },
+            "speed_mps": 8.0,
+            "accel_mps2": 0.0,
+            "grade_rad": 0.0,
+            "friction_est": {
+              "value": 0.62,
+              "sigma": 0.04
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1.0,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          },
+          {
+            "vehicle_id": "V-2",
+            "timestamp": "@now",
+            "position": {
+              "x": null,
+              "y": null,
+              "segment_id": "S-8",
+              "offset_m": 10.0
+            },
+            "speed_mps": 7.0,
+            "accel_mps2": 0.0,
+            "grade_rad": 0.05,
+            "friction_est": {
+              "value": 0.6,
+              "sigma": 0.05
+            },
+            "mode": "NORMAL",
+            "comm_confidence": 1.0,
+            "vehicle_kind": "TRUCK",
+            "route_id": "R-1"
+          }
+        ],
+        "SafetyState": [
+          {
+            "vehicle_id": "V-1",
+            "timestamp": "@now",
+            "v_safe": 11.0,
+            "h_safe": 45.0,
+            "actual_speed": 8.0,
+            "headway_current": 60.0,
+            "lead_vehicle_id": "V-2",
+            "active_constraint": "NONE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          },
+          {
+            "vehicle_id": "V-2",
+            "timestamp": "@now",
+            "v_safe": 10.0,
+            "h_safe": 45.0,
+            "actual_speed": 7.0,
+            "headway_current": 70.0,
+            "lead_vehicle_id": null,
+            "active_constraint": "GRADE",
+            "risk_level": "LOW",
+            "headway_violation": false,
+            "envelope_violation": false
+          }
+        ],
+        "SystemHealth": [
+          {
+            "timestamp": "@now",
+            "system_mode": "NORMAL",
+            "connectivity": "CONNECTED",
+            "fleet_count": 2,
+            "components": [
+              {
+                "component_id": "LINK-V2I",
+                "timestamp": "@now",
+                "state": "UP",
+                "latency_ms": 12.0,
+                "age_ms": 40.0,
+                "error_code": null,
+                "link_kind": "V2I",
+                "messages_received": 100.0,
+                "messages_dropped": 0.0
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

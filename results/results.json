@@ -1,0 +1,27 @@
+{
+  "project": "FOG-ORCHESTRATOR 2.0",
+  "operational_context": "NMDC Limited (BIOM-Kirandul, BIOM-Bacheli, Donimalai)",
+  "reference_vehicle": "BEML BH100 Mining Dumper",
+  "validation_status": "VALIDATED",
+  "key_break_even_thresholds": {
+    "fleet_density_break_even_n_star": 12,
+    "visibility_break_even_v_star_m": 25,
+    "forecast_lead_time_break_even_t_star_min": 15
+  },
+  "monte_carlo_statistics": {
+    "num_samples": 1000,
+    "v_safe_mean_kmh": 17.258963505787076,
+    "v_safe_p5_kmh": 4.836462070726188,
+    "s_stop_p95_m": 42.81786294853475,
+    "physical_safety_rate_pct": 100.0
+  },
+  "performance_gains": {
+    "system6_vs_baseline0_human_throughput_gain_pct": 50.5,
+    "system6_vs_baseline1_fixed_fog_throughput_gain_pct": 89.0,
+    "system6_vs_baseline2_vehicle_only_throughput_gain_pct": 27.4,
+    "peak_queue_reduction_pct": -45.0,
+    "safety_violations_system6": 0
+  },
+  "final_architecture_status": "VALIDATED",
+  "hil_hardware_recommendation": "YES \u2014 Proceed to Physical Two-Robot HIL Prototype"
+}

@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "source_id": "CAM-1",
+  "visibility_proxy": null,
+  "confidence": null,
+  "detections": [],
+  "road_state": null,
+  "status": "UNAVAILABLE",
+  "frame_ref": null
+}
