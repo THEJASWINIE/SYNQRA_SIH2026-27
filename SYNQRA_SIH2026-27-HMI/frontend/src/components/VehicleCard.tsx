@@ -18,6 +18,7 @@
 
 import type { SafetyState, VehicleState } from "../contracts/domain";
 import { fmt, HSAFE_UNIT_NOTE, headwayView, kmh, speedView } from "../state/derive";
+import { communicationText, vehicleProvenanceLabel } from "../state/dataStatus";
 import type { FreshnessView } from "../state/freshness";
 import { riskToken } from "../theme/statusTokens";
 import { FreshnessIndicator, StatusBadge } from "./primitives";
@@ -129,6 +130,16 @@ export function VehicleCard({
           <span className="faint">POSITION UNAVAILABLE</span>
         )}
         <FreshnessIndicator view={freshness} />
+      </div>
+
+      {/*
+        PHASE 8 §15 — provenance and communication, as separate facts from each other and
+        from freshness. Until Phase 8 the fleet overview showed neither, so a SIMULATED
+        speed was indistinguishable from a measured one on the most-used screen in the HMI.
+      */}
+      <div className="vehicle-meta">
+        <span className="faint">SOURCE {vehicleProvenanceLabel(vehicle)}</span>
+        <span className="faint">COMMS {communicationText(vehicle)}</span>
       </div>
     </article>
   );

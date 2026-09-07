@@ -64,19 +64,50 @@ export interface VehicleState {
   vehicleId: VehicleId;
   timestamp: Iso8601;
   position: VehiclePosition;
-  speedMps: number;
-  accelMps2: number;
-  /** Road grade at the vehicle (FR-003, S2-a). SUPPLIED. */
-  gradeRad: number;
-  /** SUPPLIED — friction estimation is Task 2's. */
-  frictionEst: Estimate;
+  /**
+   * P6.1: `null` means the canonical Twin has no value for this field.
+   * UNAVAILABLE is distinct from 0 and must never be rendered as a number.
+   */
+  speedMps: number | null;
+  accelMps2: number | null;
+  /** Road grade at the vehicle (FR-003, S2-a). SUPPLIED. Null when unavailable. */
+  gradeRad: number | null;
+  /** SUPPLIED — friction estimation is Task 2's. Null when unavailable. */
+  frictionEst: Estimate | null;
   mode: VehicleMode;
-  /** 0..1 */
-  commConfidence: number;
+  /** 0..1, or null when the Twin reports no communication confidence. */
+  commConfidence: number | null;
   /** [EXT] E-02 truck / shovel / other, for map glyphs (FR-002). */
   vehicleKind: string | null;
   /** [EXT] E-02 currently assigned route, for FR-010 cross-reference. */
   routeId: RouteId | null;
+  /**
+   * [P6.1] Per-field provenance straight from the canonical Twin projection.
+   *
+   * Presentation may read it to show source/freshness badges. It is never used to
+   * recompute a physical value - the Twin remains authoritative.
+   */
+  provenance?: Readonly<Record<string, TwinFieldProvenance>>;
+  /** [P6.1] True when a real sensor stands behind at least one field. */
+  hasHardwareData?: boolean;
+}
+
+/**
+ * [P6.1] Provenance of one canonical Twin field.
+ *
+ * `source` is how the value was produced; `origin` is what ultimately stands behind it.
+ * They are kept separate on purpose - see contracts/raw.ts.
+ */
+export interface TwinFieldProvenance {
+  value: unknown;
+  timestamp: number | null;
+  source: string;
+  origin: string;
+  quality: string;
+  ageS: number | null;
+  available: boolean;
+  clockDomain: string;
+  freshness: string;
 }
 
 // ---------------------------------------------------------------------------

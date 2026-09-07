@@ -23,6 +23,7 @@
  * supplied state is reported as gone rather than rendered from a stale copy.
  */
 
+import { communicationText, vehicleProvenanceLabel } from "../state/dataStatus";
 import {
   EmptyState,
   FreshnessIndicator,
@@ -255,7 +256,10 @@ export function VehicleDetail({
             <Field
               label="Friction estimate"
               value={
-                vehicle.frictionEst.value === null
+                // P6.1: the whole estimate may be absent (the canonical Twin has no
+                // friction for a hardware-only vehicle), as may its value. Both read
+                // UNAVAILABLE - never a fabricated number.
+                vehicle.frictionEst == null || vehicle.frictionEst.value === null
                   ? UNAVAILABLE
                   : `${fmt(vehicle.frictionEst.value, 2)} ± ${
                       vehicle.frictionEst.sigma === null
@@ -269,6 +273,21 @@ export function VehicleDetail({
               label="Comm confidence"
               value={fmt(vehicle.commConfidence, 2)}
               note="supplied 0..1 — not classified; no threshold is specified"
+            />
+            {/*
+              PHASE 8 §16 — source and communication state, kept apart from each other and
+              from freshness. The same three facts read identically here, on S1, S3, S4 and
+              S6, because all five ask `dataStatus` rather than re-deciding locally.
+            */}
+            <Field
+              label="Telemetry source"
+              value={vehicleProvenanceLabel(vehicle)}
+              note="supplied provenance — never inferred from connectivity"
+            />
+            <Field
+              label="Communication"
+              value={communicationText(vehicle)}
+              note="supplied link state — independent of telemetry freshness"
             />
             <Field label="Route" value={vehicle.routeId ?? UNAVAILABLE} />
           </dl>

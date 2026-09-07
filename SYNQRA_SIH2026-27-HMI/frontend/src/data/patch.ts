@@ -14,6 +14,7 @@
  */
 
 import type { AppState, AppStatePatch } from "../contracts/appState";
+import { mergeCommandEvent } from "../state/dispatchCommand";
 import type {
   Alert,
   ArrivalPlan,
@@ -138,6 +139,13 @@ function removeIds<T>(
 export function mergePatch(state: AppState, patch: ProviderPatch): AppState {
   const next: AppState = { ...state };
 
+  // Phase 3 — a command observation carried by the provider (a `command_issued` frame).
+  // Merged through the SAME pure function the S4 panel uses for HTTP results, so one
+  // command_id yields exactly one record regardless of which arrived first.
+  if (patch.commandEvent) {
+    next.commands = mergeCommandEvent(state.commands, patch.commandEvent);
+  }
+
   // 1. Deletions.
   const deletions: EntityDeletions = patch.deletions ?? {};
   for (const slice of KEYED_SLICES) {
@@ -204,5 +212,9 @@ export function emptyAppState(nowIso: string): AppState {
     health: null,
     kpis: null,
     cv: null,
+    // Phase 3 — the session command log starts empty and is never inferred.
+    commands: [],
+    // Phase 4 — IDLE, not zeroed: nothing has been measured yet.
+    observability: { status: "IDLE", data: null, fetchedAt: null, error: null },
   };
 }

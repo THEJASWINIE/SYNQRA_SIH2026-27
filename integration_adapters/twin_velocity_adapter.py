@@ -1,4 +1,6 @@
 import os
+
+from integration_adapters.config_paths import config_path as _project_config_path
 import json
 import time
 import math
@@ -18,7 +20,7 @@ class TwinVelocityAdapter:
 
     def __init__(self, config_path: Optional[str] = None, prototype_scale: float = 0.10):
         if config_path is None:
-            config_path = os.path.join("config", "integration_config.json")
+            config_path = _project_config_path("integration_config.json")
 
         self.prototype_scale = prototype_scale
         if os.path.exists(config_path):

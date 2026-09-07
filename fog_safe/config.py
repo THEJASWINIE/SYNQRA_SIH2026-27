@@ -46,6 +46,35 @@ class SafetyMarginParameters:
     k_comm: float = 0.5                # Adaptive margin factor for comm degradation (s)
 
 @dataclass
+class TractionCeilingParameters:
+    """
+    SAFETY CONSTRAINT — conservative operational ceiling on traction-limited speed.
+
+    This is a safety constraint, NOT a hidden tuning constant. It exists because the
+    purely physical traction limit
+
+        v_traction = sqrt(2 * a_tr_max * R_effective)
+
+    permits speeds on low-friction surfaces that the project does not accept
+    operationally. The ceiling bounds permitted speed proportionally to the available
+    tire-road friction:
+
+        v_traction_ceiling = ceiling_factor_mps * mu
+
+    PROVENANCE: `ceiling_factor_mps` is the EXISTING project parameter
+    `traction_speed_factor_mps`, defined in
+    `SYNQRA_SIH2026-27-main/config/vehicle.yaml` (MODEL CONFIG section) as
+    "Traction safe speed multiplier (v_traction = factor * mu)". It is supplied by the
+    caller; no value is invented or hardcoded here.
+
+    When `ceiling_factor_mps` is None the ceiling is NOT applied and the solver uses the
+    physical traction limit alone. A caller with no configured value therefore gets the
+    unmodified physical model rather than a silently assumed ceiling.
+    """
+    ceiling_factor_mps: float = None    # m/s per unit mu; None => ceiling not configured
+
+
+@dataclass
 class SiteParameters:
     """Mine site operational speed & geometry bounds (NMDC reference)."""
     v_mine_max_kmh: float = 20.0       # km/h (Site regulatory speed limit)

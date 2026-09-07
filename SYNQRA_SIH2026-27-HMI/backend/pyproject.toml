@@ -37,3 +37,11 @@ per-file-ignores = { "tests/*" = ["S101"] }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.pyright]
+extraPaths = [
+    ".",
+    "../../",
+    "../../SYNQRA_SIH2026-27-main"
+]
+reportMissingImports = "none"

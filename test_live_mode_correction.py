@@ -26,6 +26,13 @@ def reset_backend_state():
     hmi_main.deduplication_store.clear()
     hmi_main.last_sequence_by_vehicle.clear()
     hmi_main.HMI_MODE = "MOCK"
+    hmi_main.last_hardware_packet_at = 0.0
+    if hmi_main.twin_store is not None:
+        with hmi_main.twin_store._lock:
+            hmi_main.twin_store._vehicles.clear()
+    if hmi_main.twin_ingestor is not None:
+        hmi_main.twin_ingestor._last_sequence.clear()
+        hmi_main.twin_ingestor._seen_sequences.clear()
 
 
 @pytest.fixture

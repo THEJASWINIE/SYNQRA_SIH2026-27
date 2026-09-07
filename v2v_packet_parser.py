@@ -12,6 +12,7 @@ without crashing the backend on malformed input.
 import time
 import math
 import logging
+from collections import deque
 from typing import Dict, Any, Optional
 
 logger = logging.getLogger("V2VPacketParser")
@@ -28,7 +29,8 @@ class V2VPacketParser:
         self.stale_sec = stale_sec
         self.offline_sec = offline_sec
         self.sequence_trackers: Dict[str, int] = {}
-        self.seen_sequences: Dict[str, set] = {}
+        self._seen_deques: Dict[str, deque] = {}  # D006: bounded
+        self._seen_sets: Dict[str, set] = {}      # D006: O(1) lookup
         self.last_seen_map: Dict[str, float] = {}
         self.previous_health_map: Dict[str, str] = {}
         self.recovery_counters: Dict[str, int] = {}
@@ -102,12 +104,34 @@ class V2VPacketParser:
             logger.warning(f"[V2VPacketParser] Numeric parsing error in packet '{line}': {e}")
             return None
 
+        # D001: Reject invalid RPM BEFORE any clamping/canonicalization.
+        # NaN, ±Inf, and negative RPM must not be laundered into 0.0.
+        # Valid RPM == 0.0 (motor stopped) is permitted.
+        if not math.isfinite(rpm) or rpm < 0:
+            logger.warning(f"[V2VPacketParser] Invalid RPM {rpm} in packet '{line}' rejected")
+            return None
+
+        # GAP 1 & GAP 2: Reject non-finite and negative speed
+        if not math.isfinite(raw_speed) or raw_speed < 0:
+            logger.warning(f"[V2VPacketParser] Invalid speed {raw_speed} in packet '{line}' rejected")
+            return None
+
         now = time.time()
 
-        # Sequence & duplicate tracking
-        seen_set = self.seen_sequences.setdefault(vid, set())
+        # Sequence & duplicate tracking — D006: bounded dedup history
+        if vid not in self._seen_deques:
+            self._seen_deques[vid] = deque(maxlen=1000)
+            self._seen_sets[vid] = set()
+        seen_deque = self._seen_deques[vid]
+        seen_set = self._seen_sets[vid]
         is_duplicate = seq in seen_set
-        seen_set.add(seq)
+        # Record into bounded tracker
+        if not is_duplicate:
+            if len(seen_deque) == seen_deque.maxlen:
+                evicted = seen_deque[0]
+                seen_set.discard(evicted)
+            seen_deque.append(seq)
+            seen_set.add(seq)
 
         last_seq = self.sequence_trackers.get(vid, 0)
         is_out_of_order = (seq < last_seq) and not is_duplicate
@@ -139,7 +163,7 @@ class V2VPacketParser:
             "vehicle_id": vid,
             "source": "V2V",
             "sequence_number": seq,
-            "rpm": max(0.0, rpm),
+            "rpm": rpm,
             "speed": None,
             "speed_value": round(raw_speed, 2),
             "speed_unit": "m/s",

@@ -17,7 +17,8 @@ from hardware_emulator import VehicleHardwareEmulator
 from fog_safe.safety import solve_safe_speed
 from integration_adapters.twin_velocity_adapter import TwinVelocityAdapter
 
-BACKEND_URL = "http://10.126.54.41:8000"
+# Backend endpoint. Override per deployment:  FOG_BACKEND_URL=http://<host>:8000
+BACKEND_URL = os.getenv("FOG_BACKEND_URL", "http://127.0.0.1:8000")
 CSV_FILE = "PHYSICAL_VISIBILITY_VELOCITY_RESULTS.csv"
 MARKDOWN_FILE = "PHYSICAL_VISIBILITY_VELOCITY_TEST.md"
 

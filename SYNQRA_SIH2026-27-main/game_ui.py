@@ -1,7 +1,8 @@
 """
 FOG-ORCHESTRATOR 2.0 — Functional Mining Digital Twin Visualization UI
 Standalone interactive Pygame visualization interface running on top of
-the verified digital twin Simulator, FogModel, and resolve_v_safe() physics pipeline.
+the canonical TwinStateStore. Physics/safety are computed in the domain layer
+(twin/ui_domain.py -> models.vehicle_physics -> fog_safe); this module only renders.
 
 Usage:
     python game_ui.py          # Interactive Graphical UI
@@ -27,21 +28,113 @@ if PROJECT_ROOT not in sys.path:
 # Backend Digital Twin Imports (Strictly preserved)
 from twin.network import MineNetwork
 from twin.simulator import Simulator
-from models.vehicle_physics import resolve_v_safe
-from models.braking import calculate_stopping_distance
+# P7: game_ui is a VISUALIZATION CLIENT. It no longer imports the authoritative
+# safety solver. Domain computation lives in twin/ui_domain.py; authoritative
+# values are read back from the canonical TwinStateStore.
+from twin.ui_domain import UISimulationDomain
+from twin.twin_state_store import TwinStateStore, TwinMode
 from interfaces.simulation_snapshot import SimulationSnapshot
+
+# P9 - READ-ONLY canonical Twin client.
+#
+# This is the ONLY link from the visualiser to the HMI backend's Twin, and it does
+# exactly one thing: GET /api/twin/snapshot. It issues no command and writes no
+# state, so the command path (HMI -> POST /api/commands -> CommandGateway) is
+# untouched. Import is guarded so the simulator still starts with no adapters
+# present, exactly as before.
+try:
+    from integration_adapters.canonical_twin_client import CanonicalTwinClient
+except Exception:  # noqa: BLE001 - the visualiser must start with or without adapters
+    CanonicalTwinClient = None
 
 # ==============================================================================
 # 1. UI Simulation Bridge (Clean Adapter on Top of Verified Simulator)
 # ==============================================================================
+
+
+# =====================================================================
+# P7.1 — UNAVAILABLE PRESENTATION SEAM
+#
+# The canonical Twin legitimately reports "no value" (a hardware-only truck has no
+# simulated road limit; a vehicle whose safe speed has not been evaluated has no v_safe).
+# These helpers are PURE - they import no pygame - so the unavailable-value behaviour is
+# testable headlessly.
+#
+# THE RULE: UNAVAILABLE is not 0, and it is never a safety fallback. A missing safe speed
+# renders as a dash; it never becomes an optimistic number.
+# =====================================================================
+
+UNAVAILABLE_TEXT = "--"
+
+
+def fmt_value(value, spec="4.1f"):
+    """Format a number for display, or the UNAVAILABLE marker when there is none."""
+    if value is None:
+        return UNAVAILABLE_TEXT
+    try:
+        return format(float(value), spec)
+    except (TypeError, ValueError):
+        return UNAVAILABLE_TEXT
+
+
+def to_kmh(value_mps):
+    """m/s -> km/h, preserving UNAVAILABLE as None. Never substitutes a number."""
+    return None if value_mps is None else value_mps * 3.6
+
+
+def exceeds(actual, ceiling, margin=0.0):
+    """
+    True only when `actual` is KNOWN to exceed `ceiling`.
+
+    With no ceiling there is no evidence of a violation, so this returns False. The caller
+    must present the safety state as unknown rather than as safe - see `safety_known()`.
+    """
+    if actual is None or ceiling is None:
+        return False
+    return actual > ceiling + margin
+
+
+# Configuration lives beside this module, not beside the process that launched it.
+DEFAULT_CONFIG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
+
+# Age at which a Twin field is STALE, in seconds. Configured, never invented: the same
+# `max_telemetry_age_seconds` the HMI backend and the command gateway read (P9).
+try:
+    from integration_adapters.config_paths import load_timeouts as _load_timeouts
+
+    TWIN_STALE_AFTER_S = float(_load_timeouts()["max_telemetry_age_seconds"])
+except Exception:  # noqa: BLE001 - the visualiser must start with or without the adapters
+    TWIN_STALE_AFTER_S = 3.0
+
+
+def safety_known(v_safe_mps):
+    """Whether an authoritative safe speed exists to judge against."""
+    return v_safe_mps is not None
+
 
 class SimulationUIBridge:
     """
     Connects the graphical UI layer to the authoritative digital twin Simulator.
     Preserves all physical models, safe speed calculators, and state machines.
     """
-    def __init__(self, config_dir: str = "config"):
-        self.config_dir = config_dir
+    def __init__(self, config_dir: str = None, canonical_client=None):
+        # P9 - THE CANONICAL TWIN IS READ, NEVER MERGED.
+        #
+        # `self.twin` below is this SIMULATOR's own TwinStateStore, holding the
+        # simulated fleet. `self.canonical` is a read-only view of the HMI backend's
+        # Twin, holding whatever telemetry actually arrived there. They are two
+        # different modelled systems that happen to share vehicle ids, and nothing
+        # copies a value from one into the other. Off unless explicitly supplied, so
+        # the existing offline demonstration is unchanged.
+        self.canonical = canonical_client
+
+        # P9 - CWD INDEPENDENCE.
+        # The default used to be the relative string "config", so the bridge only found
+        # its YAML when the process happened to be started from
+        # `SYNQRA_SIH2026-27-main/`. Two test suites already worked around that with
+        # `os.chdir`. Configuration is now located from THIS FILE, so it resolves the
+        # same from any working directory. The VALUES are unchanged.
+        self.config_dir = config_dir if config_dir is not None else DEFAULT_CONFIG_DIR
         self.load_configurations()
         self.reset()
 
@@ -95,6 +188,24 @@ class SimulationUIBridge:
         sim_scenario_cfg["optimization_mode"] = "baseline"
 
         self.sim = Simulator(self.network, self.vehicle_cfg, self.weather_cfg, sim_scenario_cfg)
+
+        # P7 - ONE canonical Twin, in this process, alongside the simulator.
+        #
+        # Option A from the P7 brief: the simulator and the Twin share a process, so
+        # they share one TwinStateStore object honestly. No cross-process claim is
+        # made here; publishing to the FastAPI backend remains a separate transport.
+        self.domain = UISimulationDomain(self.sim, self.vehicle_cfg)
+        # P10 - freshness is now EVALUATED in this process too.
+        #
+        # This store was built with `stale_after_s=None`, which under the P1 rule means
+        # freshness is never evaluated: every field reported NOT_EVALUATED and the
+        # renderer could never show STALE. The threshold is not invented here - it is the
+        # same configured `max_telemetry_age_seconds` the backend and the command gateway
+        # already use (P9 centralization), so all three agree on when a value has aged out.
+        self.twin = TwinStateStore(network=self.network, mode=TwinMode.SIMULATION,
+                                   stale_after_s=TWIN_STALE_AFTER_S)
+        for _v in self.sim.vehicles:
+            self.twin.register_vehicle(_v)
         
         # Store nominal physical design speed limits on edges
         for edge in self.sim.network.edges.values():
@@ -189,8 +300,9 @@ class SimulationUIBridge:
             edge.c_rr = crr
             edge.surface_state = surface
             
-            # Keep nominal speed limit intact on edge for resolve_v_safe
-            nom_limit = getattr(edge, "nominal_speed_limit", 13.89)
+            # Keep the nominal speed limit intact on the edge for the domain solver.
+            # P7: fall back to the edge's own CONFIGURED limit, never a literal.
+            nom_limit = getattr(edge, "nominal_speed_limit", edge.speed_limit_mps)
             
             # The edge speed limit for dispatch represents the commanded limit clamped to nominal road limit
             target_mps = 0.0 if self.e_stop_active else (self.target_speed_kmh / 3.6)
@@ -271,98 +383,42 @@ class SimulationUIBridge:
 
     def evaluate_physics(self):
         """
-        Evaluates resolve_v_safe and enforces local safety governor & car-following across all vehicles.
-        
-        Strict Priority Hierarchy:
-            E-STOP (0 km/h)
-                  ↓
-            invalid / fail-safe state (0 km/h)
-                  ↓
-            truck-following safety stop (0 km/h when gap <= safe_headway)
-                  ↓
-            physical v_safe governor (visibility, friction, grade, curve)
-                  ↓
-            user commanded target speed
+        P7: delegate to the DOMAIN, then publish to the canonical Twin.
+
+        This method no longer computes safety. `twin/ui_domain.py` calls the single
+        authoritative solver (fog_safe via the P2 adapter); this bridge then syncs the
+        resulting domain state into the canonical TwinStateStore, which is what the
+        renderer reads.
         """
-        target_mps = 0.0 if self.e_stop_active else (self.target_speed_kmh / 3.6)
+        self.domain.evaluate(
+            target_speed_kmh=self.target_speed_kmh,
+            e_stop_active=self.e_stop_active,
+            car_following_limit=self.compute_car_following_limit,
+        )
+        self.sync_twin()
 
-        # 1. Update edges and traveling vehicles
-        for edge in self.sim.network.edges.values():
-            nom_limit = getattr(edge, "nominal_speed_limit", edge.speed_limit_mps)
-            
-            # Compute authoritative safe speed for edge based on nominal physical road limit
-            phys_res_edge = resolve_v_safe(
-                mass_kg=self.vehicle_cfg["tare_mass_kg"] + self.vehicle_cfg["payload_mass_kg"],
-                grade_percent=edge.grade_percent,
-                friction_mu=edge.friction_mu,
-                c_rr=edge.c_rr,
-                hardware_max_brake_n=self.vehicle_cfg["hardware_max_brake_force_n"],
-                max_retarder_power_w=self.vehicle_cfg["max_retarder_power_w"],
-                curve_radius_m=edge.curve_radius_m,
-                traction_speed_factor_mps=self.vehicle_cfg["traction_speed_factor_mps"],
-                speed_limit_mps=nom_limit,
-                visibility_m=edge.visibility_m,
-                tau_total=self.vehicle_cfg["ecu_hydraulic_latency_s"],
-                s_margin=self.vehicle_cfg["safety_stop_margin_m"]
-            )
-            edge.v_safe_mps = phys_res_edge["v_safe"]
+    def sync_twin(self):
+        """Publish current domain state into the canonical Twin (simulation clock)."""
+        self.twin.sync_from_simulation(
+            network=self.sim.network,
+            vehicles=self.sim.vehicles,
+            fog_model=self.sim.fog_model,
+            timestamp=self.sim.current_time,
+        )
 
-            # Sort vehicles on edge by position descending (lead vehicle is first)
-            edge.vehicles.sort(key=lambda x: getattr(x, "position_s", 0.0), reverse=True)
+    def twin_v_safe_mps(self, vehicle_id):
+        """
+        Authoritative safe speed for one vehicle, READ FROM THE CANONICAL TWIN.
 
-            for v in edge.vehicles:
-                phys_res = resolve_v_safe(
-                    mass_kg=v.mass_kg,
-                    grade_percent=edge.grade_percent,
-                    friction_mu=edge.friction_mu,
-                    c_rr=edge.c_rr,
-                    hardware_max_brake_n=self.vehicle_cfg["hardware_max_brake_force_n"],
-                    max_retarder_power_w=self.vehicle_cfg["max_retarder_power_w"],
-                    curve_radius_m=edge.curve_radius_m,
-                    traction_speed_factor_mps=self.vehicle_cfg["traction_speed_factor_mps"],
-                    speed_limit_mps=nom_limit,
-                    visibility_m=edge.visibility_m,
-                    tau_total=self.vehicle_cfg["ecu_hydraulic_latency_s"],
-                    s_margin=self.vehicle_cfg["safety_stop_margin_m"]
-                )
-                
-                # Authoritative physical safe speed ceiling
-                v.v_safe_mps = phys_res["v_safe"]
-                
-                # Dynamic stopping envelope and safe headway
-                a_dec = max(0.1, phys_res["a_dec"])
-                v.stop_envelope_m = calculate_stopping_distance(v.speed_mps, a_dec, self.vehicle_cfg["ecu_hydraulic_latency_s"]) + self.vehicle_cfg["safety_stop_margin_m"]
-                v.safe_headway_m = max(v.stop_envelope_m + self.vehicle_cfg["safety_headway_margin_m"], self.vehicle_cfg["min_static_headway_m"])
-                
-                # Car-following check on same road segment
-                car_fol_limit, lead_id, gap_m, is_fol_stopped = self.compute_car_following_limit(v, edge)
-                v.lead_vehicle_id = lead_id
-                v.lead_gap_m = gap_m
-                v.is_following_stopped = is_fol_stopped
+        Returns None when the Twin has no value. The caller must render UNAVAILABLE
+        rather than substituting an optimistic number.
+        """
+        field = self.twin.get_vehicle_field(vehicle_id, "v_safe_mps")
+        return field.value if field.is_available else None
 
-                # Strict Priority Enforcement:
-                if self.e_stop_active:
-                    v.v_dispatch_mps = 0.0
-                elif is_fol_stopped:
-                    v.v_dispatch_mps = 0.0
-                else:
-                    v.v_dispatch_mps = min(target_mps, nom_limit, car_fol_limit)
-
-                # Final commanded speed cannot exceed physical v_safe
-                v.v_command_mps = min(v.v_dispatch_mps, v.v_safe_mps)
-
-        # 2. Vehicles in Queues / Nodes
-        for node in self.sim.network.nodes.values():
-            if node.queue:
-                for v in node.queue.vehicles:
-                    v.v_safe_mps = 13.89
-                    v.v_dispatch_mps = 0.0
-                    v.v_command_mps = 0.0
-                    v.stop_envelope_m = 0.0
-                    v.safe_headway_m = self.vehicle_cfg["min_static_headway_m"]
-                    v.is_following_stopped = False
-                    v.lead_vehicle_id = None
-                    v.lead_gap_m = float('inf')
+    def twin_field(self, vehicle_id, name):
+        """Full provenance envelope for a field, for display (source/quality/freshness)."""
+        return self.twin.get_vehicle_field(vehicle_id, name)
 
     def set_target_speed(self, speed_kmh: float):
         """Sets commanded target speed (km/h). Local governor automatically clamps to v_safe."""
@@ -434,7 +490,9 @@ class SimulationUIBridge:
         t1 = self.get_truck(self.selected_truck_id)
         t = self.sim.current_time
         speed_kmh = (t1.speed_mps * 3.6) if t1 else 0.0
-        safe_kmh = (t1.v_safe_mps * 3.6) if t1 else 0.0
+        # P7.1: authoritative v_safe from the canonical Twin. None = UNAVAILABLE;
+        # there is deliberately no 0.0 fallback, which would read as 'stopped'.
+        safe_kmh = to_kmh(self.twin_v_safe_mps(t1.id)) if t1 else None
         cmd_kmh = (t1.v_command_mps * 3.6) if t1 else 0.0
 
         self.history_time.append(t)
@@ -537,8 +595,10 @@ class SimulationUIBridge:
         for v in self.sim.vehicles:
             speed_mps = float(getattr(v, "speed_mps", 0.0))
             speed_kmh = speed_mps * 3.6
-            v_safe_mps = float(getattr(v, "v_safe_mps", 13.89))
-            v_safe_kmh = v_safe_mps * 3.6
+            # P7: authoritative v_safe comes from the canonical Twin. No fallback
+            # literal - an unknown safe speed is UNAVAILABLE, never an optimistic number.
+            v_safe_mps = self.twin_v_safe_mps(v.id)
+            v_safe_kmh = None if v_safe_mps is None else v_safe_mps * 3.6
             v_cmd_mps = float(getattr(v, "v_command_mps", 0.0))
             v_cmd_kmh = v_cmd_mps * 3.6
 
@@ -556,7 +616,11 @@ class SimulationUIBridge:
             if self.e_stop_active:
                 status_label = "E-STOP"
                 status_color = (255, 60, 60)
-            elif speed_mps > v_safe_mps + 0.1 or getattr(v, "warning_fault", False):
+            elif not safety_known(v_safe_mps):
+                # No authoritative safe speed: state is UNKNOWN, never implied safe.
+                status_label = "NO V_SAFE"
+                status_color = (150, 150, 160)
+            elif exceeds(speed_mps, v_safe_mps, 0.1) or getattr(v, "warning_fault", False):
                 status_label = "UNSAFE"
                 status_color = (255, 60, 60)
             elif crusher_node and crusher_node.queue and v in crusher_node.queue.vehicles:
@@ -586,7 +650,8 @@ class SimulationUIBridge:
                 status_label = "FOLLOWING"
                 status_color = (250, 180, 45)
             elif speed_mps > 0.5:
-                if speed_mps > 0.88 * v_safe_mps or self.current_visibility_m <= 10.0:
+                if (safety_known(v_safe_mps) and speed_mps > 0.88 * v_safe_mps) \
+                        or self.current_visibility_m <= 10.0:
                     status_label = "CAUTION"
                     status_color = (250, 180, 45)
                 else:
@@ -627,7 +692,8 @@ class SimulationUIBridge:
         loc = self.get_vehicle_location(t1)
 
         speed_mps = float(t1.speed_mps) if t1 else 0.0
-        v_safe_mps = float(t1.v_safe_mps) if t1 else 13.89
+        # P7: no optimistic fallback; None means UNAVAILABLE.
+        v_safe_mps = self.twin_v_safe_mps(t1.id) if t1 else None
         v_cmd_mps = float(t1.v_command_mps) if t1 else 0.0
         v_disp_mps = float(getattr(t1, "v_dispatch_mps", speed_mps)) if t1 else 0.0
         is_loaded = bool(t1.is_loaded) if t1 else False
@@ -641,7 +707,8 @@ class SimulationUIBridge:
             grade_pct = float(edge.grade_percent) if edge else 0.0
             friction_mu = float(edge.friction_mu) if edge else 0.60
             surface_state = str(edge.surface_state) if edge else "dry"
-            road_limit_mps = float(getattr(edge, "nominal_speed_limit", edge.speed_limit_mps)) if edge else 13.89
+            # P7: no edge => no configured road limit. UNAVAILABLE, not an assumed 50 km/h.
+            road_limit_mps = float(getattr(edge, "nominal_speed_limit", edge.speed_limit_mps)) if edge else None
             road_length_m = float(edge.length_m) if edge else 500.0
             curve_radius_m = float(edge.curve_radius_m) if edge else 0.0
             vis_m = float(edge.visibility_m) if edge else self.current_visibility_m
@@ -651,9 +718,11 @@ class SimulationUIBridge:
         else:
             curr_edge_id = loc["node_id"]
             grade_pct = 0.0
-            friction_mu = 0.60
-            surface_state = "dry"
-            road_limit_mps = 13.89
+            # P7: nothing is known about this road. Report UNAVAILABLE rather than
+            # inventing friction, surface or a speed limit.
+            friction_mu = None
+            surface_state = None
+            road_limit_mps = None
             road_length_m = 0.0
             curve_radius_m = 0.0
             vis_m = self.current_visibility_m
@@ -672,7 +741,11 @@ class SimulationUIBridge:
             safety_status = "E-STOP"
             safety_color = (255, 60, 60)
             safety_desc = "EMERGENCY STOP ACTIVATED"
-        elif speed_mps > v_safe_mps + 0.1 or getattr(t1, "warning_fault", False):
+        elif not safety_known(v_safe_mps):
+            safety_status = "NO V_SAFE"
+            safety_color = (150, 150, 160)
+            safety_desc = "SAFE SPEED UNAVAILABLE - NOT EVALUATED"
+        elif exceeds(speed_mps, v_safe_mps, 0.1) or getattr(t1, "warning_fault", False):
             safety_status = "UNSAFE"
             safety_color = (245, 60, 60)
             safety_desc = "SPEED EXCEEDS SAFE CEILING!"
@@ -681,7 +754,9 @@ class SimulationUIBridge:
             safety_color = (250, 180, 45)
             lead_str = f"behind {lead_veh_id} (Gap: {lead_gap_m:.1f}m)" if lead_veh_id else "(Lead Truck Ahead)"
             safety_desc = f"FOLLOWING STOP — MAINTAINING SAFE HEADWAY {lead_str}"
-        elif vis_m <= 10.0 or speed_mps > 0.88 * v_safe_mps or (grade_pct < -5.0 and surface_state in ["wet", "saturated"]):
+        elif vis_m <= 10.0 \
+                or (safety_known(v_safe_mps) and speed_mps > 0.88 * v_safe_mps) \
+                or (grade_pct is not None and grade_pct < -5.0 and surface_state in ["wet", "saturated"]):
             safety_status = "CAUTION"
             safety_color = (250, 180, 45)
             safety_desc = "HAZARDOUS CONDITIONS / NEAR LIMIT"
@@ -710,7 +785,7 @@ class SimulationUIBridge:
             "speed_mps": speed_mps,
             "speed_kmh": speed_mps * 3.6,
             "v_safe_mps": v_safe_mps,
-            "v_safe_kmh": v_safe_mps * 3.6,
+            "v_safe_kmh": to_kmh(v_safe_mps),
             "v_command_mps": v_cmd_mps,
             "v_command_kmh": v_cmd_mps * 3.6,
             "v_dispatch_mps": v_disp_mps,
@@ -726,7 +801,7 @@ class SimulationUIBridge:
             "surface_state": surface_state,
             "visibility_m": vis_m,
             "speed_limit_mps": road_limit_mps,
-            "speed_limit_kmh": road_limit_mps * 3.6,
+            "speed_limit_kmh": to_kmh(road_limit_mps),
             "stop_envelope_m": stop_envelope_m,
             "safe_headway_m": safe_headway_m,
             "is_following_stopped": is_fol_stopped,
@@ -1214,6 +1289,9 @@ class MiningVisualizerUI:
         # 4. Bottom Real-time Telemetry Speed Graph
         self.draw_speed_graph()
 
+        # 5. P9 - canonical Twin, read-only and clearly separated from the simulator.
+        self.draw_canonical_twin_panel()
+
         if not self.headless:
             pygame.display.flip()
 
@@ -1547,7 +1625,7 @@ class MiningVisualizerUI:
             btn.draw(self.screen, self.font_bold)
 
         # Backend Model Synced Note
-        note = self.font_small.render("● Synced with FogModel, Friction (μ) & resolve_v_safe()", True, COLOR_TEXT_MUTED)
+        note = self.font_small.render("● Reading canonical Twin state (fog, friction, v_safe)", True, COLOR_TEXT_MUTED)
         self.screen.blit(note, (x + 20, y + 194))
 
     def draw_fleet_telemetry_panel(self):
@@ -1622,7 +1700,7 @@ class MiningVisualizerUI:
             self.screen.blit(self.font_small.render("kph", True, COLOR_TEXT_MUTED), (x + 118, ry + 9))
 
             # Col 2: V_SAFE
-            safe_val = self.font_digits_med.render(f"{truck['v_safe_kmh']:4.1f}", True, COLOR_AMBER)
+            safe_val = self.font_digits_med.render(fmt_value(truck["v_safe_kmh"]), True, COLOR_AMBER)
             self.screen.blit(safe_val, (x + 142, ry + 6))
 
             # Col 3: COMMAND
@@ -1699,8 +1777,14 @@ class MiningVisualizerUI:
         items_left = [
             ("Segment / Node:", f"{tel['current_edge']}"),
             ("Gradient:", f"{tel['grade_percent']:+.1f} % ({'Downhill' if tel['grade_percent'] < 0 else ('Uphill' if tel['grade_percent'] > 0 else 'Flat')})"),
-            ("Friction (μ):", f"{tel['friction_mu']:.2f}"),
-            ("Surface State:", f"{tel['surface_state'].upper()}"),
+            # A vehicle at a NODE is not on a road, so no friction or surface state is
+            # known for it (see get_telemetry: "nothing is known about this road").
+            # Both arrive as None and must render as UNAVAILABLE - never as an assumed
+            # 0.60 / "dry", which would tell the operator the road is gripping when
+            # nothing has been observed.
+            ("Friction (μ):", fmt_value(tel["friction_mu"], ".2f")),
+            ("Surface State:",
+             tel["surface_state"].upper() if tel["surface_state"] else UNAVAILABLE_TEXT),
         ]
 
         items_right = [
@@ -1714,7 +1798,13 @@ class MiningVisualizerUI:
         ly = y + 36
         for lbl, val in items_left:
             self.screen.blit(self.font_body.render(lbl, True, COLOR_TEXT_SECONDARY), (x + 16, ly))
-            col = COLOR_RED if "-" in val else (COLOR_GREEN if "+" in val else COLOR_TEXT_PRIMARY)
+            # UNAVAILABLE is dimmed, not alarmed. The sign-based rule below reads the "-"
+            # in the marker as negative and would colour an unknown value like a warning;
+            # "not measured" is not the same as "bad".
+            if val == UNAVAILABLE_TEXT:
+                col = COLOR_TEXT_SECONDARY
+            else:
+                col = COLOR_RED if "-" in val else (COLOR_GREEN if "+" in val else COLOR_TEXT_PRIMARY)
             self.screen.blit(self.font_bold.render(val, True, col), (x + 130, ly))
             ly += 24
 
@@ -1797,6 +1887,89 @@ class MiningVisualizerUI:
     # ==============================================================================
     # Bottom Section: Real-time Telemetry Speed Graph
     # ==============================================================================
+
+    def canonical_twin_rows(self):
+        """
+        P9 - the canonical Twin panel's render model. PURE: no pygame, so it is
+        testable headlessly, and no Twin logic lives inside a drawing function.
+
+        Returns (header_text, rows). Every row states, for one canonical vehicle,
+        the SUPPLIED speed, provenance and freshness. Nothing is computed, nothing
+        is defaulted and no simulator value is substituted for a missing canonical
+        one - a field the backend Twin does not carry renders UNAVAILABLE.
+        """
+        client = getattr(self.bridge, "canonical", None)
+        if client is None:
+            return ("CANONICAL TWIN NOT CONNECTED - simulator-local only", [])
+
+        rows = []
+        for vehicle_id in sorted(client.vehicles()):
+            vehicle = client.vehicle(vehicle_id)
+            if vehicle is None:
+                continue
+            speed_kmh = to_kmh(vehicle.speed_mps)
+            rows.append({
+                "vehicle_id": vehicle_id,
+                "speed_kmh": fmt_value(speed_kmh, ".1f"),
+                "rpm": fmt_value(vehicle.rpm, ".0f"),
+                "provenance": vehicle.provenance_label(),
+                "freshness": vehicle.freshness_label(),
+                "comms": vehicle.communication_state or "UNKNOWN",
+            })
+        return (client.status_text(), rows)
+
+    def canonical_unavailable_notes(self):
+        """
+        P9 - what the canonical Twin does NOT carry, stated rather than hidden.
+
+        The live backend returns empty `environment`, `roads` and `mine` blocks. An
+        empty environment panel and a hazard-free one look identical, so the absence
+        is named instead of drawn as nothing.
+        """
+        client = getattr(self.bridge, "canonical", None)
+        if client is None:
+            return []
+        notes = []
+        for block, label in (("environment", "environment"), ("roads", "road state"),
+                             ("mine", "topology")):
+            if client.block_is_empty(block):
+                notes.append("canonical %s UNAVAILABLE" % label)
+        return notes
+
+    def draw_canonical_twin_panel(self):
+        """
+        Panel 5: the canonical Twin, READ-ONLY.
+
+        Deliberately separate from every simulator panel. A value here came from the
+        HMI backend's Twin; a value anywhere else on this screen came from this
+        process's simulator. The two are never interleaved in one list, because a
+        reader cannot tell them apart once they are.
+        """
+        pygame = self.pygame
+        x, y, w, h = 848, 636, 400, 184
+        pygame.draw.rect(self.screen, COLOR_PANEL_BG, (x, y, w, h), border_radius=8)
+        pygame.draw.rect(self.screen, COLOR_PANEL_BORDER, (x, y, w, h), 1, border_radius=8)
+
+        header, rows = self.canonical_twin_rows()
+        self.screen.blit(self.font_section.render("CANONICAL DIGITAL TWIN (READ-ONLY)",
+                                                  True, COLOR_CYAN), (x + 16, y + 12))
+        self.screen.blit(self.font_small.render(header, True, COLOR_TEXT_SECONDARY), (x + 16, y + 34))
+
+        row_y = y + 56
+        if not rows:
+            self.screen.blit(
+                self.font_small.render("No canonical vehicle supplied.", True, COLOR_TEXT_SECONDARY),
+                (x + 16, row_y))
+            row_y += 18
+        for row in rows[:4]:
+            line = "%s  %s km/h  %s  %s" % (row["vehicle_id"], row["speed_kmh"],
+                                            row["provenance"], row["freshness"])
+            self.screen.blit(self.font_small.render(line, True, COLOR_TEXT_PRIMARY), (x + 16, row_y))
+            row_y += 18
+
+        for note in self.canonical_unavailable_notes()[:3]:
+            self.screen.blit(self.font_small.render(note, True, COLOR_TEXT_SECONDARY), (x + 16, row_y))
+            row_y += 16
 
     def draw_speed_graph(self):
         """
@@ -2067,15 +2240,33 @@ def run_headless_test() -> bool:
 def main():
     parser = argparse.ArgumentParser(description="FOG-ORCHESTRATOR 2.0 Mine Visualization UI")
     parser.add_argument("--test", action="store_true", help="Run automated headless verification test and exit")
+    # P9 - OPT-IN, so the documented launch command behaves exactly as before.
+    #
+    # Without this flag game_ui is the same self-contained simulator it has always
+    # been. With it, the canonical Twin panel additionally DISPLAYS the HMI
+    # backend's Twin, read-only. Either way the simulator is unchanged.
+    parser.add_argument("--canonical-twin", action="store_true",
+                        help="Also display the HMI backend's canonical Twin (read-only)")
+    parser.add_argument("--twin-url", default=None,
+                        help="Canonical Twin snapshot URL (implies --canonical-twin)")
     args = parser.parse_args()
 
     if args.test:
         success = run_headless_test()
         sys.exit(0 if success else 1)
-    else:
-        bridge = SimulationUIBridge()
-        ui = MiningVisualizerUI(bridge, headless=False)
+
+    client = None
+    if (args.canonical_twin or args.twin_url) and CanonicalTwinClient is not None:
+        client = CanonicalTwinClient(url=args.twin_url) if args.twin_url else CanonicalTwinClient()
+        client.start()
+
+    bridge = SimulationUIBridge(canonical_client=client)
+    ui = MiningVisualizerUI(bridge, headless=False)
+    try:
         ui.run()
+    finally:
+        if client is not None:
+            client.stop()
 
 if __name__ == "__main__":
     main()

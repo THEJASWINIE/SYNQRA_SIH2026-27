@@ -18,7 +18,7 @@ import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { type FreshnessConfig, freshnessConfig } from "../config/freshness";
 import type { ConnectionStatus } from "../contracts/appState";
-import type { DispatchCommand, SlotState } from "../contracts/domain";
+import type { DispatchCommand, SafetyState, SlotState, VehicleState } from "../contracts/domain";
 import { SLOT_STATUSES } from "../contracts/enums";
 import { HmiContext } from "../state/ProviderHost";
 import { AppStateStore } from "../state/store";
@@ -70,6 +70,9 @@ interface MountOptions {
   error?: string | null;
   config?: FreshnessConfig | null;
   nowIso?: string;
+  /** Phase 2 — S4 command panel. Optional, so every existing call is unaffected. */
+  vehicles?: Record<string, VehicleState>;
+  safety?: Record<string, SafetyState>;
 }
 
 function render(options: MountOptions = {}): string {
@@ -80,6 +83,8 @@ function render(options: MountOptions = {}): string {
       changes: {
         slots: options.slots ?? { "SL-1": slot() },
         dispatch: options.dispatch ?? { "C-1": command() },
+        ...(options.vehicles ? { vehicles: options.vehicles } : {}),
+        ...(options.safety ? { safety: options.safety } : {}),
       },
     },
     T,
@@ -505,5 +510,165 @@ describe("FR-010 AC3 — declared partial non-conformance (M7D-C)", () => {
     const html = render();
     expect(html).not.toContain("Event log");
     expect(html).not.toContain("EventRecord");
+  });
+});
+
+// =========================================================================
+// Phase 2 — S4 dispatch command panel (render level).
+//
+// Interaction (clicking SEND / CONFIRM STOP, the busy state) cannot be driven here: the
+// suite renders with `react-dom/server` and there is no DOM (M4D-C). The behaviour behind
+// those clicks is covered as pure logic in `state/dispatchCommand.test.ts` and
+// `api/commandClient.test.ts`.
+// =========================================================================
+
+function vehicle(partial: Partial<VehicleState> = {}): VehicleState {
+  return {
+    vehicleId: "TRUCK_01",
+    timestamp: T,
+    position: { x: null, y: null, segmentId: null, offsetM: null },
+    speedMps: 2.5,
+    accelMps2: null,
+    gradeRad: null,
+    frictionEst: null,
+    mode: "TRAVELING",
+    commConfidence: null,
+    vehicleKind: "TRUCK",
+    routeId: null,
+    ...partial,
+  } as VehicleState;
+}
+
+const TWO_TRUCKS: Record<string, VehicleState> = {
+  TRUCK_01: vehicle(),
+  TRUCK_02: vehicle({ vehicleId: "TRUCK_02", speedMps: 1.0 }),
+};
+
+describe("S4 dispatch command panel", () => {
+  it("A — renders the command panel", () => {
+    const html = render({ vehicles: TWO_TRUCKS });
+    expect(html).toContain("Dispatch command");
+    expect(html).toContain("POST /api/commands");
+  });
+
+  it("B — offers every supplied vehicle for selection", () => {
+    const html = render({ vehicles: TWO_TRUCKS });
+    expect(html).toContain("TRUCK_01");
+    expect(html).toContain("TRUCK_02");
+    expect(html).toContain("dispatch-vehicle");
+  });
+
+  it("C — offers all four backend actions and the target-speed field", () => {
+    const html = render({ vehicles: TWO_TRUCKS });
+    for (const action of ["TARGET SPEED", "HOLD", "STOP", "RELEASE"]) {
+      expect(html, `missing action: ${action}`).toContain(action);
+    }
+    // TARGET_SPEED is the default action, so the speed input is present.
+    expect(html).toContain("dispatch-target-speed");
+    expect(html).toContain("Target speed (m/s)");
+  });
+
+  it("labels the speed unit as m/s, matching the wire contract", () => {
+    const html = render({ vehicles: TWO_TRUCKS });
+    expect(html).toContain("m/s");
+    expect(html).toContain("exactly as typed");
+  });
+
+  it("does not show a stop confirmation until STOP is chosen and sent", () => {
+    // Default action is TARGET_SPEED; the confirmation must not be pre-rendered.
+    const html = render({ vehicles: TWO_TRUCKS });
+    expect(html).not.toContain("CONFIRM STOP");
+  });
+
+  it("shows an empty state when no vehicle has been supplied", () => {
+    const html = render({ vehicles: {} });
+    expect(html).toContain("NO VEHICLE SUPPLIED");
+  });
+
+  it("shows -- for a safe speed the authoritative state does not supply", () => {
+    // No SafetyState is supplied, which is the current LIVE-mode condition.
+    const html = greyscale(render({ vehicles: TWO_TRUCKS }));
+    expect(html).toContain("Safe speed");
+    expect(html).toContain("--");
+    // It must not invent a number from the vehicle's speed.
+    expect(html).not.toContain("SAFE SPEED CALCULATED");
+  });
+
+  it("shows a supplied safe speed when the authoritative state has one", () => {
+    const html = render({
+      vehicles: TWO_TRUCKS,
+      safety: {
+        TRUCK_01: {
+          vehicleId: "TRUCK_01",
+          timestamp: T,
+          vSafe: 10,
+          hSafe: null,
+          actualSpeed: 2.5,
+          headwayCurrent: null,
+          leadVehicleId: null,
+          activeConstraint: "VISIBILITY",
+          riskLevel: "LOW",
+          headwayViolation: null,
+          envelopeViolation: null,
+        } as SafetyState,
+      },
+    });
+    expect(html).toContain("36.0"); // 10 m/s supplied -> 36.0 km/h
+  });
+
+  it("distinguishes SIMULATION from PHYSICAL provenance", () => {
+    const simulated = render({
+      vehicles: {
+        TRUCK_01: vehicle({
+          provenance: {
+            speed_mps: {
+              value: 2.5,
+              timestamp: 1788000000,
+              source: "SIMULATION",
+              origin: "SIMULATION",
+              quality: "GOOD",
+              ageS: 0.1,
+              available: true,
+              clockDomain: "WALL_CLOCK",
+              freshness: "CURRENT",
+            },
+          },
+        }),
+      },
+    });
+    expect(simulated).toContain("SIMULATION");
+
+    const physical = render({
+      vehicles: {
+        TRUCK_01: vehicle({
+          provenance: {
+            speed_mps: {
+              value: 2.5,
+              timestamp: 1788000000,
+              source: "DERIVED",
+              origin: "HARDWARE",
+              quality: "GOOD",
+              ageS: 0.1,
+              available: true,
+              clockDomain: "WALL_CLOCK",
+              freshness: "CURRENT",
+            },
+          },
+        }),
+      },
+    });
+    expect(physical).toContain("PHYSICAL");
+  });
+
+  it("S — renders the session history region, empty before any command", () => {
+    const html = render({ vehicles: TWO_TRUCKS });
+    expect(html).toContain("Session command history");
+    expect(html).toContain("NO COMMANDS THIS SESSION");
+  });
+
+  it("never claims a vehicle executed anything", () => {
+    const html = greyscale(render({ vehicles: TWO_TRUCKS })).toLowerCase();
+    expect(html).not.toContain("vehicle stopped");
+    expect(html).not.toContain("executed successfully");
   });
 });

@@ -35,3 +35,9 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# ESP32 firmware deployment secrets (SSID / password / backend endpoint).
+# Only the *.example.h templates are tracked. Never commit secrets.h.
+esp32_code/**/secrets.h
+secrets.h
+!esp32_code/**/secrets.example.h

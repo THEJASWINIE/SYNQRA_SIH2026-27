@@ -38,6 +38,7 @@ import {
   normalizeSafetyState,
   normalizeSlotState,
   normalizeSystemHealth,
+  normalizeTwinVehicle,
   normalizeVehicleState,
   normalizeVisibilityForecast,
 } from "../data/normalize";
@@ -113,6 +114,7 @@ const KEYED_TARGET: Partial<Record<MessageType, keyof NormalizedBatch>> = {
 
 // biome-ignore lint/suspicious/noExplicitAny: dispatch table across 15 distinct schemas
 const NORMALIZERS: Record<MessageType, (raw: any) => unknown> = {
+  TwinVehicle: normalizeTwinVehicle,
   VehicleState: normalizeVehicleState,
   SafetyState: normalizeSafetyState,
   RoadState: normalizeRoadState,

@@ -20,7 +20,7 @@ class GatewayTelemetryParser:
     _sequence_counters: Dict[str, int] = {}
 
     @classmethod
-    def parse_packet(cls, raw_line: str) -> Optional[Dict[str, Any]]:
+    def parse_packet(cls, raw_line: str, provenance_source: str = "SIMULATION") -> Optional[Dict[str, Any]]:
         """
         Parses string format:
         V=TRUCK_01,SEQ=101,RPM=240.0,SPD=2.50,AX=0.12,AY=-0.05,AZ=9.81,GX=0.02,GY=0.01,GZ=-0.03,RSSI=-65,SNR=9.2
@@ -49,6 +49,7 @@ class GatewayTelemetryParser:
                 applied = 0.0
             return {
                 "type": "command_ack",
+                "provenance_source": provenance_source,
                 "command_id": ack_id,
                 "vehicle_id": vid,
                 "status": status,
@@ -98,6 +99,10 @@ class GatewayTelemetryParser:
 
         return {
             "vehicle_id": vid,
+            # P3 PROVENANCE: HARDWARE only when this record genuinely came off the serial
+            # port. The simulated fallback loop below stamps SIMULATION so a disconnected
+            # gateway can never masquerade as live hardware.
+            "provenance_source": provenance_source,
             "sequence_number": seq_num,
             "timestamp": now,
             "latency_ms": latency_ms,
@@ -207,7 +212,8 @@ class GatewaySerialReader:
             while self.running:
                 line = ser.readline().decode('utf-8', errors='ignore')
                 if line:
-                    parsed = GatewayTelemetryParser.parse_packet(line)
+                    # Genuine bytes off the physical gateway.
+                    parsed = GatewayTelemetryParser.parse_packet(line, provenance_source="HARDWARE")
                     if parsed:
                         vid = parsed["vehicle_id"]
                         self.health_monitor.record_heartbeat(vid, parsed["timestamp"])
@@ -218,7 +224,16 @@ class GatewaySerialReader:
             self._run_simulated_loop()
 
     def _run_simulated_loop(self):
-        """Simulates incoming gateway serial lines for testing when physical USB is disconnected."""
+        """
+        Simulates incoming gateway serial lines when the physical USB gateway is absent.
+
+        P3: every record produced here is stamped provenance_source="SIMULATION". It is
+        NOT physical telemetry and must never be reported as a hardware measurement.
+        """
+        logger.warning(
+            "GatewaySerialReader running in SIMULATED fallback mode - emitted telemetry is "
+            "SIMULATION, not hardware."
+        )
         step = 0
         while self.running:
             step += 1
@@ -227,7 +242,7 @@ class GatewaySerialReader:
             rpm_a = 240.0 + 20.0 * (step % 5)
             spd_a = (rpm_a * 3.14159 * 0.10) / 60.0
             pkt_a = f"V=TRUCK_01,RPM={rpm_a:.1f},SPD={spd_a:.2f},AX=0.12,AY=-0.05,AZ=9.81,GX=0.02,GY=0.01,GZ=-0.03,RSSI=-62,SNR=9.5"
-            parsed_a = GatewayTelemetryParser.parse_packet(pkt_a)
+            parsed_a = GatewayTelemetryParser.parse_packet(pkt_a, provenance_source="SIMULATION")
             if parsed_a and self.callback:
                 self.health_monitor.record_heartbeat("TRUCK_01", now)
                 self.callback(parsed_a)
@@ -238,7 +253,7 @@ class GatewaySerialReader:
             rpm_b = 180.0 + 15.0 * (step % 4)
             spd_b = (rpm_b * 3.14159 * 0.085) / 60.0
             pkt_b = f"V=TRUCK_02,RPM={rpm_b:.1f},SPD={spd_b:.2f},AX=-0.04,AY=0.01,AZ=9.79,GX=0.00,GY=0.01,GZ=0.00,RSSI=-75,SNR=7.8"
-            parsed_b = GatewayTelemetryParser.parse_packet(pkt_b)
+            parsed_b = GatewayTelemetryParser.parse_packet(pkt_b, provenance_source="SIMULATION")
             if parsed_b and self.callback:
                 self.health_monitor.record_heartbeat("TRUCK_02", now)
                 self.callback(parsed_b)

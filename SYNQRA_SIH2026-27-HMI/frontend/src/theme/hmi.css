@@ -119,6 +119,31 @@ body {
   outline-offset: -2px;
 }
 
+/*
+ * Additional (unnumbered) screens.
+ *
+ * Visually subordinate to the canonical S1-S7 row so the numbered structure reads as the
+ * primary one. Still a full nav - these screens are retained, not deprecated.
+ */
+.hmi-nav-secondary {
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+}
+
+.hmi-nav-secondary button {
+  font-size: 0.72rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.hmi-nav-group-label {
+  color: var(--text-dim);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0 0.6rem 0 0;
+  white-space: nowrap;
+}
+
 .hmi-main {
   flex: 1;
   padding: 0.85rem;
@@ -849,3 +874,304 @@ button.vehicle-id {
   font-size: 0.72rem;
   color: var(--text-faint);
 }
+
+/* =====================================================================
+   P8 — OPERATOR HMI
+   Large numerals, low density, high contrast. State is never conveyed by
+   colour alone: every action also carries a text label and a glyph.
+   ===================================================================== */
+
+.op-root { padding: 1.5rem; max-width: 70rem; margin: 0 auto; }
+
+.op-header { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.op-vehicle { font-size: 2rem; font-weight: 700; letter-spacing: 0.05em; }
+.op-picker { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+.op-picker select { font-size: 1rem; padding: 0.25rem 0.5rem; }
+
+.op-action {
+  margin: 1.25rem 0;
+  padding: 1.5rem;
+  border: 3px solid currentColor;
+  border-radius: 0.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 1rem;
+  align-items: center;
+}
+.op-action-glyph { grid-row: 1 / span 2; font-size: 3rem; font-weight: 700; line-height: 1; }
+.op-action-label { font-size: 3rem; font-weight: 800; letter-spacing: 0.04em; line-height: 1.05; }
+.op-action-detail { font-size: 1rem; opacity: 0.85; }
+
+/* Colour REINFORCES the label; it never replaces it. */
+.op-action-normal { color: #1b7f4b; background: #eaf7f0; }
+.op-action-caution { color: #8a5a00; background: #fdf3e0; }
+.op-action-slow_down { color: #a13b00; background: #fdeee4; }
+.op-action-stop { color: #8f1d1d; background: #fbe9e9; }
+.op-action-safety_data_unavailable { color: #3f4550; background: #eef0f3; }
+
+.op-speeds, .op-conditions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.op-readout { padding: 0.75rem 1rem; border: 1px solid rgba(128, 128, 128, 0.35); border-radius: 0.375rem; }
+.op-readout-label { font-size: 0.8rem; letter-spacing: 0.08em; opacity: 0.75; }
+.op-readout-value { font-size: 2.5rem; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.op-readout-value.dim { font-size: 1.1rem; font-weight: 600; opacity: 0.7; }
+.op-readout-unit { font-size: 1rem; font-weight: 500; opacity: 0.8; }
+.op-readout-note { font-size: 0.75rem; opacity: 0.7; margin-top: 0.25rem; }
+
+.op-status {
+  display: flex; flex-wrap: wrap; gap: 1.25rem;
+  font-size: 0.85rem; opacity: 0.9;
+  padding-top: 0.75rem; border-top: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.op-empty-title { font-size: 1.5rem; }
+.op-empty-note { opacity: 0.8; }
+
+@media (max-width: 40rem) {
+  .op-action-label { font-size: 2.1rem; }
+  .op-readout-value { font-size: 2rem; }
+}
+
+/* -- phase 10 demo lab ---------------------------------------------------- */
+
+.demo-lab-banner {
+  border: 1px solid var(--crit);
+  border-left: 5px solid var(--crit);
+  background: #2b1414;
+  padding: 0.6rem 0.9rem;
+  border-radius: 4px;
+}
+
+.demo-lab-banner-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  color: var(--crit);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.demo-lab-banner p {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+.hmi-nav-demo-lab {
+  color: var(--warn) !important;
+  font-weight: 600;
+}
+
+.demo-lab-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.demo-lab-btn {
+  background: var(--panel-alt);
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.9rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.demo-lab-btn:hover:not(:disabled) {
+  background: var(--line);
+  border-color: var(--text-dim);
+}
+
+.demo-lab-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.demo-lab-btn-primary {
+  background: #183b2a;
+  border-color: var(--ok);
+  color: #c9f7dc;
+}
+
+.demo-lab-btn-primary:hover:not(:disabled) {
+  background: #204e38;
+}
+
+.demo-lab-btn-inject {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  background: #2b2014;
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.demo-lab-btn-inject:hover:not(:disabled) {
+  background: #3b2c1c;
+}
+
+.demo-lab-aggregate {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.demo-lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 1rem;
+}
+
+.demo-lab-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: border-color 0.2s ease;
+}
+
+.demo-lab-card[data-status="PASS"] {
+  border-color: rgba(61, 220, 132, 0.4);
+}
+
+.demo-lab-card[data-status="FAIL"] {
+  border-color: rgba(255, 93, 93, 0.5);
+}
+
+.demo-lab-card[data-status="RUNNING"] {
+  border-color: rgba(106, 169, 255, 0.5);
+}
+
+.demo-lab-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.demo-lab-card-head h3 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.demo-lab-card-desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.demo-lab-status {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.demo-lab-status-idle {
+  background: var(--line);
+  color: var(--text-dim);
+}
+
+.demo-lab-status-running {
+  background: #17283c;
+  color: var(--info);
+  border: 1px solid rgba(106, 169, 255, 0.4);
+}
+
+.demo-lab-status-pass {
+  background: #142e1f;
+  color: var(--ok);
+  border: 1px solid rgba(61, 220, 132, 0.4);
+}
+
+.demo-lab-status-fail {
+  background: #331515;
+  color: var(--crit);
+  border: 1px solid rgba(255, 93, 93, 0.4);
+}
+
+.demo-lab-status-manual {
+  background: #2b2512;
+  color: var(--warn);
+  border: 1px solid rgba(242, 165, 74, 0.4);
+}
+
+.demo-lab-evidence {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.75rem;
+  margin-top: 0.3rem;
+}
+
+.demo-lab-evidence dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.6rem;
+}
+
+.demo-lab-evidence dt {
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+}
+
+.demo-lab-evidence dd {
+  margin: 0;
+  color: var(--text);
+  word-break: break-all;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.demo-lab-log {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.demo-lab-log th,
+.demo-lab-log td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.demo-lab-log th {
+  color: var(--text-faint);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--panel-alt);
+}
+
+.demo-lab-log tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+

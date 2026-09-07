@@ -5,10 +5,12 @@ and direct Wi-Fi payloads against HMI backend and canonical store contract.
 """
 
 import sys
+import os
 import time
 import requests
 
-BACKEND_URL = "http://10.126.54.41:8000"
+# Backend endpoint. Override per deployment:  FOG_BACKEND_URL=http://<host>:8000
+BACKEND_URL = os.getenv("FOG_BACKEND_URL", "http://127.0.0.1:8000")
 
 def run_physical_v2v_verification():
     print("====================================================")

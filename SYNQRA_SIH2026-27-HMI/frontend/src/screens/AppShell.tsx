@@ -13,7 +13,7 @@
 
 import { useState } from "react";
 import { BackendHealth } from "../components/BackendHealth";
-import { StatusBadge } from "../components/primitives";
+import { EmptyState, Panel, StatusBadge } from "../components/primitives";
 import { useHmi } from "../state/ProviderHost";
 import { displayedModeFor, MODE_SOURCE_TEXT } from "../state/systemMode";
 import { useAppState } from "../state/useAppState";
@@ -21,18 +21,71 @@ import { providerStatusToken, systemModeToken } from "../theme/statusTokens";
 import { AlertList } from "./AlertList";
 import { BottleneckQueue } from "./BottleneckQueue";
 import { Diagnostics } from "./Diagnostics";
+import { DigitalTwin } from "./DigitalTwin";
 import { DispatchSlots } from "./DispatchSlots";
 import { EventReplay } from "./EventReplay";
 import { OperationsOverview } from "./OperationsOverview";
+import { OperatorView } from "./OperatorView";
+import { SafetyEnvironment } from "./SafetyEnvironment";
 import { VehicleDetail } from "./VehicleDetail";
+import { FailureInjectionLab } from "./FailureInjectionLab";
 
-const OVERVIEW_ID = "overview";
-export const VEHICLE_ID = "vehicle";
+/**
+ * CANONICAL SIH SCREENS — S1..S7.
+ *
+ * The numbering is the contract; the component behind each number is an implementation
+ * detail. Screens are therefore RE-LABELLED here rather than renamed on disk, so no test,
+ * import or file path churns over a numbering decision.
+ *
+ * Every canonical number now has a screen. `PENDING_SCREENS` is retained and empty: it is
+ * the mechanism by which a declared-but-unbuilt screen says so instead of rendering an
+ * empty dashboard, and a future S8 would use it again.
+ */
+const OVERVIEW_ID = "overview"; // S1 Operations
+export const VEHICLE_ID = "vehicle"; // S2 Vehicle Detail
+const SAFETY_ID = "safety"; // S3 Safety / Environment
+const DISPATCH_ID = "dispatch"; // S4 Dispatch
+const ALERTS_ID = "alerts"; // S5 Alerts
+const TWIN_ID = "twin"; // S6 Digital Twin
+const DIAGNOSTICS_ID = "diagnostics"; // S7 System Health
+
+/**
+ * ADDITIONAL UTILITY SCREENS.
+ *
+ * Retained in full. They are not replacements for any canonical screen, and they are left
+ * unnumbered so the S1..S7 structure stays unambiguous.
+ */
+/** P8 — dumper-operator view (root CLAUDE.md §12). Not the control-room dashboard. */
+export const OPERATOR_ID = "operator";
 const BOTTLENECK_ID = "bottleneck";
-const DISPATCH_ID = "dispatch";
-const ALERTS_ID = "alerts";
 const REPLAY_ID = "replay";
-const DIAGNOSTICS_ID = "diagnostics";
+/** Phase 10 — Failure Injection / Demo Lab. Simulation / Test only. */
+export const DEMO_LAB_ID = "demo-lab";
+
+/**
+ * Canonical screens not yet built. Declared so the shell never implies they exist.
+ * Empty since Phase 7 built S6; the mechanism stays for whatever is declared next.
+ */
+export const PENDING_SCREENS: Record<string, { title: string; detail: string }> = {};
+
+/**
+ * A canonical screen that is declared but not yet built.
+ *
+ * Says so plainly rather than rendering an empty dashboard. An empty safety panel and a
+ * safe one look identical, which is the substitution this HMI exists to avoid. Exported so
+ * it is covered by the real code path rather than a reconstruction of it.
+ */
+export function PendingScreen({ screenId }: { screenId: string }) {
+  const pending = PENDING_SCREENS[screenId];
+  if (!pending) return null;
+  return (
+    <section className="hmi-screen" aria-label={pending.title}>
+      <Panel title={pending.title}>
+        <EmptyState headline="NOT BUILT YET" detail={pending.detail} />
+      </Panel>
+    </section>
+  );
+}
 
 export function AppShell() {
   const state = useAppState();
@@ -123,6 +176,7 @@ export function AppShell() {
         </dl>
       </header>
 
+      {/* Canonical SIH screens, in order. */}
       <nav className="hmi-nav" aria-label="Screens">
         <button
           type="button"
@@ -136,15 +190,15 @@ export function AppShell() {
           aria-current={screenId === VEHICLE_ID ? "page" : undefined}
           onClick={() => setScreenId(VEHICLE_ID)}
         >
-          S2 Vehicle
+          S2 Vehicle Detail
           {selectedVehicleId ? ` · ${selectedVehicleId}` : ""}
         </button>
         <button
           type="button"
-          aria-current={screenId === BOTTLENECK_ID ? "page" : undefined}
-          onClick={() => setScreenId(BOTTLENECK_ID)}
+          aria-current={screenId === SAFETY_ID ? "page" : undefined}
+          onClick={() => setScreenId(SAFETY_ID)}
         >
-          S3 Bottleneck
+          S3 Safety / Environment
         </button>
         <button
           type="button"
@@ -158,21 +212,56 @@ export function AppShell() {
           aria-current={screenId === ALERTS_ID ? "page" : undefined}
           onClick={() => setScreenId(ALERTS_ID)}
         >
-          Alerts
+          S5 Alerts
         </button>
         <button
           type="button"
-          aria-current={screenId === REPLAY_ID ? "page" : undefined}
-          onClick={() => setScreenId(REPLAY_ID)}
+          aria-current={screenId === TWIN_ID ? "page" : undefined}
+          onClick={() => setScreenId(TWIN_ID)}
         >
-          S5 Replay
+          S6 Digital Twin
         </button>
         <button
           type="button"
           aria-current={screenId === DIAGNOSTICS_ID ? "page" : undefined}
           onClick={() => setScreenId(DIAGNOSTICS_ID)}
         >
-          S6 Diagnostics
+          S7 System Health
+        </button>
+      </nav>
+
+      {/* Additional screens. Unnumbered on purpose: they do not replace any canonical
+          screen, and numbering them would blur the S1-S7 structure. */}
+      <nav className="hmi-nav hmi-nav-secondary" aria-label="Additional screens">
+        <span className="hmi-nav-group-label">Additional</span>
+        <button
+          type="button"
+          aria-current={screenId === OPERATOR_ID ? "page" : undefined}
+          onClick={() => setScreenId(OPERATOR_ID)}
+        >
+          Operator
+        </button>
+        <button
+          type="button"
+          aria-current={screenId === BOTTLENECK_ID ? "page" : undefined}
+          onClick={() => setScreenId(BOTTLENECK_ID)}
+        >
+          Bottleneck
+        </button>
+        <button
+          type="button"
+          aria-current={screenId === REPLAY_ID ? "page" : undefined}
+          onClick={() => setScreenId(REPLAY_ID)}
+        >
+          Replay
+        </button>
+        <button
+          type="button"
+          className="hmi-nav-demo-lab"
+          aria-current={screenId === DEMO_LAB_ID ? "page" : undefined}
+          onClick={() => setScreenId(DEMO_LAB_ID)}
+        >
+          ⚠ Demo Lab
         </button>
       </nav>
 
@@ -204,8 +293,16 @@ export function AppShell() {
           </div>
         )}
 
-        {screenId === VEHICLE_ID ? (
+        {PENDING_SCREENS[screenId] ? (
+          <PendingScreen screenId={screenId} />
+        ) : screenId === VEHICLE_ID ? (
           <VehicleDetail vehicleId={selectedVehicleId} onBack={() => setScreenId(OVERVIEW_ID)} />
+        ) : screenId === SAFETY_ID ? (
+          <SafetyEnvironment vehicleId={selectedVehicleId} />
+        ) : screenId === TWIN_ID ? (
+          <DigitalTwin vehicleId={selectedVehicleId} />
+        ) : screenId === OPERATOR_ID ? (
+          <OperatorView vehicleId={selectedVehicleId} />
         ) : screenId === BOTTLENECK_ID ? (
           <BottleneckQueue />
         ) : screenId === DISPATCH_ID ? (
@@ -216,6 +313,8 @@ export function AppShell() {
           <EventReplay />
         ) : screenId === DIAGNOSTICS_ID ? (
           <Diagnostics />
+        ) : screenId === DEMO_LAB_ID ? (
+          <FailureInjectionLab />
         ) : (
           <OperationsOverview onSelectVehicle={openVehicle} />
         )}

@@ -16,8 +16,8 @@ describe("valid payloads (category 1)", () => {
     expect(result.ok).toBe(true);
   });
 
-  it("covers all fifteen contract messages", () => {
-    expect(MESSAGE_TYPES).toHaveLength(15);
+  it("covers all sixteen contract messages", () => {
+    expect(MESSAGE_TYPES).toHaveLength(16);
   });
 });
 

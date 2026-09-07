@@ -59,20 +59,61 @@ def calculate_v_stop(
     v_stop = -a_dec * tau_eff_margin + np.sqrt(delta)
     return max(0.0, float(v_stop))
 
+def _invalid_friction_result(mu_effective: float, r_effective: float, s_base: float) -> SafeSpeedResult:
+    """
+    FAIL-CLOSED result for an unusable friction estimate.
+
+    Without a positive friction coefficient there is no tire-road force available to
+    brake, steer or hold the vehicle, so no positive speed can be certified safe. The
+    solver must not fall through to models whose internal floors (e.g. the minimum
+    acceleration clamp inside the traction limit) would otherwise convert mu <= 0 into a
+    positive permitted speed.
+    """
+    zeros = {"v_stop": 0.0, "v_retarder": 0.0, "v_traction": 0.0, "v_curve": 0.0, "v_mine": 0.0}
+    return SafeSpeedResult(
+        v_safe_ms=0.0,
+        v_safe_kmh=0.0,
+        primary_constraint="INVALID_FRICTION",
+        secondary_constraint="INVALID_FRICTION",
+        candidate_limits_ms=dict(zeros),
+        candidate_limits_kmh=dict(zeros),
+        a_dec=0.0,
+        s_stop=float(np.inf),
+        s_margin=s_base,
+        r_effective=r_effective,
+        is_safe=False,
+    )
+
+
 def solve_safe_speed(
     vehicle: MiningVehicle,
     road: RoadSegment,
     env: EnvironmentState,
     comm: CommunicationModel,
     mu_effective: float,
-    r_effective: float = None
+    r_effective: float = None,
+    traction_ceiling_factor_mps: float = None
 ) -> SafeSpeedResult:
     """
     Model 8: Multi-Constraint Safe Speed Solver.
-    Computes v_safe = min(v_stop, v_retarder, v_traction, v_curve, v_mine)
+    Computes v_safe = min(v_stop, v_retarder, v_traction, v_traction_ceiling, v_curve, v_mine)
+
+    `traction_ceiling_factor_mps` (optional) applies the explicit conservative traction
+    ceiling  v_traction_ceiling = factor * mu  described in
+    `fog_safe.config.TractionCeilingParameters`. When None the ceiling is not applied and
+    only the physical traction limit is used. The caller supplies the value; the solver
+    never assumes one.
+
+    Friction validity is enforced here, in the authoritative solver, so every caller
+    inherits the same fail-closed behaviour: mu <= 0 or a non-finite mu yields
+    v_safe = 0.0 with primary_constraint "INVALID_FRICTION".
     """
     if r_effective is None:
         r_effective = env.r_effective
+
+    # FAIL CLOSED on an unusable friction estimate (NaN, +/-Inf, zero or negative).
+    if not np.isfinite(mu_effective) or mu_effective <= 0.0:
+        return _invalid_friction_result(mu_effective, r_effective, comm.margin_params.s_base)
 
     tau_total = comm.tau_total
 
@@ -99,10 +140,17 @@ def solve_safe_speed(
     v_retarder = calculate_retarder_speed_limit(vehicle, road, env, mu=mu_effective)
 
     # 4. v_curve (lateral skid limit)
-    if np.isfinite(road.curve_radius) and road.curve_radius > 0:
+    # D002: Three-way branch. Invalid curve_radius (0, negative, NaN, -Inf)
+    # must FAIL CLOSED (v_curve=0), not fail open (v_curve=inf).
+    if np.isinf(road.curve_radius) and road.curve_radius > 0:
+        # Explicit +inf: straight road, no curve constraint.
+        # This is the convention used by the adapter (vehicle_physics.py).
+        v_curve = np.inf
+    elif np.isfinite(road.curve_radius) and road.curve_radius > 0:
         v_curve = np.sqrt(max(0.0, mu_effective * env.g * road.curve_radius))
     else:
-        v_curve = np.inf
+        # 0, negative, NaN, -Inf: FAIL CLOSED — no safe speed.
+        v_curve = 0.0
 
     # 5. v_traction (longitudinal acceleration slip limit over perception distance R_effective)
     a_tr_max = env.g * (mu_effective * np.cos(road.theta) + np.sin(road.theta) - road.c_rr * np.cos(road.theta))
@@ -118,6 +166,12 @@ def solve_safe_speed(
         "v_curve": float(v_curve),
         "v_mine": float(v_mine)
     }
+
+    # 7. v_traction_ceiling — explicit conservative operational ceiling on traction-limited
+    #    speed (see fog_safe.config.TractionCeilingParameters). Applied only when the
+    #    caller supplies the project's configured factor; never assumed by the solver.
+    if traction_ceiling_factor_mps is not None:
+        candidates_ms["v_traction_ceiling"] = float(traction_ceiling_factor_mps) * float(mu_effective)
 
     candidates_kmh = {k: v * 3.6 for k, v in candidates_ms.items()}
 

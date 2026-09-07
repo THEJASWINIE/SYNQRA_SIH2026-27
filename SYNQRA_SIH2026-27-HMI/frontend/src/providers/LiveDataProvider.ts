@@ -43,6 +43,7 @@ import {
   normalizeSafetyState,
   normalizeSlotState,
   normalizeSystemHealth,
+  normalizeTwinVehicle,
   normalizeVehicleState,
   normalizeVisibilityForecast,
 } from "../data/normalize";
@@ -50,6 +51,7 @@ import { buildPatch, type NormalizedBatch } from "../data/patch";
 import type { Clock } from "../data/sourced";
 import { systemClock } from "../data/sourced";
 import { validateMessage } from "../data/validate";
+import { type CommandEvent, normalizeCommandFrame } from "../state/dispatchCommand";
 import { getScenario } from "../mocks/registry";
 import type {
   DataProvider,
@@ -67,6 +69,9 @@ import { type CancelHandle, realScheduler, type Scheduler } from "./scheduler";
 // ---------------------------------------------------------------------------
 
 const KEYED_TARGET: Partial<Record<MessageType, keyof NormalizedBatch>> = {
+  // P6.1: the canonical Twin projection lands in the SAME vehicles slice as the legacy
+  // VehicleState envelope. One representation, one store - never two.
+  TwinVehicle: "vehicles",
   VehicleState: "vehicles",
   SafetyState: "safety",
   RoadState: "road",
@@ -81,6 +86,7 @@ const KEYED_TARGET: Partial<Record<MessageType, keyof NormalizedBatch>> = {
 
 // biome-ignore lint/suspicious/noExplicitAny: dispatch table across 15 distinct schemas
 const NORMALIZERS: Record<MessageType, (raw: any) => unknown> = {
+  TwinVehicle: normalizeTwinVehicle,
   VehicleState: normalizeVehicleState,
   SafetyState: normalizeSafetyState,
   RoadState: normalizeRoadState,
@@ -725,6 +731,7 @@ export class LiveDataProvider implements DataProvider {
 
     const batch: NormalizedBatch = {};
     let deletions: EntityDeletions | undefined;
+    let commandEvent: CommandEvent | undefined;
 
     const processItems = (type: MessageType, items: unknown) => {
       if (!items) return;
@@ -775,29 +782,56 @@ export class LiveDataProvider implements DataProvider {
         if (t in NORMALIZERS) {
           processItems(t, obj.payload);
         }
-      } else if ("type" in obj && obj.type === "telemetry_update" && "data" in obj && obj.data && typeof obj.data === "object") {
-        const d = obj.data as Record<string, unknown>;
-        const vid = String(d.vehicle_id || d.vehicleId || "TRUCK_01");
-        const ts = typeof d.timestamp === "number" ? new Date(d.timestamp * 1000).toISOString() : this.nowIso();
-        const vState = {
-          vehicle_id: vid,
-          timestamp: ts,
-          position: {
-            x: vid === "TRUCK_01" ? 120.0 : 80.0,
-            y: 50.0,
-            segment_id: "SEG_01",
-            offset_m: 10.0,
-          },
-          speed_mps: typeof d.speed_value === "number" ? d.speed_value : (typeof d.speed === "number" ? d.speed : 0.0),
-          accel_mps2: d.acceleration && typeof d.acceleration === "object" && "z" in d.acceleration ? Number(d.acceleration.z) : 0.0,
-          grade_rad: 0.0,
-          friction_est: { value: 0.8, sigma: 0.05 },
-          mode: d.communication_status === "ONLINE" ? "TRAVELING" : "STOPPED",
-          comm_confidence: d.communication_status === "ONLINE" ? 0.95 : 0.0,
-          vehicle_kind: "TRUCK",
-          route_id: "ROUTE_MAIN",
-        };
-        processItems("VehicleState", vState);
+      } else if ("type" in obj && obj.type === "twin_vehicle_update" && "data" in obj) {
+        // P6.1 — the canonical Twin projection. This is the authoritative live path.
+        processItems("TwinVehicle", obj.data);
+      } else if ("type" in obj && obj.type === "connection_established" && "twin" in obj) {
+        // Initial snapshot. Normalized through exactly the same path as subsequent
+        // twin_vehicle_update frames, so there is only ever one representation.
+        const twin = obj.twin as { vehicles?: Record<string, unknown> } | null;
+        const vehicles = twin?.vehicles;
+        if (vehicles && typeof vehicles === "object") {
+          for (const projection of Object.values(vehicles)) {
+            if (projection && typeof projection === "object") {
+              processItems("TwinVehicle", projection);
+            }
+          }
+        }
+      } else if ("type" in obj && obj.type === "command_issued") {
+        // Phase 3 — the gateway confirming a command it ACCEPTED. Correlated by
+        // command_id, so it updates the existing record rather than adding a row.
+        // A malformed frame normalizes to null and is ignored; it never throws.
+        const event = normalizeCommandFrame(obj, this.nowIso());
+        if (event !== null) commandEvent = event;
+      } else if ("type" in obj && obj.type === "command_rejected") {
+        // NOT a command result. The backend sends this only to refuse a command that a
+        // client tried to submit over the WebSocket, and it carries no command_id:
+        //   { type, reason: "COMMAND_INJECTION_NOT_PERMITTED", message }
+        // It must never touch command history. Recorded as a diagnostic instead.
+        this.failures.push({
+          kind: "VALIDATION",
+          messageType: "DispatchCommand",
+          issues: [
+            {
+              path: "type",
+              expected: "a command submitted via POST /api/commands",
+              received: "a command submitted over the WebSocket",
+              message:
+                typeof (obj as { message?: unknown }).message === "string"
+                  ? (obj as { message: string }).message
+                  : "Command refused by the WebSocket ingress.",
+            },
+          ],
+          receivedAt: this.nowIso(),
+        });
+      } else if ("type" in obj && obj.type === "telemetry_update") {
+        // Legacy compatibility frame. DELIBERATELY IGNORED (P6.1).
+        //
+        // This branch used to invent position x=120/80, y=50, segment SEG_01,
+        // friction 0.8 and comm_confidence 0.95 to satisfy the old non-nullable schema.
+        // Fabricating state in the client is exactly as wrong as fabricating it in the
+        // backend. The canonical `twin_vehicle_update` frame carries the real values,
+        // including their unavailability.
       } else if ("type" in obj && obj.type === "connection_established" && "vehicles" in obj && obj.vehicles && typeof obj.vehicles === "object") {
         for (const [vid, rawVeh] of Object.entries(obj.vehicles as Record<string, unknown>)) {
           const d = rawVeh as Record<string, unknown>;
@@ -838,9 +872,15 @@ export class LiveDataProvider implements DataProvider {
     const hasChanges = Object.keys(changes).length > 0;
     const hasDeletions = deletions !== undefined && Object.keys(deletions).length > 0;
 
-    if (!hasChanges && !hasDeletions) return null;
+    // A command frame is a real update even when it carries no entity changes, so it must
+    // still be emitted - otherwise `command_issued` would be silently dropped.
+    if (!hasChanges && !hasDeletions && commandEvent === undefined) return null;
 
-    const patch: ProviderPatch = deletions ? { changes, deletions } : { changes };
+    const patch: ProviderPatch = {
+      changes,
+      ...(deletions ? { deletions } : {}),
+      ...(commandEvent ? { commandEvent } : {}),
+    };
     this.emit(patch);
     return changes;
   }

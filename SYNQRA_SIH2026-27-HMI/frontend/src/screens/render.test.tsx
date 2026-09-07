@@ -20,6 +20,7 @@ import { SYSTEM_MODES } from "../contracts/enums";
 import { emptyAppState } from "../data/patch";
 import { viewFreshness } from "../state/freshness";
 import { providerStatusToken, systemModeToken } from "../theme/statusTokens";
+import { PENDING_SCREENS, PendingScreen } from "./AppShell";
 import { MineMap } from "./MineMap";
 
 const T = "2026-01-01T00:00:00.000Z";
@@ -425,18 +426,72 @@ describe("App shell — first paint, before any data has arrived", () => {
     expect(html).toContain("Nominal");
   });
 
-  it("offers navigation to all six screens, none of them a placeholder", () => {
+  it("offers navigation to the canonical S1-S7 screens", () => {
     for (const label of [
       "S1 Operations",
-      "S2 Vehicle",
-      "S3 Bottleneck",
+      "S2 Vehicle Detail",
+      "S3 Safety / Environment",
       "S4 Dispatch",
-      "S5 Replay",
-      "S6 Diagnostics",
+      "S5 Alerts",
+      "S6 Digital Twin",
+      "S7 System Health",
     ]) {
-      expect(html, `missing nav entry: ${label}`).toContain(label);
+      expect(html, `missing canonical nav entry: ${label}`).toContain(label);
     }
-    // Every mandatory screen is implemented; no milestone placeholder remains (M10D-C).
+  });
+
+  it("keeps the additional utility screens reachable", () => {
+    // Retained alongside S1-S7, never as replacements for them.
+    for (const label of ["Operator", "Bottleneck", "Replay"]) {
+      expect(html, `missing additional nav entry: ${label}`).toContain(label);
+    }
+  });
+
+  it("numbers each canonical screen exactly once", () => {
+    // A duplicated S-number would make the structure ambiguous for an operator.
+    for (const marker of ["S1 ", "S2 ", "S3 ", "S4 ", "S5 ", "S6 ", "S7 "]) {
+      const occurrences = html.split(marker).length - 1;
+      expect(occurrences, `${marker.trim()} appears ${occurrences} times`).toBe(1);
+    }
+  });
+
+  it("does not present an implemented screen as a placeholder", () => {
+    // S1/S2/S4/S5/S7 are built. Only the two declared-pending screens may say otherwise,
+    // and neither is the screen rendered here.
     expect(html).not.toContain("NOT IMPLEMENTED");
+    expect(html).not.toContain("NOT BUILT YET");
+  });
+});
+
+describe("canonical screens that are declared but not yet built", () => {
+  /**
+   * Phase 6 built S3 and Phase 7 built S6, so nothing is pending any more. The mechanism
+   * is kept and still tested: it is how a future declared-but-unbuilt screen says so
+   * instead of rendering an empty dashboard that reads as a working one.
+   */
+  it("declares no screen without an implementation", () => {
+    expect(Object.keys(PENDING_SCREENS)).toEqual([]);
+  });
+
+  it.each([["safety"], ["twin"], ["overview"]])(
+    "renders nothing for %s, which is a built screen the shell routes itself",
+    (screenId) => {
+      expect(renderToString(<PendingScreen screenId={screenId} />)).toBe("");
+    },
+  );
+
+  it("still announces a screen that IS declared pending", () => {
+    // Exercises the mechanism itself rather than a reconstruction of it.
+    const declared = { title: "S9 EXAMPLE — NOT BUILT YET", detail: "Nothing is shown." };
+    PENDING_SCREENS.example = declared;
+    try {
+      const out = renderToString(<PendingScreen screenId="example" />);
+      expect(out).toContain("S9 EXAMPLE — NOT BUILT YET");
+      expect(out).toContain("NOT BUILT YET");
+      // The dangerous failure would be a panel that reads as a safe, working one.
+      expect(out).not.toMatch(/\bNORMAL\b|\bSAFE\b/);
+    } finally {
+      delete PENDING_SCREENS.example;
+    }
   });
 });

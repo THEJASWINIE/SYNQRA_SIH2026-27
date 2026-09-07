@@ -16,8 +16,10 @@
  *      nothing else, so displayed ages advance without any datum being altered.
  */
 
-import type { AppState, ConnectionStatus, ProviderKind } from "../contracts/appState";
+import type { AppState, ConnectionStatus, ProviderKind, ObservabilityState } from "../contracts/appState";
+import type { ObservabilityResult } from "../api/observabilityClient";
 import { emptyAppState, mergePatch } from "../data/patch";
+import { type CommandEvent, mergeCommandEvent } from "./dispatchCommand";
 import type { ProviderPatch } from "../providers/DataProvider";
 
 export type StoreListener = () => void;
@@ -65,6 +67,37 @@ export class AppStateStore {
       connection: { ...merged.connection, lastMessageAt: receivedAtIso },
     });
   }
+
+  /**
+   * Phase 3 — record one observation about a command.
+   *
+   * The SINGLE entry point for command state. The S4 panel calls it with HTTP results and
+   * the live provider calls it with `command_issued` frames, so both converge on one
+   * record per command_id through the same deterministic merge.
+   */
+  recordCommandEvent = (event: CommandEvent): void => {
+    this.commit({ ...this.state, commands: mergeCommandEvent(this.state.commands, event) });
+  };
+
+  /**
+   * Phase 4 — record one observability attempt.
+   *
+   * On failure the last good snapshot is KEPT and marked stale. Blanking the counters
+   * would read as "everything is zero", which is a different and wrong claim.
+   */
+  setObservability = (result: ObservabilityResult, nowIso: string): void => {
+    const previous = this.state.observability;
+    const next: ObservabilityState =
+      result.kind === "ok"
+        ? { status: "CURRENT", data: result.snapshot, fetchedAt: nowIso, error: null }
+        : {
+            status: previous.data === null ? "ERROR" : "STALE",
+            data: previous.data,
+            fetchedAt: previous.fetchedAt,
+            error: result.message,
+          };
+    this.commit({ ...this.state, observability: next });
+  };
 
   setStatus(status: ConnectionStatus, error: string | null): void {
     this.commit({

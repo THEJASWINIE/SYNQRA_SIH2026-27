@@ -88,11 +88,15 @@ int16_t GyZ = 0;
 // WIFI
 // =====================================================
 
-const char* WIFI_SSID = "jagadeesh";
-const char* WIFI_PASSWORD = "jagadeeshking";
+// Credentials and the HMI endpoint are NOT stored in source.
+// Copy secrets.example.h to secrets.h in this sketch folder and
+// fill in the values for your deployment. secrets.h is gitignored.
+#include "secrets.h"
 
-const char* HMI_SERVER =
-  "http://10.126.54.41:8000/api/hardware/telemetry";
+const char* WIFI_SSID = SECRET_WIFI_SSID;
+const char* WIFI_PASSWORD = SECRET_WIFI_PASSWORD;
+
+const char* HMI_SERVER = SECRET_HMI_TELEMETRY_URL;
 
 
 // =====================================================

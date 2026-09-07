@@ -7,6 +7,8 @@ Never invents or hardcodes uncalibrated parameters.
 """
 
 import os
+
+from integration_adapters.config_paths import config_path as _project_config_path
 import json
 import math
 import logging
@@ -19,7 +21,7 @@ class UnitConverter:
 
     def __init__(self, config_path: Optional[str] = None):
         if config_path is None:
-            config_path = os.path.join("config", "physical_vehicle_parameters.json")
+            config_path = _project_config_path("physical_vehicle_parameters.json")
         
         self.vehicle_params: Dict[str, Dict[str, Any]] = {}
         if os.path.exists(config_path):

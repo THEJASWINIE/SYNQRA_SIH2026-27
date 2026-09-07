@@ -7,6 +7,8 @@ Ensures physical vehicle data is never overwritten or miscalibrated.
 """
 
 import os
+
+from integration_adapters.config_paths import config_path as _project_config_path
 import json
 import logging
 from typing import Dict, Any, Optional
@@ -18,7 +20,7 @@ class KinematicScaleAdapter:
 
     def __init__(self, config_path: Optional[str] = None):
         if config_path is None:
-            config_path = os.path.join("config", "integration_config.json")
+            config_path = _project_config_path("integration_config.json")
 
         self.proto_max_mps = 3.0
         self.twin_max_mps = 11.11

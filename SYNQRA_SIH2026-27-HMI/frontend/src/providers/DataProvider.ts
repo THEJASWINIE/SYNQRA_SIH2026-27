@@ -16,6 +16,7 @@
  */
 
 import type { AppStatePatch, ConnectionStatus, ProviderKind } from "../contracts/appState";
+import type { CommandEvent } from "../state/dispatchCommand";
 import type { Iso8601 } from "../contracts/primitives";
 import type { ProviderError } from "../data/errors";
 
@@ -76,6 +77,11 @@ export interface EntityDeletions {
 export interface ProviderPatch {
   changes: AppStatePatch;
   deletions?: EntityDeletions;
+  /**
+   * Phase 3 — one observation about a command, from a `command_issued` frame.
+   * Optional, so every existing provider and patch is unaffected.
+   */
+  commandEvent?: CommandEvent;
 }
 
 export type StatusListener = (status: ConnectionStatus, error: ProviderError | null) => void;

@@ -28,6 +28,7 @@
  */
 
 import { useState } from "react";
+import { submitCommand } from "../api/commandClient";
 import {
   EmptyState,
   FreshnessIndicator,
@@ -36,6 +37,15 @@ import {
   StatusBadge,
 } from "../components/primitives";
 import type { DispatchCommand, SlotState } from "../contracts/domain";
+import {
+  DATA_STATE_TEXT,
+  UNAVAILABLE_LABEL,
+  UNAVAILABLE_VALUE,
+  communicationText,
+  fieldDataState,
+  isStale,
+  vehicleProvenanceLabel,
+} from "../state/dataStatus";
 import {
   conflictingSlots,
   fmt,
@@ -47,7 +57,20 @@ import {
   rankDispatch,
   TIME_AXIS_UNAVAILABLE_REASON_TEXT,
 } from "../state/derive";
+import {
+  buildCommandPayload,
+  DEFAULT_REASON,
+  DISPATCH_ACTIONS,
+  type DispatchAction,
+  nextCommandId,
+  outcomeDetail,
+  outcomeLabel,
+  requiresConfirmation,
+  requiresTargetSpeed,
+  validateTargetSpeed,
+} from "../state/dispatchCommand";
 import { viewFreshness } from "../state/freshness";
+import { useHmi } from "../state/ProviderHost";
 import { useAppState, useFreshnessConfig, useNowMs } from "../state/useAppState";
 import { dispatchStateToken, providerStatusToken, slotStatusToken } from "../theme/statusTokens";
 
@@ -56,7 +79,6 @@ function readable(token: string): string {
   return token.replace(/_/g, " ");
 }
 
-const UNAVAILABLE = "UNAVAILABLE";
 const NOT_SUPPLIED = "NOT SUPPLIED";
 
 /** Clock time from a supplied ISO timestamp. Formatting only; the value is unchanged. */
@@ -203,7 +225,7 @@ function SlotTable({ slots }: { slots: SlotState[] }) {
         {slots.map((slot) => (
           <tr key={slot.slotId} className={slot.status === "CONFLICT" ? "row-conflict" : undefined}>
             <td className="mono">{slot.slotId}</td>
-            <td className="mono">{slot.vehicleId ?? UNAVAILABLE}</td>
+            <td className="mono">{slot.vehicleId ?? UNAVAILABLE_LABEL}</td>
             <td>
               <StatusBadge token={slotStatusToken(slot.status)} />
             </td>
@@ -352,6 +374,342 @@ function DispatchDetail({ command }: { command: DispatchCommand }) {
 
 // ---------------------------------------------------------------------------
 
+/**
+ * S4 command panel — the operator's dispatch interface.
+ *
+ * WHAT THIS COMPONENT DOES NOT DO
+ *   It computes no safe speed, holds no vehicle state, and decides nothing about safety.
+ *   It collects operator input, hands it to `api/commandClient` (the single command path
+ *   to POST /api/commands -> CommandGateway), and renders the answer that comes back.
+ *
+ *   Validation, payload construction and result classification live in
+ *   `state/dispatchCommand.ts` so they are testable without a DOM (M4D-C).
+ */
+function DispatchCommandPanel() {
+  const state = useAppState();
+  const config = useFreshnessConfig();
+  const nowMs = useNowMs();
+
+  const vehicleIds = Object.keys(state.vehicles).sort();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const activeId = selectedId ?? vehicleIds[0] ?? null;
+  const vehicle = activeId ? state.vehicles[activeId] : undefined;
+  const safety = activeId ? state.safety[activeId] : undefined;
+
+  const [action, setAction] = useState<DispatchAction>("TARGET_SPEED");
+  const [targetSpeedRaw, setTargetSpeedRaw] = useState("");
+  const [reason, setReason] = useState("");
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  /**
+   * Phase 3 — command history is SHARED STATE, read from the same AppStateStore the
+   * WebSocket writes into. The panel keeps no private copy, so an HTTP response and a
+   * `command_issued` frame converge on one record.
+   */
+  const { store } = useHmi();
+  const history = state.commands;
+  const latest = history[0] ?? null;
+  const speedValidation = requiresTargetSpeed(action) ? validateTargetSpeed(targetSpeedRaw) : null;
+
+  /**
+   * Provenance and freshness of the selected vehicle's speed — Phase 8.
+   *
+   * SIMULATION and PHYSICAL must never look alike (project rule 17), and they must not
+   * look DIFFERENT from how the same field reads on S1, S2, S3 and S6 either. This screen
+   * previously had its own labeller that omitted the DERIVED case, so a hardware-derived
+   * speed read "PHYSICAL" here and "PHYSICAL (derived)" on S3.
+   */
+  const speedProv = vehicle?.provenance?.speed_mps;
+  const provenanceText = vehicleProvenanceLabel(vehicle);
+  const telemetryState = fieldDataState(speedProv);
+
+  async function send(payloadAction: DispatchAction) {
+    setFormError(null);
+    const commandId = nextCommandId(activeId ?? "NO_VEHICLE", payloadAction);
+    const built = buildCommandPayload(
+      { vehicleId: activeId, action: payloadAction, targetSpeedRaw, reason },
+      commandId,
+    );
+    if (!built.ok) {
+      setFormError(built.error);
+      return;
+    }
+
+    const submittedAtIso = new Date(nowMs).toISOString();
+
+    // The record itself is created by the shared merge, so the panel keeps no copy.
+    store.recordCommandEvent({
+      commandId,
+      origin: "HTTP",
+      observedAtIso: submittedAtIso,
+      vehicleId: built.payload.vehicle_id,
+      action: payloadAction,
+      targetSpeedMps: requiresTargetSpeed(payloadAction) ? built.payload.target_speed : null,
+      reason: built.payload.reason,
+      outcome: "PENDING",
+    });
+    setBusy(true);
+
+    const result = await submitCommand(built.payload);
+
+    // Correlated by command_id, so one command is one row - never two.
+    store.recordCommandEvent({
+      commandId,
+      origin: "HTTP",
+      observedAtIso: new Date().toISOString(),
+      outcome: result.outcome,
+      message: result.message,
+    });
+    setBusy(false);
+    setAwaitingConfirm(false);
+  }
+
+  function onSubmit() {
+    if (busy) return; // guards double-click / double submission
+    if (requiresConfirmation(action)) {
+      setAwaitingConfirm(true);
+      return;
+    }
+    void send(action);
+  }
+
+  return (
+    <Panel title="Dispatch command" note="POST /api/commands · validated by the Command Gateway">
+      {vehicleIds.length === 0 ? (
+        <EmptyState
+          headline="NO VEHICLE SUPPLIED"
+          detail="The data layer has supplied no vehicle state, so no vehicle can be commanded."
+        />
+      ) : (
+        <>
+          {/* -- vehicle selection + summary ------------------------------- */}
+          <div className="field">
+            <label htmlFor="dispatch-vehicle">Vehicle</label>
+            <select
+              id="dispatch-vehicle"
+              value={activeId ?? ""}
+              disabled={busy}
+              onChange={(event) => {
+                setSelectedId(event.target.value);
+                setAwaitingConfirm(false);
+              }}
+            >
+              {vehicleIds.map((id) => (
+                <option key={id} value={id}>
+                  {id}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/*
+            PHASE 8 §18 — the operator must be able to see that the state they are acting
+            on is behind reality. This WARNS; it never rejects. The CommandGateway remains
+            the sole authority on acceptance, and no command is blocked or pre-failed here.
+          */}
+          {isStale(telemetryState) ? (
+            <p className="warn" role="status">
+              ▲ TELEMETRY STALE — the vehicle state shown below is the last supplied value
+              and is no longer updating. Commands are still submitted normally; the
+              CommandGateway decides acceptance.
+            </p>
+          ) : null}
+
+          <dl className="fields">
+            <div className="field">
+              <dt>Selected vehicle</dt>
+              <dd>{activeId ?? UNAVAILABLE_VALUE}</dd>
+            </div>
+            <div className="field">
+              <dt>Telemetry state</dt>
+              <dd>{DATA_STATE_TEXT[telemetryState]}</dd>
+            </div>
+            <div className="field">
+              <dt>Current speed</dt>
+              <dd>
+                {vehicle?.speedMps === null || vehicle?.speedMps === undefined
+                  ? "--"
+                  : `${(vehicle.speedMps * 3.6).toFixed(1)} km/h`}
+              </dd>
+            </div>
+            <div className="field">
+              <dt>Safe speed</dt>
+              {/* ONLY when the authoritative state supplies it. Never computed here. */}
+              <dd>
+                {safety?.vSafe === null || safety?.vSafe === undefined
+                  ? "--"
+                  : `${(safety.vSafe * 3.6).toFixed(1)} km/h`}
+              </dd>
+            </div>
+            <div className="field">
+              <dt>Communication</dt>
+              <dd>
+                {/* SUPPLIED link state. Independent of telemetry freshness (Phase 8 §15). */}
+                {communicationText(vehicle)}
+              </dd>
+            </div>
+            <div className="field">
+              <dt>Telemetry source</dt>
+              <dd>{provenanceText}</dd>
+            </div>
+            <div className="field">
+              <dt>Freshness</dt>
+              <dd>
+                <FreshnessIndicator view={viewFreshness(vehicle?.timestamp, config, nowMs)} />
+              </dd>
+            </div>
+          </dl>
+
+          {/* -- command form ---------------------------------------------- */}
+          <div className="field">
+            <label htmlFor="dispatch-action">Action</label>
+            <select
+              id="dispatch-action"
+              value={action}
+              disabled={busy}
+              onChange={(event) => {
+                setAction(event.target.value as DispatchAction);
+                setAwaitingConfirm(false);
+                setFormError(null);
+              }}
+            >
+              {DISPATCH_ACTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option.replace("_", " ")}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {requiresTargetSpeed(action) ? (
+            <div className="field">
+              <label htmlFor="dispatch-target-speed">Target speed (m/s)</label>
+              <input
+                id="dispatch-target-speed"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.1"
+                value={targetSpeedRaw}
+                disabled={busy}
+                aria-invalid={speedValidation !== null && !speedValidation.ok}
+                onChange={(event) => setTargetSpeedRaw(event.target.value)}
+              />
+              {/* The wire unit is m/s. km/h is shown only as a read-back, never sent. */}
+              <div className="faint">
+                {speedValidation?.ok && speedValidation.value !== null
+                  ? `= ${(speedValidation.value * 3.6).toFixed(1)} km/h · sent as m/s`
+                  : "Sent to the gateway in m/s, exactly as typed."}
+              </div>
+              {speedValidation && !speedValidation.ok && targetSpeedRaw !== "" ? (
+                <div className="faint" role="alert">
+                  {speedValidation.error}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          <div className="field">
+            <label htmlFor="dispatch-reason">Reason</label>
+            <input
+              id="dispatch-reason"
+              type="text"
+              value={reason}
+              disabled={busy}
+              placeholder={DEFAULT_REASON}
+              onChange={(event) => setReason(event.target.value)}
+            />
+            <div className="faint">Optional. Defaults to {DEFAULT_REASON}.</div>
+          </div>
+
+          {formError ? (
+            <p className="empty" role="alert">
+              <strong>{formError}</strong>
+            </p>
+          ) : null}
+
+          {/* -- submit / confirm ------------------------------------------ */}
+          {awaitingConfirm ? (
+            <div className="hmi-banner" role="alertdialog" aria-label="Confirm stop">
+              <div className="hmi-banner-title">Stop {activeId}?</div>
+              <p>This sends a STOP command through the Command Gateway.</p>
+              <button type="button" disabled={busy} onClick={() => setAwaitingConfirm(false)}>
+                CANCEL
+              </button>
+              <button
+                type="button"
+                className="destructive"
+                disabled={busy}
+                onClick={() => void send("STOP")}
+              >
+                CONFIRM STOP
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className={action === "STOP" ? "destructive" : undefined}
+              disabled={busy || activeId === null}
+              onClick={onSubmit}
+            >
+              {busy ? "SUBMITTING…" : `SEND ${action.replace("_", " ")}`}
+            </button>
+          )}
+
+          {/* -- latest result --------------------------------------------- */}
+          {latest ? (
+            <dl className="fields" role="status">
+              <div className="field">
+                <dt>Result</dt>
+                <dd>{outcomeLabel(latest.outcome)}</dd>
+                <div className="faint">{outcomeDetail(latest.outcome)}</div>
+                {latest.message ? <div className="faint">Backend: {latest.message}</div> : null}
+              </div>
+            </dl>
+          ) : null}
+
+          {/* -- session history ------------------------------------------- */}
+          <table className="hmi-table">
+            <caption>Session command history</caption>
+            <thead>
+              <tr>
+                <th scope="col">Time</th>
+                <th scope="col">Command ID</th>
+                <th scope="col">Vehicle</th>
+                <th scope="col">Action</th>
+                <th scope="col">Target (m/s)</th>
+                <th scope="col">Result</th>
+                <th scope="col">Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.length === 0 ? (
+                <tr>
+                  <td colSpan={7}>NO COMMANDS THIS SESSION</td>
+                </tr>
+              ) : (
+                history.map((row) => (
+                  <tr key={row.commandId}>
+                    <td>{clockTime(row.submittedAtIso)}</td>
+                    <td className="mono">{row.commandId}</td>
+                    <td>{row.vehicleId}</td>
+                    <td>{row.action.replace("_", " ")}</td>
+                    <td>{row.targetSpeedMps === null ? "--" : row.targetSpeedMps.toFixed(2)}</td>
+                    <td>{outcomeLabel(row.outcome)}</td>
+                    <td>{row.reason}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </>
+      )}
+    </Panel>
+  );
+}
+
 export function DispatchSlots() {
   const state = useAppState();
   const config = useFreshnessConfig();
@@ -374,6 +732,9 @@ export function DispatchSlots() {
 
   return (
     <>
+      {/* 0 — COMMAND. S4's primary purpose: the operator's only command path. */}
+      <DispatchCommandPanel />
+
       {/* 1 — CONFLICTS. Above the timeline, never collapsed. */}
       <Panel
         title="Slot conflicts"
@@ -489,11 +850,11 @@ export function DispatchSlots() {
           </div>
           <div className="field">
             <dt>Scenario</dt>
-            <dd>{state.connection.scenarioName ?? UNAVAILABLE}</dd>
+            <dd>{state.connection.scenarioName ?? UNAVAILABLE_VALUE}</dd>
           </div>
           <div className="field">
             <dt>Last delivery received</dt>
-            <dd>{state.connection.lastMessageAt ?? UNAVAILABLE}</dd>
+            <dd>{state.connection.lastMessageAt ?? UNAVAILABLE_VALUE}</dd>
             <div className="faint">HMI receipt time, not a datum's age</div>
           </div>
         </dl>

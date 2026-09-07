@@ -20,6 +20,8 @@ import type { ConnectivityState, HealthState, LinkKind, SystemMode } from "../co
 import { CONNECTIVITY_STATES, HEALTH_STATES, LINK_KINDS, SYSTEM_MODES } from "../contracts/enums";
 import type { ValidationFailure } from "../data/errors";
 import { HmiContext, type HmiContextValue } from "../state/ProviderHost";
+import type { ObservabilityState } from "../contracts/appState";
+import { normalizeObservability } from "../api/observabilityClient";
 import { AppStateStore } from "../state/store";
 import { testHmiContext } from "../state/testHmiContext";
 import { Diagnostics } from "./Diagnostics";
@@ -86,6 +88,8 @@ interface MountOptions {
   vehicleTimestamp?: string;
   nowIso?: string;
   failures?: readonly ValidationFailure[];
+  /** Phase 5 — S7 observability. Optional, so every existing call is unaffected. */
+  observability?: ObservabilityState;
 }
 
 function render(options: MountOptions = {}): string {
@@ -115,6 +119,17 @@ function render(options: MountOptions = {}): string {
 
   store.setStatus(options.status ?? "CONNECTED", options.error ?? null);
   if (options.nowIso) store.tick(options.nowIso);
+  if (options.observability) {
+    const o = options.observability;
+    store.setObservability(
+      o.data ? { kind: "ok", snapshot: o.data } : { kind: "error", message: o.error ?? "", httpStatus: null },
+      o.fetchedAt ?? T,
+    );
+    if (o.status === "STALE" && o.data) {
+      // Reach STALE the way production does: one success, then a failure.
+      store.setObservability({ kind: "error", message: o.error ?? "unreachable", httpStatus: null }, T);
+    }
+  }
 
   const overrides: Partial<HmiContextValue> = { validationFailures: options.failures ?? [] };
   const value = testHmiContext({
@@ -416,5 +431,154 @@ describe("scope — no operational control, no computation", () => {
   it("states that nothing operational is computed", () => {
     // The claim lives in the no-link empty state.
     expect(render({ links: [] })).toContain("Task 1 does not synthesise link health");
+  });
+});
+
+// =========================================================================
+// Phase 5 — S7 System Health.
+//
+// Rendered with `react-dom/server` against a real store, exactly as the rest of this
+// suite. The derivation logic itself is covered in `state/systemHealth.test.ts`.
+// =========================================================================
+
+const OBS_PAYLOAD = {
+  service: "hmi-backend",
+  timestamp: 1_788_665_982.04608,
+  twin_attached: true,
+  twin_vehicle_count: 2,
+  telemetry_ingest: { accepted: 56, duplicate: 0, out_of_order: 0, invalid: 0, unknown_vehicle: 0 },
+  command_gateway: {
+    accepted: 6, rejected: 6, duplicate: 1, stale: 0,
+    unknown_vehicle: 2, invalid: 0, unsafe: 3, timeout: 0,
+  },
+  backend_cache_vehicles: 2,
+  websocket_clients: 1,
+  command_history_length: 12,
+  hardware: { hardware_seen: false, hardware_connected: false, age_seconds: null },
+  mode: "MOCK",
+};
+
+function obsState(payload: unknown = OBS_PAYLOAD, over: Partial<ObservabilityState> = {}): ObservabilityState {
+  return {
+    status: "CURRENT",
+    data: normalizeObservability(payload),
+    fetchedAt: T,
+    error: null,
+    ...over,
+  };
+}
+
+describe("S7 System Health", () => {
+  it("1 — renders the system health screen", () => {
+    const html = render({ observability: obsState() });
+    expect(html).toContain("System health");
+    expect(html).toContain("Observability");
+  });
+
+  it("2/20 — the existing /api/health backend panel is preserved", () => {
+    const html = render({ observability: obsState() });
+    expect(html).toContain("HMI backend health");
+    // Service liveness and observability remain separate concepts.
+    expect(html).toContain("separate failure domain");
+  });
+
+  it("3 — CURRENT observability is shown", () => {
+    const html = render({ observability: obsState() });
+    expect(html).toContain("CURRENT");
+    expect(html).toContain("ONLINE");
+  });
+
+  it("4 — telemetry counters are shown", () => {
+    const html = render({ observability: obsState() });
+    expect(html).toContain("Telemetry ingestion");
+    expect(html).toContain("56");
+    expect(html).toContain("Out of order");
+  });
+
+  it("5 — command gateway counters are shown, labelled as counters", () => {
+    const html = render({ observability: obsState() });
+    expect(html).toContain("Command gateway");
+    expect(html).toContain("counters");
+    expect(html).toContain("Unsafe");
+  });
+
+  it("6/15/16 — hardware fields are shown honestly while in MOCK", () => {
+    const html = render({ observability: obsState() });
+    expect(html).toContain("Hardware seen");
+    expect(html).toContain("Hardware connected");
+    expect(html).toContain("NOT CONNECTED");
+    expect(html).toContain("SIMULATION");
+    // Reachable backend + attached Twin must not read as physical hardware.
+    expect(html).not.toContain("HARDWARE CONNECTED: YES");
+  });
+
+  it("7 — a zero counter renders as 0, not as unavailable", () => {
+    const html = render({ observability: obsState() });
+    expect(html).toContain(">0<");
+  });
+
+  it("8 — a missing counter renders unavailable, not 0", () => {
+    const html = render({
+      observability: obsState({ ...OBS_PAYLOAD, telemetry_ingest: { accepted: 5 } }),
+    });
+    expect(html).toContain("--");
+  });
+
+  it("9/10 — STALE keeps the last known counters and says so", () => {
+    const html = render({
+      observability: obsState(OBS_PAYLOAD, { status: "STALE", error: "backend unreachable" }),
+    });
+    expect(html).toContain("STALE");
+    // The counters are still there, not blanked and not zeroed.
+    expect(html).toContain("56");
+    expect(html).toContain("last known good");
+  });
+
+  it("11 — ERROR before any success says unavailable without inventing counters", () => {
+    const html = render({
+      observability: { status: "ERROR", data: null, fetchedAt: null, error: "refused" },
+    });
+    expect(html).toContain("TELEMETRY COUNTERS UNAVAILABLE");
+    expect(html).toContain("not shown as zero");
+  });
+
+  it("12 — IDLE before the first fetch is not presented as healthy", () => {
+    const html = render(); // no observability supplied at all
+    expect(html).toContain("NOT YET QUERIED");
+  });
+
+  it("14 — the fleet summary separates the reported count from the canonical state", () => {
+    const html = render({ observability: obsState() });
+    expect(html).toContain("Vehicles in Twin (reported)");
+    expect(html).toContain("Vehicles in HMI state");
+    expect(html).toContain("HMI clients, not vehicles");
+  });
+
+  it("18 — S7 does not call the observability endpoint itself", async () => {
+    // The screen reads shared state; only healthClient may issue a request from here.
+    const source = await import("node:fs").then((fs) =>
+      fs.readFileSync("src/screens/Diagnostics.tsx", "utf-8"),
+    );
+    // The endpoint name may appear as a LABEL; what must be absent is any call to it.
+    expect(source).not.toContain("fetchObservability");
+    expect(source).not.toContain('fetch(`${API_BASE_URL}/api/observability');
+    // The only permitted request from this screen is the /api/health liveness check.
+    const fetchCalls = source.match(/fetch\w*\(/g) ?? [];
+    expect(fetchCalls.every((c) => c === "fetchHealth("), fetchCalls.join(",")).toBe(true);
+  });
+
+  it("17 — S7 creates no polling loop of its own", async () => {
+    const source = await import("node:fs").then((fs) =>
+      fs.readFileSync("src/screens/Diagnostics.tsx", "utf-8"),
+    );
+    expect(source).not.toContain("setInterval");
+  });
+
+  it("19 — command records stay separate from observability counters", () => {
+    const html = render({ observability: obsState() });
+    // The gateway metric is present...
+    expect(html).toContain("Command gateway");
+    // ...and the screen points at S4 for the actual records rather than listing them.
+    expect(html).toContain("Command records live on S4");
   });
 });

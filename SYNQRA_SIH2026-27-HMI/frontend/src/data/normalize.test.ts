@@ -20,6 +20,7 @@ import {
   normalizeSafetyState,
   normalizeSlotState,
   normalizeSystemHealth,
+  normalizeTwinVehicle,
   normalizeVehicleState,
   normalizeVisibilityForecast,
 } from "./normalize";
@@ -30,6 +31,7 @@ const RECEIVED_AT = "2026-01-01T00:00:01.000Z";
 /** Validate then normalize, the only permitted order. */
 // biome-ignore lint/suspicious/noExplicitAny: test harness dispatches across 15 schemas
 const NORMALIZERS: Record<MessageType, (raw: any) => unknown> = {
+  TwinVehicle: normalizeTwinVehicle,
   VehicleState: normalizeVehicleState,
   SafetyState: normalizeSafetyState,
   RoadState: normalizeRoadState,

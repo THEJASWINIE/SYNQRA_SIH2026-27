@@ -1,5 +1,10 @@
 /**
- * S6 Diagnostics — M10. FR-013, S6-a, NFR-003.
+ * S7 System Health (formerly S6 Diagnostics) — M10 + Phase 5. FR-013, S6-a, NFR-003.
+ *
+ * Phase 5 added the observability-backed health sections at the top. They read
+ * `AppState.observability`, which ProviderHost populates from GET /api/observability.
+ * THIS SCREEN ISSUES NO OBSERVABILITY REQUEST OF ITS OWN and starts no polling loop.
+ * The `/api/health` liveness check below is a DIFFERENT question and is preserved.
  *
  * ==========================================================================
  *  THE DATA-PATH TRUTH SCREEN. NOTHING OPERATIONAL IS COMPUTED HERE.
@@ -42,8 +47,17 @@ import type { Health } from "../contracts/domain";
 import { LINK_KINDS } from "../contracts/enums";
 import { fmt } from "../state/derive";
 import { freshnessOverview } from "../state/diagnostics";
-import { formatAge } from "../state/freshness";
+import { formatAge, viewFreshness } from "../state/freshness";
 import { useHmi } from "../state/ProviderHost";
+import {
+  deriveSystemHealth,
+  formatAgeSeconds,
+  formatCounter,
+  HEALTH_GLYPH,
+  OBSERVABILITY_STATUS_DETAIL,
+  OBSERVABILITY_STATUS_TEXT,
+  UNAVAILABLE_TEXT,
+} from "../state/systemHealth";
 import { displayedModeFor, MODE_SOURCE_TEXT } from "../state/systemMode";
 import { useAppState, useFreshnessConfig, useNowMs } from "../state/useAppState";
 import { providerStatusToken, systemModeToken } from "../theme/statusTokens";
@@ -135,8 +149,223 @@ export function Diagnostics() {
   const mode = displayedModeFor(state);
   const suppliedKinds = new Set(links.map((l) => l.linkKind).filter(Boolean));
 
+  const observability = state.observability;
+  const health = deriveSystemHealth(observability);
+  const snapshot = observability.data;
+  const stale = observability.status === "STALE";
+
   return (
     <>
+      {/* 0 — SYSTEM HEALTH BANNER. Compact, scannable, never an invented aggregate. */}
+      <Panel title="System health" note="GET /api/observability · via shared state">
+        <dl className="fields">
+          {health.map((line) => (
+            <div className="field" key={line.label}>
+              <dt>{line.label}</dt>
+              <dd>
+                <span aria-hidden="true">{HEALTH_GLYPH[line.state]}</span> {line.value}
+              </dd>
+              {line.detail ? <div className="faint">{line.detail}</div> : null}
+            </div>
+          ))}
+        </dl>
+      </Panel>
+
+      {/* OBSERVABILITY LIFECYCLE. Distinct from service liveness further down. */}
+      <Panel title="Observability" note="control-plane snapshot state">
+        <dl className="fields">
+          <div className="field">
+            <dt>Snapshot state</dt>
+            <dd>
+              {stale ? "⚠ " : observability.status === "ERROR" ? "✕ " : ""}
+              {OBSERVABILITY_STATUS_TEXT[observability.status]}
+            </dd>
+            <div className="faint">{OBSERVABILITY_STATUS_DETAIL[observability.status]}</div>
+          </div>
+          <div className="field">
+            <dt>Last successful update</dt>
+            <dd>{observability.fetchedAt ?? UNAVAILABLE_TEXT}</dd>
+            <div className="faint">HMI receipt time of the last successful fetch</div>
+          </div>
+          <div className="field">
+            <dt>Backend snapshot time</dt>
+            <dd>
+              {snapshot?.timestamp === null || snapshot?.timestamp === undefined
+                ? UNAVAILABLE_TEXT
+                : new Date(snapshot.timestamp * 1000).toISOString()}
+            </dd>
+          </div>
+          {observability.error ? (
+            <div className="field">
+              <dt>Last error</dt>
+              <dd>{observability.error}</dd>
+            </div>
+          ) : null}
+        </dl>
+        {stale ? (
+          <p className="faint">
+            Showing the last known good counters. They are NOT current, and they are not zeroed.
+          </p>
+        ) : null}
+      </Panel>
+
+      {/* TELEMETRY INGESTION COUNTERS */}
+      <Panel
+        title="Telemetry ingestion"
+        note={stale ? "LAST KNOWN VALUES — STALE" : "counters reported by the backend"}
+      >
+        {snapshot?.telemetryIngest ? (
+          <div className="metrics">
+            <MetricCard label="Accepted" value={formatCounter(snapshot.telemetryIngest.accepted)} />
+            <MetricCard label="Invalid" value={formatCounter(snapshot.telemetryIngest.invalid)} />
+            <MetricCard
+              label="Duplicate"
+              value={formatCounter(snapshot.telemetryIngest.duplicate)}
+            />
+            <MetricCard
+              label="Out of order"
+              value={formatCounter(snapshot.telemetryIngest.outOfOrder)}
+            />
+            <MetricCard
+              label="Unknown vehicle"
+              value={formatCounter(snapshot.telemetryIngest.unknownVehicle)}
+            />
+          </div>
+        ) : (
+          <EmptyState
+            headline="TELEMETRY COUNTERS UNAVAILABLE"
+            detail="The backend has not supplied telemetry ingestion counters. They are not shown as zero."
+          />
+        )}
+      </Panel>
+
+      {/* COMMAND GATEWAY COUNTERS. Metrics only, never command records. */}
+      <Panel
+        title="Command gateway"
+        note={stale ? "LAST KNOWN VALUES — STALE" : "counters only — not command history"}
+      >
+        {snapshot?.commandGateway ? (
+          <>
+            <div className="metrics">
+              <MetricCard
+                label="Accepted"
+                value={formatCounter(snapshot.commandGateway.accepted)}
+              />
+              <MetricCard
+                label="Rejected"
+                value={formatCounter(snapshot.commandGateway.rejected)}
+              />
+              <MetricCard label="Unsafe" value={formatCounter(snapshot.commandGateway.unsafe)} />
+              <MetricCard
+                label="Unknown vehicle"
+                value={formatCounter(snapshot.commandGateway.unknownVehicle)}
+              />
+              <MetricCard
+                label="Duplicate"
+                value={formatCounter(snapshot.commandGateway.duplicate)}
+              />
+              <MetricCard label="Stale" value={formatCounter(snapshot.commandGateway.stale)} />
+              <MetricCard label="Invalid" value={formatCounter(snapshot.commandGateway.invalid)} />
+              <MetricCard label="Timeout" value={formatCounter(snapshot.commandGateway.timeout)} />
+            </div>
+            <p className="faint">
+              A refusal is the gateway working, not a fault. Command records live on S4 Dispatch;
+              these are counters.
+            </p>
+          </>
+        ) : (
+          <EmptyState
+            headline="COMMAND GATEWAY COUNTERS UNAVAILABLE"
+            detail="The backend has not supplied command gateway counters. They are not shown as zero."
+          />
+        )}
+      </Panel>
+
+      {/* HARDWARE. Derived only from the backend's own hardware fields. */}
+      <Panel title="Hardware" note="never inferred from backend or Twin availability">
+        {snapshot?.hardware ? (
+          <dl className="fields">
+            <div className="field">
+              <dt>Hardware seen</dt>
+              <dd>
+                {snapshot.hardware.hardwareSeen === null
+                  ? UNAVAILABLE_TEXT
+                  : snapshot.hardware.hardwareSeen
+                    ? "YES"
+                    : "NO"}
+              </dd>
+              <div className="faint">A physical packet has arrived at some point</div>
+            </div>
+            <div className="field">
+              <dt>Hardware connected</dt>
+              <dd>
+                {snapshot.hardware.hardwareConnected === null
+                  ? UNAVAILABLE_TEXT
+                  : snapshot.hardware.hardwareConnected
+                    ? "YES"
+                    : "NO"}
+              </dd>
+              <div className="faint">A physical packet has arrived recently</div>
+            </div>
+            <div className="field">
+              <dt>Last physical packet age</dt>
+              <dd>{formatAgeSeconds(snapshot.hardware.ageSeconds)}</dd>
+            </div>
+            <div className="field">
+              <dt>Backend mode</dt>
+              <dd>{snapshot.mode ?? UNAVAILABLE_TEXT}</dd>
+              <div className="faint">
+                MOCK means the telemetry ingress is SIMULATED. It is not a malfunction, and it is
+                not a statement about hardware.
+              </div>
+            </div>
+          </dl>
+        ) : (
+          <EmptyState
+            headline="HARDWARE STATUS UNAVAILABLE"
+            detail="The backend has not supplied hardware status. No hardware state is inferred from it being reachable."
+          />
+        )}
+      </Panel>
+
+      {/* FLEET SUMMARY. Concise; vehicle detail lives on S2. */}
+      <Panel title="Fleet summary" note="freshness from the canonical vehicle state">
+        <div className="metrics">
+          <MetricCard
+            label="Vehicles in Twin (reported)"
+            value={formatCounter(snapshot?.twinVehicleCount)}
+            footer="backend metric"
+          />
+          <MetricCard
+            label="Vehicles in HMI state"
+            value={String(Object.keys(state.vehicles).length)}
+            footer="canonical Twin projection"
+          />
+          <MetricCard
+            label="WebSocket clients"
+            value={formatCounter(snapshot?.websocketClients)}
+            footer="HMI clients, not vehicles"
+          />
+        </div>
+        {Object.keys(state.vehicles).length === 0 ? (
+          <EmptyState
+            headline="NO VEHICLE STATE SUPPLIED"
+            detail="The Twin projection has supplied no vehicle. A reported count is a metric, not vehicle state."
+          />
+        ) : (
+          <dl className="fields">
+            {Object.values(state.vehicles).map((vehicle) => (
+              <div className="field" key={vehicle.vehicleId}>
+                <dt>{vehicle.vehicleId}</dt>
+                <dd>
+                  <FreshnessIndicator view={viewFreshness(vehicle.timestamp, config, nowMs)} />
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </Panel>
+
       {/* 1 — GLOBAL OPERATIONAL STATE */}
       <Panel title="Operational state" note="FR-013 · FR-016 · supplied">
         <div className="metrics">

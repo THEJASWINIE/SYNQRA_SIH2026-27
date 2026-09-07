@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { fetchObservability } from "../api/observabilityClient";
 import { type FreshnessConfig, readFreshnessConfig } from "../config/freshness";
 import type { ProviderKind } from "../contracts/appState";
 import type { ValidationFailure } from "../data/errors";
@@ -44,6 +45,15 @@ export const DEFAULT_SCENARIO_ID = "nominal";
 
 /** Display ticker period. Presentation only — see `AppStateStore.tick`. */
 export const TICK_INTERVAL_MS = 1000;
+
+/**
+ * How often the shared observability poll runs, in ms.
+ *
+ * Observability is a control-plane signal that changes far more slowly than telemetry, so
+ * it is polled at 1/5 the display tick rate. Deliberately not tied to WebSocket frames:
+ * a busy telemetry stream must not turn into a request storm.
+ */
+export const OBSERVABILITY_INTERVAL_MS = 5000;
 
 export interface HmiContextValue {
   store: AppStateStore;
@@ -258,6 +268,48 @@ export function ProviderHost({
   useEffect(() => {
     const handle = setInterval(() => store.tick(new Date().toISOString()), TICK_INTERVAL_MS);
     return () => clearInterval(handle);
+  }, [store]);
+
+  // -- observability refresh (Phase 4) --------------------------------------
+
+  /**
+   * ONE shared observability poll for the whole HMI.
+   *
+   * Lives here, not in a screen, so however many panels read the counters there is
+   * exactly one request in flight. Observability is a slow control-plane signal, so it is
+   * polled well below the telemetry rate and is never driven by WebSocket frames.
+   *
+   * Safety properties:
+   *   * `inFlight` prevents request pile-up when the backend is slow
+   *   * `disposed` stops any state write after unmount
+   *   * the interval is cleared and the request aborted on cleanup, so no duplicate timer
+   *     survives a re-render
+   */
+  useEffect(() => {
+    let disposed = false;
+    let inFlight = false;
+    const controller = new AbortController();
+
+    const refresh = async () => {
+      if (disposed || inFlight) return;
+      inFlight = true;
+      try {
+        const result = await fetchObservability({ signal: controller.signal });
+        if (disposed) return; // never write to a store we no longer own
+        store.setObservability(result, new Date().toISOString());
+      } finally {
+        inFlight = false;
+      }
+    };
+
+    void refresh();
+    const handle = setInterval(() => void refresh(), OBSERVABILITY_INTERVAL_MS);
+
+    return () => {
+      disposed = true;
+      clearInterval(handle);
+      controller.abort();
+    };
   }, [store]);
 
   // -- replay lifecycle -----------------------------------------------------

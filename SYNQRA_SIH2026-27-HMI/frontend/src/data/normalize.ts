@@ -46,6 +46,8 @@ import {
   type VehicleMode,
 } from "../contracts/enums";
 import type { Estimate } from "../contracts/primitives";
+import type { RawTwinField, RawTwinVehicle } from "../contracts/raw";
+import type { TwinFieldProvenance } from "../contracts/domain";
 import type {
   RawAlert,
   RawArrivalPlan,
@@ -102,6 +104,83 @@ const toEstimate = (e: { value: number | null; sigma: number | null }): Estimate
 // Message normalizers — contract §2–§11
 // ---------------------------------------------------------------------------
 
+
+/**
+ * P6.1 — normalize one canonical Twin vehicle projection.
+ *
+ * ONE centralized mapping (no per-screen ad-hoc mapping). Values the Twin reports as
+ * unavailable stay `null`; they are never defaulted to 0, false or "". Per-field
+ * provenance is carried through verbatim so presentation can show source/freshness
+ * without ever recomputing a physical quantity.
+ */
+export function normalizeTwinVehicle(raw: RawTwinVehicle): VehicleState {
+  const dynamic = raw.dynamic ?? {};
+
+  const field = (name: string): RawTwinField | undefined => dynamic[name];
+
+  const numberOf = (name: string): number | null => {
+    const f = field(name);
+    if (!f || !f.available || typeof f.value !== "number" || !Number.isFinite(f.value)) {
+      return null;
+    }
+    return f.value;
+  };
+
+  const stringOf = (name: string): string | null => {
+    const f = field(name);
+    if (!f || !f.available || typeof f.value !== "string") return null;
+    return f.value;
+  };
+
+  const provenance: Record<string, TwinFieldProvenance> = {};
+  for (const [name, f] of Object.entries(dynamic) as [string, RawTwinField][]) {
+    provenance[name] = {
+      value: f.value,
+      timestamp: f.timestamp,
+      source: f.source,
+      origin: f.origin,
+      quality: f.quality,
+      ageS: f.age_s,
+      available: f.available,
+      clockDomain: f.clock_domain,
+      freshness: f.freshness,
+    };
+  }
+
+  // Prefer the timestamp of a genuinely observed field; never invent one.
+  const stamped = (Object.values(dynamic) as RawTwinField[]).find(
+    (f) => f.available && f.timestamp !== null,
+  );
+  const timestamp = stamped?.timestamp != null
+    ? new Date(stamped.timestamp * 1000).toISOString()
+    : new Date(0).toISOString();
+
+  const roadId = stringOf("road_id");
+
+  return {
+    vehicleId: raw.vehicle_id,
+    timestamp,
+    position: {
+      // No hardware on this prototype measures map coordinates. They stay null unless a
+      // simulation supplies an along-road offset.
+      x: null,
+      y: null,
+      segmentId: roadId,
+      offsetM: numberOf("position_s"),
+    },
+    speedMps: numberOf("speed_mps"),
+    accelMps2: numberOf("acceleration_mps2"),
+    gradeRad: null,
+    frictionEst: null,
+    mode: toVehicleMode(stringOf("state") ?? "UNKNOWN"),
+    commConfidence: null,
+    vehicleKind: "TRUCK",
+    routeId: roadId,
+    provenance,
+    hasHardwareData: raw.has_hardware_data ?? false,
+  };
+}
+
 export function normalizeVehicleState(raw: RawVehicleState): VehicleState {
   return {
     vehicleId: raw.vehicle_id,
@@ -115,7 +194,7 @@ export function normalizeVehicleState(raw: RawVehicleState): VehicleState {
     speedMps: raw.speed_mps,
     accelMps2: raw.accel_mps2,
     gradeRad: raw.grade_rad,
-    frictionEst: toEstimate(raw.friction_est),
+    frictionEst: raw.friction_est === null ? null : toEstimate(raw.friction_est),
     mode: toVehicleMode(raw.mode),
     commConfidence: raw.comm_confidence,
     vehicleKind: raw.vehicle_kind,
