@@ -42,23 +42,30 @@ import { FailureInjectionLab } from "./FailureInjectionLab";
  * empty dashboard, and a future S8 would use it again.
  */
 const OVERVIEW_ID = "overview"; // S1 Operations
-export const VEHICLE_ID = "vehicle"; // S2 Vehicle Detail
-const SAFETY_ID = "safety"; // S3 Safety / Environment
-const DISPATCH_ID = "dispatch"; // S4 Dispatch
-const ALERTS_ID = "alerts"; // S5 Alerts
-const TWIN_ID = "twin"; // S6 Digital Twin
-const DIAGNOSTICS_ID = "diagnostics"; // S7 System Health
+export const VEHICLE_ID = "vehicle"; // S2 Vehicle
+const BOTTLENECK_ID = "bottleneck"; // S3 Bottleneck & Queue
+const DISPATCH_ID = "dispatch"; // S4 Dispatch & Slots
+const REPLAY_ID = "replay"; // S5 Replay
+const DIAGNOSTICS_ID = "diagnostics"; // S6 Diagnostics
 
 /**
- * ADDITIONAL UTILITY SCREENS.
+ * ADDITIONAL SCREENS — reachable, not primary.
  *
- * Retained in full. They are not replacements for any canonical screen, and they are left
- * unnumbered so the S1..S7 structure stays unambiguous.
+ * Route ids are UNCHANGED from the earlier numbering, so no bookmark, test id or
+ * selection path breaks. Only the label and the nav row a button sits in changed.
+ * Nothing was deleted: every screen built in earlier phases is still mounted.
+ */
+const SAFETY_ID = "safety"; // Safety / Environment
+const ALERTS_ID = "alerts"; // Alerts
+const TWIN_ID = "twin"; // Digital Twin
+
+/**
+ * OPERATOR AND TOOLING SCREENS.
+ *
+ * Retained in full. Not replacements for any primary screen.
  */
 /** P8 — dumper-operator view (root CLAUDE.md §12). Not the control-room dashboard. */
 export const OPERATOR_ID = "operator";
-const BOTTLENECK_ID = "bottleneck";
-const REPLAY_ID = "replay";
 /** Phase 10 — Failure Injection / Demo Lab. Simulation / Test only. */
 export const DEMO_LAB_ID = "demo-lab";
 
@@ -176,7 +183,7 @@ export function AppShell() {
         </dl>
       </header>
 
-      {/* Canonical SIH screens, in order. */}
+      {/* PRIMARY OPERATIONAL SCREENS — S1..S6. */}
       <nav className="hmi-nav" aria-label="Screens">
         <button
           type="button"
@@ -190,80 +197,51 @@ export function AppShell() {
           aria-current={screenId === VEHICLE_ID ? "page" : undefined}
           onClick={() => setScreenId(VEHICLE_ID)}
         >
-          S2 Vehicle Detail
+          S2 Vehicle
           {selectedVehicleId ? ` · ${selectedVehicleId}` : ""}
-        </button>
-        <button
-          type="button"
-          aria-current={screenId === SAFETY_ID ? "page" : undefined}
-          onClick={() => setScreenId(SAFETY_ID)}
-        >
-          S3 Safety / Environment
-        </button>
-        <button
-          type="button"
-          aria-current={screenId === DISPATCH_ID ? "page" : undefined}
-          onClick={() => setScreenId(DISPATCH_ID)}
-        >
-          S4 Dispatch
-        </button>
-        <button
-          type="button"
-          aria-current={screenId === ALERTS_ID ? "page" : undefined}
-          onClick={() => setScreenId(ALERTS_ID)}
-        >
-          S5 Alerts
-        </button>
-        <button
-          type="button"
-          aria-current={screenId === TWIN_ID ? "page" : undefined}
-          onClick={() => setScreenId(TWIN_ID)}
-        >
-          S6 Digital Twin
-        </button>
-        <button
-          type="button"
-          aria-current={screenId === DIAGNOSTICS_ID ? "page" : undefined}
-          onClick={() => setScreenId(DIAGNOSTICS_ID)}
-        >
-          S7 System Health
-        </button>
-      </nav>
-
-      {/* Additional screens. Unnumbered on purpose: they do not replace any canonical
-          screen, and numbering them would blur the S1-S7 structure. */}
-      <nav className="hmi-nav hmi-nav-secondary" aria-label="Additional screens">
-        <span className="hmi-nav-group-label">Additional</span>
-        <button
-          type="button"
-          aria-current={screenId === OPERATOR_ID ? "page" : undefined}
-          onClick={() => setScreenId(OPERATOR_ID)}
-        >
-          Operator
         </button>
         <button
           type="button"
           aria-current={screenId === BOTTLENECK_ID ? "page" : undefined}
           onClick={() => setScreenId(BOTTLENECK_ID)}
         >
-          Bottleneck
+          S3 Bottleneck &amp; Queue
+        </button>
+        <button
+          type="button"
+          aria-current={screenId === DISPATCH_ID ? "page" : undefined}
+          onClick={() => setScreenId(DISPATCH_ID)}
+        >
+          S4 Dispatch &amp; Slots
         </button>
         <button
           type="button"
           aria-current={screenId === REPLAY_ID ? "page" : undefined}
           onClick={() => setScreenId(REPLAY_ID)}
         >
-          Replay
+          S5 Replay
         </button>
         <button
           type="button"
-          className="hmi-nav-demo-lab"
-          aria-current={screenId === DEMO_LAB_ID ? "page" : undefined}
-          onClick={() => setScreenId(DEMO_LAB_ID)}
+          aria-current={screenId === DIAGNOSTICS_ID ? "page" : undefined}
+          onClick={() => setScreenId(DIAGNOSTICS_ID)}
         >
-          ⚠ Demo Lab
+          S6 Diagnostics
         </button>
       </nav>
+
+      {/*
+        The secondary "Additional" navigation row was removed.
+
+        The primary row is the whole navigation now: S1..S6. Bottleneck and Replay were
+        duplicated there and in the primary row, which made the same screen reachable by
+        two differently-named buttons.
+
+        The route ids and every screen component are DELIBERATELY KEPT. Safety /
+        Environment, Alerts, Digital Twin, Operator and Demo Lab are still mounted and
+        still routed below - they simply have no button. Restoring any of them is one
+        button, not a rebuild, and their own test suites still cover them.
+      */}
 
       <main className="hmi-main">
         {/*

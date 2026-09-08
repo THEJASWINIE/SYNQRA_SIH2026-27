@@ -443,12 +443,11 @@ describe("App shell — first paint, before any data has arrived", () => {
     }
   });
 
-  it("keeps every additional screen reachable", () => {
-    // The renumbering MOVED screens between nav rows. It deleted none, and this is the
-    // test that would fail if a later edit quietly dropped one.
-    for (const label of ["Safety / Environment", "Alerts", "Digital Twin", "Operator"]) {
-      expect(html, `missing additional nav entry: ${label}`).toContain(label);
-    }
+  it("offers exactly one navigation row", () => {
+    // The "Additional" row was removed. The six primary screens ARE the navigation, and
+    // no screen is reachable by two differently-named buttons any more.
+    expect(html).not.toContain("hmi-nav-secondary");
+    expect(html).not.toContain("Additional");
   });
 
   it("numbers each primary screen exactly once", () => {
