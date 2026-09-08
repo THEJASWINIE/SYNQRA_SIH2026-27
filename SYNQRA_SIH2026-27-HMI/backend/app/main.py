@@ -411,6 +411,10 @@ class _BoundedDedupStore:
         self._store.clear()
         self._order.clear()
 
+    def clear_vehicle(self, vid: str) -> None:
+        self._store.pop(vid, None)
+        self._order.pop(vid, None)
+
     @staticmethod
     def _parse_key(key: str):
         parts = key.rsplit("_", 1)
@@ -901,6 +905,11 @@ async def ingest_hardware_telemetry(payload: HardwareTelemetryPayload) -> Dict[s
         if ws in active_websockets:
             active_websockets.remove(ws)
 
+    logging.getLogger("hmi.backend").info(
+        "[HARDWARE TELEMETRY] vehicle=%s sequence=%d speed=%.2f m/s rpm=%.2f source=%s",
+        vid, payload.sequence, canonical_record["speed_value"], payload.rpm, source_val
+    )
+
     return {
         "status": "ACCEPTED",
         "vehicle_id": vid,
@@ -908,6 +917,53 @@ async def ingest_hardware_telemetry(payload: HardwareTelemetryPayload) -> Dict[s
         "source": source_val,
         "is_duplicate": False,
         "communication_status": "ONLINE"
+    }
+
+
+class HardwareResetRequest(BaseModel):
+    vehicle_id: Optional[str] = Field("TRUCK_01", description="Vehicle ID to reset, or empty/null for all vehicles")
+
+
+@app.post("/api/hardware/reset", tags=["hardware"])
+async def reset_hardware_session(req: Optional[HardwareResetRequest] = None) -> Dict[str, Any]:
+    """
+    Resets the hardware sequence tracking and deduplication store for a vehicle or fleet.
+    Allows a newly powered on or rebooted physical ESP32 to establish a fresh sequence lifecycle.
+    """
+    target_vid = req.vehicle_id.upper() if (req and req.vehicle_id) else None
+    targets = [target_vid] if target_vid else (list(last_sequence_by_vehicle.keys()) or ["TRUCK_01", "TRUCK_02"])
+
+    for vid in targets:
+        last_sequence_by_vehicle[vid] = 0
+        deduplication_store.clear_vehicle(vid)
+        if twin_ingestor is not None:
+            if hasattr(twin_ingestor, "_last_sequence") and vid in twin_ingestor._last_sequence:
+                twin_ingestor._last_sequence[vid] = 0
+            if hasattr(twin_ingestor, "_seen_sequences") and vid in twin_ingestor._seen_sequences:
+                from telemetry_ingest import BoundedSequenceTracker
+                twin_ingestor._seen_sequences[vid] = BoundedSequenceTracker()
+
+    logging.getLogger("hmi.backend").info(
+        "[HARDWARE SESSION RESET] Reset sequence and dedup tracking for vehicles: %s", targets
+    )
+
+    return {
+        "status": "RESET_SUCCESS",
+        "vehicles": targets,
+        "last_sequence": 0,
+        "message": f"Hardware telemetry sequence state reset successfully for {targets}"
+    }
+
+
+@app.get("/api/hardware/sequence", tags=["hardware"])
+def get_hardware_sequence(vehicle_id: str = "TRUCK_01") -> Dict[str, Any]:
+    """Exposes current sequence synchronization state for a vehicle."""
+    vid = vehicle_id.upper()
+    last_seq = last_sequence_by_vehicle.get(vid, 0)
+    return {
+        "vehicle_id": vid,
+        "last_sequence": last_seq,
+        "next_sequence": last_seq + 1
     }
 
 

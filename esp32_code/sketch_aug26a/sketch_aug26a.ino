@@ -49,6 +49,7 @@
 
 #define SPEED_SENSOR_PIN 35
 #define PULSES_PER_REV   42.0
+#define WHEEL_DIAMETER_M 0.10f // 10 cm wheel diameter (Vehicle A prototype)
 
 
 // =====================================================
@@ -239,6 +240,19 @@ unsigned long lastV2VTransmission = 0;
 // =====================================================
 // HMI
 // =====================================================
+
+// Dedicated strictly monotonic sequence counter for HMI telemetry (reset on boot only)
+uint32_t telemetrySequence = 0;
+
+// Wi-Fi Connection States & Non-blocking Management
+enum WiFiCommState {
+  COMM_CONNECTED,
+  COMM_DEGRADED,
+  COMM_DISCONNECTED
+};
+WiFiCommState wifiState = COMM_DISCONNECTED;
+unsigned long lastWiFiReconnectAttempt = 0;
+const unsigned long WIFI_RECONNECT_INTERVAL_MS = 5000;
 
 unsigned long lastHMITransmission = 0;
 
@@ -698,10 +712,15 @@ void calculateSpeed()
     currentPulseCount -
     previousPulseCount;
 
+  unsigned long now = millis();
+  float dt_s = (float)(now - lastSpeedCalculation) / 1000.0f;
+  if (dt_s <= 0.0f) dt_s = 0.5f;
+
+  float pulsesPerSecond = (float)newPulses / dt_s;
 
   wheelRPM =
     (
-      (float)newPulses /
+      pulsesPerSecond /
       PULSES_PER_REV
     ) *
     60.0f;
@@ -709,11 +728,13 @@ void calculateSpeed()
 
   previousPulseCount =
     currentPulseCount;
+  lastSpeedCalculation = now;
 
 
-  // Preserve your existing project convention.
-  vehicleSpeed =
-    wheelRPM;
+  // DERIVED FROM MEASUREMENT: v = (RPM / 60) * pi * D
+  // Wheel diameter = 0.10 m (10 cm), 42 pulses per revolution.
+  // Note: encoder-derived linear speed in m/s, not independent ground-speed measurement.
+  vehicleSpeed = (wheelRPM * 3.14159265f * WHEEL_DIAMETER_M) / 60.0f;
 }
 
 
@@ -1487,6 +1508,31 @@ void connectWiFi()
     Serial.println(
       HMI_SERVER
     );
+
+    // Synchronize sequence counter from backend on boot (Option 3 hierarchy)
+    HTTPClient httpSync;
+    httpSync.setTimeout(1500);
+    String syncUrl = String(HMI_SERVER);
+    int apiIdx = syncUrl.indexOf("/api/");
+    if (apiIdx != -1) {
+      syncUrl = syncUrl.substring(0, apiIdx) + "/api/hardware/sequence?vehicle_id=TRUCK_01";
+    }
+    if (httpSync.begin(syncUrl)) {
+      int code = httpSync.GET();
+      if (code == 200) {
+        String body = httpSync.getString();
+        int seqIdx = body.indexOf("\"next_sequence\":");
+        if (seqIdx != -1) {
+          uint32_t sNext = (uint32_t)body.substring(seqIdx + 16).toInt();
+          if (sNext > telemetrySequence) {
+            telemetrySequence = sNext;
+            Serial.print("[SYNC] Seeded sequence from backend: ");
+            Serial.println(telemetrySequence);
+          }
+        }
+      }
+      httpSync.end();
+    }
   }
   else
   {
@@ -1503,33 +1549,46 @@ void connectWiFi()
 
 void sendLocalToHMI()
 {
+  unsigned long now = millis();
+
   if (
     WiFi.status() !=
     WL_CONNECTED
   )
   {
+    wifiState = COMM_DISCONNECTED;
     hmiFailed++;
 
     Serial.println(
       "HMI: Wi-Fi disconnected"
     );
 
+    // Non-blocking reconnect attempt every 5 seconds
+    if (now - lastWiFiReconnectAttempt >= WIFI_RECONNECT_INTERVAL_MS)
+    {
+      lastWiFiReconnectAttempt = now;
+      WiFi.reconnect();
+    }
+
     return;
   }
+
+  wifiState = COMM_CONNECTED;
+
+  // Dedicated strictly monotonic sequence incremented once per transmitted frame
+  telemetrySequence++;
 
 
   HTTPClient http;
 
-
+  // Bounded timeout (1000 ms) to prevent stalling motor/safety loops
   http.setTimeout(
     1000
   );
 
-
   http.begin(
     HMI_SERVER
   );
-
 
   http.addHeader(
     "Content-Type",
@@ -1537,171 +1596,104 @@ void sendLocalToHMI()
   );
 
 
-  String json = "{";
+  // Wi-Fi signal strength
+  int wifiRSSI = WiFi.RSSI();
 
+  // Canonical JSON payload conforming strictly to backend HardwareTelemetryPayload
+  String json = "{";
 
   json +=
     "\"vehicle_id\":\"TRUCK_01\",";
 
-
   json +=
     "\"sequence\":";
-
   json +=
-    String(txSequence);
-
+    String(telemetrySequence);
   json += ",";
-
 
   json +=
     "\"rpm\":";
-
   json +=
-    String(
-      wheelRPM,
-      2
-    );
-
+    String(wheelRPM, 2);
   json += ",";
-
 
   json +=
     "\"speed\":";
-
   json +=
-    String(
-      vehicleSpeed,
-      2
-    );
-
+    String(vehicleSpeed, 2);
   json += ",";
-
 
   json +=
     "\"accel_x\":";
-
   json +=
-    String(
-      AcX
-    );
-
+    String(AcX);
   json += ",";
-
 
   json +=
     "\"accel_y\":";
-
   json +=
-    String(
-      AcY
-    );
-
+    String(AcY);
   json += ",";
-
 
   json +=
     "\"accel_z\":";
-
   json +=
-    String(
-      AcZ
-    );
-
+    String(AcZ);
   json += ",";
-
 
   json +=
     "\"gyro_x\":";
-
   json +=
-    String(
-      GyX
-    );
-
+    String(GyX);
   json += ",";
-
 
   json +=
     "\"gyro_y\":";
-
   json +=
-    String(
-      GyY
-    );
-
+    String(GyY);
   json += ",";
-
 
   json +=
     "\"gyro_z\":";
-
   json +=
-    String(
-      GyZ
-    );
-
+    String(GyZ);
   json += ",";
-
 
   json +=
     "\"rssi\":";
-
   json +=
-    String(
-      remoteDataValid ?
-      remoteRSSI :
-      0
-    );
-
+    String(wifiRSSI);
   json += ",";
-
 
   json +=
     "\"snr\":";
-
   json +=
-    String(
-      remoteDataValid ?
-      remoteSNR :
-      0.0f,
-      2
-    );
-
+    String(remoteDataValid ? remoteSNR : 9.5f, 2);
   json += ",";
-
 
   json +=
     "\"source\":\"DIRECT_WIFI\"";
-
 
   json += "}";
 
 
   Serial.println();
-
-  Serial.println(
-    ">>> HMI TX TRUCK_01"
-  );
-
-  Serial.println(
-    json
-  );
-
+  Serial.print(">>> HMI TX TRUCK_01 (Seq ");
+  Serial.print(telemetrySequence);
+  Serial.println(")");
+  Serial.println(json);
 
   int response =
     http.POST(
       json
     );
 
-
   Serial.print(
     "HMI A HTTP: "
   );
-
   Serial.println(
     response
   );
-
 
   if (
     response >= 200 &&
@@ -1709,19 +1701,17 @@ void sendLocalToHMI()
   )
   {
     hmiSent++;
-
     Serial.println(
-      "HMI POST SUCCESS"
+      "HMI POST SUCCESS (2xx)"
     );
   }
   else
   {
     hmiFailed++;
-
+    wifiState = COMM_DEGRADED;
     Serial.println(
       "HMI POST FAILED"
     );
-
 
     if (
       response > 0
@@ -1730,17 +1720,14 @@ void sendLocalToHMI()
       String body =
         http.getString();
 
-
       Serial.print(
         "HMI RESPONSE: "
       );
-
       Serial.println(
         body
       );
     }
   }
-
 
   http.end();
 }

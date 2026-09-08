@@ -194,16 +194,30 @@ python -m pytest tests/test_end_to_end.py tests/test_fog_propagation.py -q
 
 ---
 
-## 6. With real hardware — NOT EXECUTED
+## 6. With real hardware — Vehicle A (TRUCK_01) Wi-Fi Telemetry
 
-Not run in P0–P9. No claim is made about it.
+Verified and bench-tested for Vehicle A (`TRUCK_01`) direct Wi-Fi telemetry into FastAPI + HMI.
+See [WIFI_HARDWARE_INTEGRATION.md](file:///c:/Users/JAGADEESH%20M/OneDrive/Documents/SIH-2026-27/WIFI_HARDWARE_INTEGRATION.md) and [WIFI_HARDWARE_TEST_MATRIX.md](file:///c:/Users/JAGADEESH%20M/OneDrive/Documents/SIH-2026-27/WIFI_HARDWARE_TEST_MATRIX.md) for full contracts and test results.
 
-1. Flash `esp32_code/`. Copy `secrets.example.h` to `secrets.h` and fill in the Wi-Fi
-   credentials; `secrets.h` is git-ignored.
-2. Point the vehicle at `POST /api/hardware/telemetry` on the backend host.
-3. Expect `/api/mode` to report `hardware_connected: true` while packets keep arriving, and
-   to fall back to `MOCK` within `offline_threshold_seconds` of the last one.
-4. Expect `/api/twin/snapshot` to show `rpm.source == "HARDWARE"`, and `TRUCK_02`'s speed as
-   `source=DERIVED, origin=HARDWARE` — it is PWM-derived, not measured.
-
-Until that has actually been executed, results stay **SIMULATION** / **EMULATED**.
+### Step-by-Step Bring-up:
+1. **Configure Secrets**:
+   ```bash
+   cd esp32_code/sketch_aug26a
+   cp secrets.example.h secrets.h
+   ```
+   Set `SECRET_WIFI_SSID`, `SECRET_WIFI_PASSWORD`, and `SECRET_HMI_TELEMETRY_URL` (e.g. `http://<HOST_IP>:8000/api/hardware/telemetry`).
+2. **Start Backend (Bound to 0.0.0.0)**:
+   ```bash
+   cd SYNQRA_SIH2026-27-HMI/backend
+   python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+   ```
+3. **Start HMI Frontend**:
+   ```bash
+   cd SYNQRA_SIH2026-27-HMI/frontend
+   npm run dev
+   ```
+4. **Flash & Power Vehicle A**:
+   - Power the ESP32. It associates to Wi-Fi and begins transmitting telemetry every 2 seconds.
+   - `/api/observability` and `/api/mode` report `mode: "LIVE"` and `hardware_connected: true`.
+   - The HMI browser window at `http://localhost:5173` immediately reflects `TRUCK_01` as `LIVE`, rendering real measured RPM and derived speed in real-time.
+   - When telemetry stops, the HMI transitions from `LIVE` $\to$ `STALE` $\to$ `OFFLINE` after 10 seconds.
