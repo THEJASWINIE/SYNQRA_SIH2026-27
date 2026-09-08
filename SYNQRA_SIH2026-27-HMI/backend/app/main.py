@@ -14,7 +14,7 @@ import math
 import asyncio
 from datetime import datetime, timezone
 from collections import deque
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
