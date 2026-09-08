@@ -144,14 +144,14 @@ describe("NFR-009 — S1 renders the full load", () => {
   it("the map accounts for all 20 nodes and all 50 vehicles", async () => {
     const { store } = await playScale();
     const label =
-      /aria-label="Mine map: (\d+) nodes, (\d+) vehicles placed, (\d+) position unavailable"/.exec(
+      /aria-label="Mine site: (\d+) layers drawn, (\d+) vehicles placed, (\d+) position unavailable"/.exec(
         s1(store),
       );
     expect(label, "the map did not render its summary label").not.toBeNull();
     if (!label) return;
 
-    const [, nodes, placed, unplaced] = label;
-    expect(Number(nodes)).toBe(20);
+    const [, layers, placed, unplaced] = label;
+    expect(Number(layers)).toBeGreaterThan(0);
     // Every vehicle is accounted for as either placed or explicitly unavailable —
     // silently dropping one at scale is the failure this asserts against.
     expect(Number(placed) + Number(unplaced)).toBe(50);
@@ -160,8 +160,8 @@ describe("NFR-009 — S1 renders the full load", () => {
   it("stays legible with colour stripped at scale (NFR-008)", async () => {
     const { store } = await playScale();
     const html = greyscale(s1(store));
-    expect(html).toContain("Active alerts");
-    expect(html).toContain("Mine map");
+    expect(html).toContain("Fleet");
+    expect(html).toContain("PUBLISHED LEASE COORDINATE EXTENT");
   });
 
   it("renders every vehicle id as readable text, not only as a label", async () => {

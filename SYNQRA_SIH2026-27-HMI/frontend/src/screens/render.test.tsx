@@ -409,50 +409,56 @@ describe("App shell — first paint, before any data has arrived", () => {
     }
   });
 
-  it("renders the no-alert empty state", () => {
-    expect(grey).toContain("NO ACTIVE ALERTS");
+  /**
+   * S1 is now the mine site twin plus the fleet, and nothing else. The alert, bottleneck,
+   * KPI and scenario panels moved to their own screens - they are still covered, by
+   * alertList.test.tsx, bottleneckQueue.test.tsx and diagnostics.test.tsx. What S1 must
+   * still do is show the site and account for the fleet.
+   */
+  it("renders the mine site twin as the primary content", () => {
+    expect(grey).toContain("PUBLISHED LEASE COORDINATE EXTENT");
+    expect(grey).toContain("Bailadila Deposit-5");
   });
 
-  it("renders the no-bottleneck empty state", () => {
-    expect(grey).toContain("NO ACTIVE BOTTLENECK");
+  it("renders the empty-fleet state rather than an empty page", () => {
+    expect(grey).toContain("NO VEHICLES SUPPLIED");
   });
 
-  it("renders the KPI and visibility empty states", () => {
-    expect(grey).toContain("KPI DATA UNAVAILABLE");
-    expect(grey).toContain("VISIBILITY DATA UNAVAILABLE");
+  it("no longer duplicates panels that belong to other screens", () => {
+    // Duplicating them above the map made the map secondary on the screen that IS the twin.
+    expect(grey).not.toContain("KPI DATA UNAVAILABLE");
+    expect(grey).not.toContain("NO ACTIVE BOTTLENECK");
   });
 
-  it("offers every scenario in the picker", () => {
-    expect(html).toContain("Nominal");
-  });
-
-  it("offers navigation to the canonical S1-S7 screens", () => {
+  it("offers navigation to the six primary screens", () => {
     for (const label of [
       "S1 Operations",
-      "S2 Vehicle Detail",
-      "S3 Safety / Environment",
+      "S2 Vehicle",
+      "S3 Bottleneck",
       "S4 Dispatch",
-      "S5 Alerts",
-      "S6 Digital Twin",
-      "S7 System Health",
+      "S5 Replay",
+      "S6 Diagnostics",
     ]) {
-      expect(html, `missing canonical nav entry: ${label}`).toContain(label);
+      expect(html, `missing primary nav entry: ${label}`).toContain(label);
     }
   });
 
-  it("keeps the additional utility screens reachable", () => {
-    // Retained alongside S1-S7, never as replacements for them.
-    for (const label of ["Operator", "Bottleneck", "Replay"]) {
+  it("keeps every additional screen reachable", () => {
+    // The renumbering MOVED screens between nav rows. It deleted none, and this is the
+    // test that would fail if a later edit quietly dropped one.
+    for (const label of ["Safety / Environment", "Alerts", "Digital Twin", "Operator"]) {
       expect(html, `missing additional nav entry: ${label}`).toContain(label);
     }
   });
 
-  it("numbers each canonical screen exactly once", () => {
+  it("numbers each primary screen exactly once", () => {
     // A duplicated S-number would make the structure ambiguous for an operator.
-    for (const marker of ["S1 ", "S2 ", "S3 ", "S4 ", "S5 ", "S6 ", "S7 "]) {
+    for (const marker of ["S1 ", "S2 ", "S3 ", "S4 ", "S5 ", "S6 "]) {
       const occurrences = html.split(marker).length - 1;
       expect(occurrences, `${marker.trim()} appears ${occurrences} times`).toBe(1);
     }
+    // There is no seventh primary screen.
+    expect(html.split("S7 ").length - 1).toBe(0);
   });
 
   it("does not present an implemented screen as a placeholder", () => {

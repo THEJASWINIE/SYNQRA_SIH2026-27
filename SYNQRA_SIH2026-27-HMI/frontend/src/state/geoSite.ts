@@ -246,8 +246,14 @@ export interface GeoFeature {
 export type LayerId =
   | "SITE_EXTENT"
   | "OSM_CONTEXT_ROADS"
+  | "SYNTHETIC_PIT"
+  | "SYNTHETIC_BENCHES"
   | "SYNTHETIC_HAUL_ROADS"
   | "SYNTHETIC_JUNCTIONS"
+  | "SYNTHETIC_LOADING_FACES"
+  | "SYNTHETIC_PROCESSING"
+  | "SYNTHETIC_DUMPS"
+  | "SYNTHETIC_SUPPORT"
   | "SYNTHETIC_OPERATIONAL_ZONES"
   | "VEHICLES";
 
@@ -321,87 +327,292 @@ function syntheticFeature(
   };
 }
 
-/** Build the demonstration layers, positioned relative to the published extent. */
+/**
+ * Build the demonstration mine, positioned relative to the published extent.
+ *
+ * ==========================================================================
+ *  EVERY SHAPE BELOW IS INVENTED.
+ *
+ *  This is a plausible open-pit iron-ore layout. It is NOT the layout of the
+ *  actual mine: the real pit, benches, haul roads, faces, crusher and dumps
+ *  are not public. Each feature carries SYNTHETIC_FOR_DEMO, a source line
+ *  saying it is not NMDC infrastructure, and the word "demonstration" in its
+ *  name, so no reader can mistake it for surveyed geometry.
+ *
+ *  Coordinates are FRACTIONS of the published extent, so the demonstration
+ *  scales with the real bounds instead of carrying invented absolute numbers.
+ * ==========================================================================
+ */
 function buildSyntheticLayers(extent: DecimalExtent): MapLayer[] {
   const { west, east, south, north } = extent;
-  // Fractions of the extent, so the demo geometry scales with the real bounds rather
-  // than carrying invented absolute coordinates of its own.
   const at = (fx: number, fy: number): LonLat => ({
     lon: west + (east - west) * fx,
     lat: south + (north - south) * fy,
   });
+  const path = (pairs: [number, number][]): LonLat[] => pairs.map(([x, y]) => at(x, y));
+
+  /** A closed ring, for pit outlines and area zones. */
+  const ring = (pairs: [number, number][]): LonLat[] => {
+    const points = path(pairs);
+    return [...points, points[0] as LonLat];
+  };
+
+  const layer = (id: LayerId, name: string, features: GeoFeature[]): MapLayer => ({
+    id,
+    name,
+    provenance: "SYNTHETIC_FOR_DEMO",
+    features,
+  });
 
   return [
-    {
-      id: "SYNTHETIC_HAUL_ROADS",
-      name: "Haul roads (demonstration)",
-      provenance: "SYNTHETIC_FOR_DEMO",
-      features: [
-        syntheticFeature(
-          "SYN-HR-1",
-          "Demonstration haul route A",
-          "LINESTRING",
-          [at(0.18, 0.22), at(0.34, 0.38), at(0.52, 0.44), at(0.7, 0.6)],
-          "Illustrative only. NMDC haul-road geometry is not public.",
-        ),
-        syntheticFeature(
-          "SYN-HR-2",
-          "Demonstration haul route B",
-          "LINESTRING",
-          [at(0.52, 0.44), at(0.6, 0.28), at(0.78, 0.24)],
-          "Illustrative only. NMDC haul-road geometry is not public.",
-        ),
-      ],
-    },
-    {
-      id: "SYNTHETIC_JUNCTIONS",
-      name: "Junctions (demonstration)",
-      provenance: "SYNTHETIC_FOR_DEMO",
-      features: [
-        syntheticFeature(
-          "SYN-J-1",
-          "Demonstration junction 1",
-          "POINT",
-          [at(0.52, 0.44)],
-          "Illustrative.",
-        ),
-        syntheticFeature(
-          "SYN-J-2",
-          "Demonstration junction 2",
-          "POINT",
-          [at(0.34, 0.38)],
-          "Illustrative.",
-        ),
-      ],
-    },
-    {
-      id: "SYNTHETIC_OPERATIONAL_ZONES",
-      name: "Operational zones (demonstration)",
-      provenance: "SYNTHETIC_FOR_DEMO",
-      features: [
-        syntheticFeature(
-          "SYN-Z-LOAD",
-          "Demonstration loading zone",
-          "POINT",
-          [at(0.18, 0.22)],
-          "Illustrative.",
-        ),
-        syntheticFeature(
-          "SYN-Z-CRUSH",
-          "Demonstration crusher area",
-          "POINT",
-          [at(0.7, 0.6)],
-          "Illustrative.",
-        ),
-        syntheticFeature(
-          "SYN-Z-DUMP",
-          "Demonstration dump area",
-          "POINT",
-          [at(0.78, 0.24)],
-          "Illustrative.",
-        ),
-      ],
-    },
+    layer("SYNTHETIC_PIT", "Pit outline (demonstration)", [
+      syntheticFeature(
+        "SYN-PIT",
+        "Demonstration pit crest",
+        "POLYGON",
+        ring([
+          [0.3, 0.3],
+          [0.44, 0.24],
+          [0.58, 0.27],
+          [0.64, 0.38],
+          [0.6, 0.5],
+          [0.46, 0.55],
+          [0.33, 0.47],
+          [0.28, 0.38],
+        ]),
+        "Illustrative pit outline. The real pit geometry is not public.",
+      ),
+    ]),
+
+    layer("SYNTHETIC_BENCHES", "Benches (demonstration)", [
+      syntheticFeature(
+        "SYN-BENCH-1",
+        "Demonstration bench 1",
+        "POLYGON",
+        ring([
+          [0.34, 0.33],
+          [0.45, 0.29],
+          [0.56, 0.32],
+          [0.58, 0.41],
+          [0.46, 0.48],
+          [0.36, 0.42],
+        ]),
+        "Illustrative bench.",
+      ),
+      syntheticFeature(
+        "SYN-BENCH-2",
+        "Demonstration bench 2",
+        "POLYGON",
+        ring([
+          [0.38, 0.36],
+          [0.46, 0.33],
+          [0.53, 0.36],
+          [0.53, 0.42],
+          [0.45, 0.45],
+          [0.39, 0.41],
+        ]),
+        "Illustrative bench.",
+      ),
+    ]),
+
+    layer("SYNTHETIC_HAUL_ROADS", "Haul roads (demonstration)", [
+      syntheticFeature(
+        "SYN-HR-RAMP",
+        "Demonstration pit ramp",
+        "LINESTRING",
+        path([
+          [0.44, 0.4],
+          [0.5, 0.36],
+          [0.57, 0.34],
+          [0.63, 0.36],
+          [0.66, 0.42],
+        ]),
+        "Illustrative ramp. Real haul-road geometry is not public.",
+      ),
+      syntheticFeature(
+        "SYN-HR-MAIN",
+        "Demonstration main haul road",
+        "LINESTRING",
+        path([
+          [0.66, 0.42],
+          [0.72, 0.48],
+          [0.76, 0.56],
+          [0.78, 0.64],
+        ]),
+        "Illustrative main haul road.",
+      ),
+      syntheticFeature(
+        "SYN-HR-CRUSHER",
+        "Demonstration crusher spur",
+        "LINESTRING",
+        path([
+          [0.76, 0.56],
+          [0.82, 0.58],
+          [0.86, 0.62],
+        ]),
+        "Illustrative crusher spur.",
+      ),
+      syntheticFeature(
+        "SYN-HR-DUMP",
+        "Demonstration waste-dump haul road",
+        "LINESTRING",
+        path([
+          [0.66, 0.42],
+          [0.7, 0.32],
+          [0.76, 0.24],
+          [0.82, 0.2],
+        ]),
+        "Illustrative waste-dump road.",
+      ),
+      syntheticFeature(
+        "SYN-HR-WORKSHOP",
+        "Demonstration workshop access road",
+        "LINESTRING",
+        path([
+          [0.72, 0.48],
+          [0.66, 0.58],
+          [0.6, 0.66],
+        ]),
+        "Illustrative access road.",
+      ),
+    ]),
+
+    layer("SYNTHETIC_JUNCTIONS", "Junctions (demonstration)", [
+      syntheticFeature(
+        "SYN-J-RAMP",
+        "Demonstration junction - ramp head",
+        "POINT",
+        [at(0.66, 0.42)],
+        "Illustrative.",
+      ),
+      syntheticFeature(
+        "SYN-J-MAIN",
+        "Demonstration junction - main split",
+        "POINT",
+        [at(0.72, 0.48)],
+        "Illustrative.",
+      ),
+      syntheticFeature(
+        "SYN-J-CRUSH",
+        "Demonstration junction - crusher approach",
+        "POINT",
+        [at(0.76, 0.56)],
+        "Illustrative.",
+      ),
+    ]),
+
+    layer("SYNTHETIC_LOADING_FACES", "Loading faces (demonstration)", [
+      syntheticFeature(
+        "SYN-FACE-1",
+        "Demonstration loading face 1",
+        "POINT",
+        [at(0.4, 0.38)],
+        "Illustrative shovel position.",
+      ),
+      syntheticFeature(
+        "SYN-FACE-2",
+        "Demonstration loading face 2",
+        "POINT",
+        [at(0.5, 0.44)],
+        "Illustrative shovel position.",
+      ),
+      syntheticFeature(
+        "SYN-FACE-3",
+        "Demonstration loading face 3",
+        "POINT",
+        [at(0.55, 0.35)],
+        "Illustrative shovel position.",
+      ),
+    ]),
+
+    layer("SYNTHETIC_PROCESSING", "Processing (demonstration)", [
+      syntheticFeature(
+        "SYN-CRUSHER",
+        "Demonstration primary crusher",
+        "POLYGON",
+        ring([
+          [0.855, 0.605],
+          [0.885, 0.605],
+          [0.885, 0.635],
+          [0.855, 0.635],
+        ]),
+        "Illustrative crusher footprint. Not real plant geometry.",
+      ),
+      syntheticFeature(
+        "SYN-STOCKPILE",
+        "Demonstration stockpile",
+        "POINT",
+        [at(0.9, 0.66)],
+        "Illustrative.",
+      ),
+    ]),
+
+    layer("SYNTHETIC_DUMPS", "Waste dumps (demonstration)", [
+      syntheticFeature(
+        "SYN-DUMP-1",
+        "Demonstration waste dump",
+        "POLYGON",
+        ring([
+          [0.78, 0.16],
+          [0.88, 0.16],
+          [0.9, 0.24],
+          [0.82, 0.28],
+          [0.76, 0.22],
+        ]),
+        "Illustrative dump footprint.",
+      ),
+    ]),
+
+    layer("SYNTHETIC_SUPPORT", "Support facilities (demonstration)", [
+      syntheticFeature(
+        "SYN-WORKSHOP",
+        "Demonstration workshop",
+        "POINT",
+        [at(0.6, 0.66)],
+        "Illustrative.",
+      ),
+      syntheticFeature(
+        "SYN-FUEL",
+        "Demonstration fuel bay",
+        "POINT",
+        [at(0.63, 0.62)],
+        "Illustrative.",
+      ),
+      syntheticFeature(
+        "SYN-WATER",
+        "Demonstration water point",
+        "POINT",
+        [at(0.56, 0.7)],
+        "Illustrative.",
+      ),
+    ]),
+
+    layer("SYNTHETIC_OPERATIONAL_ZONES", "Operational zones (demonstration)", [
+      syntheticFeature(
+        "SYN-Z-LOAD",
+        "Demonstration loading zone",
+        "POLYGON",
+        ring([
+          [0.36, 0.32],
+          [0.58, 0.3],
+          [0.6, 0.48],
+          [0.38, 0.5],
+        ]),
+        "Illustrative zone.",
+      ),
+      syntheticFeature(
+        "SYN-Z-QUEUE",
+        "Demonstration crusher queue zone",
+        "POLYGON",
+        ring([
+          [0.78, 0.54],
+          [0.86, 0.54],
+          [0.86, 0.62],
+          [0.78, 0.62],
+        ]),
+        "Illustrative queue zone, for the S3 bottleneck demonstration.",
+      ),
+    ]),
   ];
 }
 

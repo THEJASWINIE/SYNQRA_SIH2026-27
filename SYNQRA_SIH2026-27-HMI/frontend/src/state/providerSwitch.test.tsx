@@ -64,8 +64,9 @@ describe("M12-A Fail-Closed Integration & Provider Switching", () => {
     expect(html).toContain("Provider error");
     expect(html).toContain("No live endpoint or transport configured");
     // Displays unsupplied / unavailable empty states
-    expect(html).toContain("TOPOLOGY UNAVAILABLE");
-    expect(html).toContain("NO ACTIVE BOTTLENECK");
+    // S1 is the mine site twin now. Its unavailable states are the ones that matter.
+    expect(html).toContain("PUBLISHED LEASE COORDINATE EXTENT");
+    expect(html).toContain("NO VEHICLES SUPPLIED");
     expect(html).toContain("0");
     // Never masquerades as an active Live Feed or displays mock vehicle data
     expect(html).not.toContain("Live Feed");
@@ -171,7 +172,9 @@ describe("M12-A Fail-Closed Integration & Provider Switching", () => {
 
     expect(html).toContain("LIVE-TRK-01");
     expect(html).toContain("51.1");
-    expect(html).toContain("Speed alert on LIVE-TRK-01");
+    // The live vehicle reaches S1 through the canonical store. The alert for it is
+    // asserted on the Alerts screen, which is where alerts now live.
+    expect(html).toContain("Fleet");
   });
 
   it("surfaces live validation failures on Diagnostics read-only (M10D-B)", async () => {

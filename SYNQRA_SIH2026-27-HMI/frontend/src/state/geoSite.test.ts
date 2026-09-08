@@ -96,10 +96,25 @@ describe("the extent is never represented as a polygon", () => {
     expect(feature?.coordinates).toEqual([]);
   });
 
-  it("no feature anywhere in the site is a POLYGON", () => {
+  it("NOTHING in the authoritative chain is a POLYGON", () => {
+    // The invariant protects the PUBLISHED EXTENT, not polygons in general. Synthetic
+    // demonstration areas (pit, benches, dumps, zones) are legitimately polygons - they
+    // are invented and say so. What must never happen is the four published bounds being
+    // promoted into a lease shape, so the rule is scoped to the authoritative chain.
     for (const layer of site.layers) {
+      if (!isAuthoritativeChain(layer.provenance)) continue;
       for (const f of layer.features) {
         expect(f.geometryType, `${layer.id}/${f.id}`).not.toBe("POLYGON");
+      }
+    }
+  });
+
+  it("every POLYGON in the site is synthetic and says so", () => {
+    for (const layer of site.layers) {
+      for (const f of layer.features) {
+        if (f.geometryType !== "POLYGON") continue;
+        expect(f.provenance, f.id).toBe("SYNTHETIC_FOR_DEMO");
+        expect(f.name.toLowerCase(), f.id).toContain("demonstration");
       }
     }
   });
@@ -164,12 +179,26 @@ describe("synthetic demonstration geometry", () => {
   const site = bailadilaDeposit5();
   const syntheticLayers = site.layers.filter((l) => l.id.startsWith("SYNTHETIC_"));
 
-  it("haul roads, junctions and operational zones all exist as synthetic layers", () => {
+  it("the full demonstration mine is present as synthetic layers", () => {
     expect(syntheticLayers.map((l) => l.id).sort()).toEqual([
+      "SYNTHETIC_BENCHES",
+      "SYNTHETIC_DUMPS",
       "SYNTHETIC_HAUL_ROADS",
       "SYNTHETIC_JUNCTIONS",
+      "SYNTHETIC_LOADING_FACES",
       "SYNTHETIC_OPERATIONAL_ZONES",
+      "SYNTHETIC_PIT",
+      "SYNTHETIC_PROCESSING",
+      "SYNTHETIC_SUPPORT",
     ]);
+  });
+
+  it("the demonstration mine has enough substance to be a mine site", () => {
+    const featureCount = syntheticLayers.reduce((n, l) => n + l.features.length, 0);
+    expect(featureCount).toBeGreaterThanOrEqual(20);
+    // A haul network, not a single line.
+    const roads = syntheticLayers.find((l) => l.id === "SYNTHETIC_HAUL_ROADS");
+    expect(roads?.features.length).toBeGreaterThanOrEqual(4);
   });
 
   it("EVERY synthetic feature is marked SYNTHETIC_FOR_DEMO", () => {

@@ -43,14 +43,38 @@ import {
 const VIEW_W = 900;
 const VIEW_H = 720;
 
-/** Stroke style per layer, so the three chains are separable without reading colour. */
-const LAYER_STROKE: Record<LayerId, string> = {
-  SITE_EXTENT: "none",
-  OSM_CONTEXT_ROADS: "10 6",
-  SYNTHETIC_HAUL_ROADS: "3 5",
-  SYNTHETIC_JUNCTIONS: "none",
-  SYNTHETIC_OPERATIONAL_ZONES: "none",
-  VEHICLES: "none",
+/**
+ * Per-layer drawing style.
+ *
+ * `dash` keeps the three provenance chains separable WITHOUT colour: the published extent
+ * is solid, OSM is long-dashed, and every synthetic layer is short-dashed or dotted. The
+ * legend still writes each chain out in words (NFR-008).
+ */
+interface LayerStyle {
+  stroke: string;
+  fill: string;
+  width: number;
+  dash: string;
+}
+
+const LAYER_STYLE: Record<LayerId, LayerStyle> = {
+  SITE_EXTENT: { stroke: "#38bdf8", fill: "none", width: 2, dash: "none" },
+  OSM_CONTEXT_ROADS: { stroke: "#a78bfa", fill: "none", width: 2, dash: "10 6" },
+  SYNTHETIC_PIT: { stroke: "#f0a35e", fill: "rgba(240,163,94,0.10)", width: 2, dash: "6 4" },
+  SYNTHETIC_BENCHES: { stroke: "#b07d4a", fill: "rgba(176,125,74,0.10)", width: 1, dash: "4 4" },
+  SYNTHETIC_HAUL_ROADS: { stroke: "#d8c9a3", fill: "none", width: 3, dash: "6 4" },
+  SYNTHETIC_JUNCTIONS: { stroke: "#d8c9a3", fill: "none", width: 1, dash: "none" },
+  SYNTHETIC_LOADING_FACES: { stroke: "#34d399", fill: "none", width: 1, dash: "none" },
+  SYNTHETIC_PROCESSING: { stroke: "#60a5fa", fill: "rgba(96,165,250,0.14)", width: 2, dash: "4 3" },
+  SYNTHETIC_DUMPS: { stroke: "#8b949e", fill: "rgba(139,148,158,0.12)", width: 2, dash: "4 3" },
+  SYNTHETIC_SUPPORT: { stroke: "#c084fc", fill: "none", width: 1, dash: "none" },
+  SYNTHETIC_OPERATIONAL_ZONES: {
+    stroke: "#fbbf24",
+    fill: "rgba(251,191,36,0.08)",
+    width: 1,
+    dash: "2 4",
+  },
+  VEHICLES: { stroke: "#fbbf24", fill: "none", width: 1, dash: "none" },
 };
 
 export function GeoSiteMap({
@@ -123,7 +147,7 @@ export function GeoSiteMap({
         className="map-frame"
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         role="img"
-        aria-label={`Bailadila Deposit-5 published coordinate extent, ${drawable.length} layers drawn, ${placed.length} vehicles placed`}
+        aria-label={`Mine site: ${drawable.length} layers drawn, ${placed.length} vehicles placed, ${unplaced.length} position unavailable`}
         style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}`, maxHeight: "70vh", width: "100%" }}
       >
         <title>Bailadila Deposit-5 geospatial prototype</title>
@@ -148,35 +172,56 @@ export function GeoSiteMap({
 
         {drawable
           .filter((layer) => layer.id !== "SITE_EXTENT")
-          .map((layer) => (
-            <g key={layer.id} aria-label={layer.name}>
-              {layer.features.map((feature) => {
-                const points = feature.coordinates.map((c) => projection.project(c));
-                if (feature.geometryType === "LINESTRING" && points.length > 1) {
+          .map((layer) => {
+            const style = LAYER_STYLE[layer.id];
+            return (
+              <g key={layer.id} aria-label={layer.name}>
+                {layer.features.map((feature) => {
+                  const points = feature.coordinates.map((c) => projection.project(c));
+                  const asPath = points.map((p) => `${p.x},${p.y}`).join(" ");
+
+                  if (feature.geometryType === "POLYGON" && points.length > 2) {
+                    return (
+                      <polygon
+                        key={feature.id}
+                        points={asPath}
+                        fill={style.fill}
+                        stroke={style.stroke}
+                        strokeWidth={style.width}
+                        strokeDasharray={style.dash}
+                      />
+                    );
+                  }
+
+                  if (feature.geometryType === "LINESTRING" && points.length > 1) {
+                    return (
+                      <polyline
+                        key={feature.id}
+                        points={asPath}
+                        fill="none"
+                        stroke={style.stroke}
+                        strokeWidth={style.width}
+                        strokeDasharray={style.dash}
+                        strokeLinejoin="round"
+                        strokeLinecap="round"
+                      />
+                    );
+                  }
+
+                  const first = points[0];
+                  if (!first) return null;
                   return (
-                    <polyline
-                      key={feature.id}
-                      points={points.map((p) => `${p.x},${p.y}`).join(" ")}
-                      fill="none"
-                      stroke="#8b949e"
-                      strokeWidth={3}
-                      strokeDasharray={LAYER_STROKE[layer.id]}
-                    />
+                    <g key={feature.id}>
+                      <circle cx={first.x} cy={first.y} r={5} fill="none" stroke={style.stroke} />
+                      <text x={first.x + 9} y={first.y + 4} fill={style.stroke} fontSize={10}>
+                        {feature.name.replace("Demonstration ", "")}
+                      </text>
+                    </g>
                   );
-                }
-                const first = points[0];
-                if (!first) return null;
-                return (
-                  <g key={feature.id}>
-                    <circle cx={first.x} cy={first.y} r={6} fill="none" stroke="#8b949e" />
-                    <text x={first.x + 10} y={first.y + 4} fill="#8b949e" fontSize={11}>
-                      {feature.name}
-                    </text>
-                  </g>
-                );
-              })}
-            </g>
-          ))}
+                })}
+              </g>
+            );
+          })}
 
         {/* Vehicles. Only those with a real position from the active provider. */}
         {placed.map((entry) => {
