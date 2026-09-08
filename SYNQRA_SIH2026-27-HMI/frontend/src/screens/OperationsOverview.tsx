@@ -19,9 +19,12 @@ import { VehicleCard } from "../components/VehicleCard";
 import { mergedAlerts, STALE_ALERTING_INACTIVE_TEXT } from "../state/alerts";
 import { activeBottleneck, fleetSummary, fmt, worstVisibility } from "../state/derive";
 import { viewFreshness } from "../state/freshness";
+import { bailadilaDeposit5, toDecimalExtent } from "../state/geoSite";
+import { positionsFor, providerForMode, type SystemMode } from "../state/vehiclePosition";
 import { useAppState, useFreshnessConfig, useNowMs } from "../state/useAppState";
 import { criticalityToken } from "../theme/statusTokens";
 import { MineMap } from "./MineMap";
+import { GeoSiteMap } from "./GeoSiteMap";
 import { ScenarioPicker } from "./ScenarioPicker";
 
 export function OperationsOverview({
@@ -35,6 +38,16 @@ export function OperationsOverview({
   const nowMs = useNowMs();
 
   const fresh = (timestamp: string | null | undefined) => viewFreshness(timestamp, config, nowMs);
+
+  /**
+   * Geospatial prototype state. The site model is static published data; the positions
+   * come from the provider that matches the ACTIVE MODE, with no fallback between modes.
+   */
+  const geoSite = bailadilaDeposit5();
+  const geoPositions = positionsFor(
+    state.vehicles,
+    providerForMode(state.connection.provider as SystemMode, toDecimalExtent(geoSite.extent)),
+  );
 
   /**
    * Supplied alerts plus the HMI's own data-path alerts (M8D-A). Derived alerts are view
@@ -89,6 +102,21 @@ export function OperationsOverview({
         >
           <MineMap state={state} />
         </Panel>
+
+      {/*
+        GEOSPATIAL DIGITAL TWIN PROTOTYPE — Bailadila Deposit-5.
+
+        Rendered beside the abstract topology map, never merged with it: one is a graph in
+        topology units, the other is geographic. The position provider is chosen from the
+        ACTIVE PROVIDER, so LIVE gets the physical provider (always UNAVAILABLE) and can
+        never inherit simulated coordinates.
+      */}
+      <GeoSiteMap
+        site={geoSite}
+        positions={geoPositions}
+        mode={state.connection.provider}
+        onSelectVehicle={onSelectVehicle}
+      />
 
         <Panel title="Scenario (developer / tester)" note="FR-019">
           <ScenarioPicker />
