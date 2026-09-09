@@ -271,6 +271,8 @@ VEHICLE_DYNAMIC_FIELDS = (
     "stop_envelope_m",
     "warning_fault",
     "communication_state",
+    "position_gnss",
+    "position_odom",
 )
 
 ROAD_DYNAMIC_FIELDS = (

@@ -44,6 +44,7 @@ from typing import Any, Dict, Optional
 
 from integration_adapters.unit_converter import UnitConverter
 from integration_adapters.vehicle_id_mapper import VehicleIDMapper
+from integration_adapters.wheel_imu_odometry import WheelImuOdometryCalculator
 
 logger = logging.getLogger("TelemetryIngest")
 
@@ -82,8 +83,34 @@ PWM_DERIVED_SPEED_VEHICLES = frozenset({"TRUCK_02"})
 # Fields no sensor on this prototype produces. Listed explicitly so that a future edit
 # populating one of them from a telemetry packet is an obvious mistake.
 NEVER_FROM_HARDWARE = frozenset(
-    {"position_s", "road_id", "node_id", "heading_rad", "visibility_m", "friction_mu"}
+    {
+        "position_s",
+        "road_id",
+        "node_id",
+        "heading_rad",
+        "visibility_m",
+        "friction_mu",
+        # A geographic fix is a measurement like any other, and no sensor on this
+        # prototype produces one. Listed here so the same guard that protects the
+        # others protects the coordinate too - see GNSS_EQUIPPED_VEHICLES.
+        "position_gnss",
+    }
 )
+
+# Vehicles carrying a VERIFIED physical GNSS receiver.
+#
+# EMPTY, and that is the hardware truth: no vehicle on this prototype has one. The
+# firmware sends no latitude or longitude at all.
+#
+# This is the ONLY way a coordinate can be stamped HARDWARE. Everything else - an
+# omitted simulation flag, a "position_source": "GNSS" tag, arrival on the
+# physical-device transport - is a CLIENT CLAIM, and a claim is not evidence. Before
+# this allowlist existed, any unauthenticated caller that posted a latitude and a
+# longitude to the hardware ingress got a position stamped HARDWARE, which the HMI
+# then drew as a physical GNSS fix.
+#
+# Fitting a real receiver is a one-line change here, backed by physical evidence.
+GNSS_EQUIPPED_VEHICLES: frozenset = frozenset()
 
 # D006: Maximum number of recent sequence numbers tracked per vehicle for
 # duplicate detection. The ordering decision uses last_accepted_sequence
@@ -204,6 +231,17 @@ class NormalizedTelemetry:
     rssi: Optional[float] = None
     snr: Optional[float] = None
 
+    # Encoder pulse fields for physical local odometry (Pass 2)
+    pulse_count: Optional[int] = None
+    delta_pulses: Optional[int] = None
+
+    # First-class GNSS position payload (Rules 1-12)
+    position_lat: Optional[float] = None
+    position_lon: Optional[float] = None
+    position_source: Optional[str] = None
+    position_status: Optional[str] = None
+    position_timestamp: Optional[float] = None
+
     @property
     def measurement_timestamp(self) -> float:
         """
@@ -278,6 +316,9 @@ class TelemetryIngestor:
         # UnitConverter reads config/physical_vehicle_parameters.json for MEASURED wheel
         # radii. Without it, encoder-derived speed is simply unavailable - never guessed.
         self.unit_converter = unit_converter if unit_converter is not None else UnitConverter()
+        self.odometry_calculators: Dict[str, WheelImuOdometryCalculator] = {
+            "TRUCK_01": WheelImuOdometryCalculator("TRUCK_01")
+        }
 
         self._last_sequence: Dict[str, int] = {}
         self._seen_sequences: Dict[str, BoundedSequenceTracker] = {}  # D006: bounded
@@ -407,6 +448,18 @@ class TelemetryIngestor:
                 return self._reject(vid, sequence, REJECT_NEGATIVE_SPEED)
             speed_mps_reported = float(speed_raw)
 
+        # First-class GNSS position extraction (Rules 1-12)
+        _pos = parsed.get("position")
+        pos_dict = _pos if isinstance(_pos, dict) else {}
+        pos_lat = _opt_float(parsed.get("latitude", parsed.get("lat", pos_dict.get("latitude", pos_dict.get("lat")))))
+        pos_lon = _opt_float(parsed.get("longitude", parsed.get("lon", pos_dict.get("longitude", pos_dict.get("lon")))))
+        pos_source = parsed.get("position_source", pos_dict.get("source"))
+        pos_status = parsed.get("position_status", pos_dict.get("status"))
+        pos_ts = _opt_float(parsed.get("position_timestamp", pos_dict.get("timestamp")))
+
+        pulse_cnt = _opt_int(parsed.get("pulse_count", parsed.get("pulses", parsed.get("encoder_pulses"))))
+        delta_pulses = _opt_int(parsed.get("delta_pulses", parsed.get("pulses_delta")))
+
         normalized = NormalizedTelemetry(
             vehicle_id=vid,
             sequence=sequence,
@@ -422,10 +475,17 @@ class TelemetryIngestor:
             gx_rad_s=_opt_float(gyro.get("x")),
             gy_rad_s=_opt_float(gyro.get("y")),
             gz_rad_s=_opt_float(gyro.get("z")),
+            pulse_count=pulse_cnt,
+            delta_pulses=delta_pulses,
             communication_state=parsed.get("communication_state") or parsed.get("communication_status"),
             raw_quality=parsed.get("data_quality"),
             rssi=_opt_float(comm.get("rssi", parsed.get("rssi"))),
             snr=_opt_float(comm.get("snr", parsed.get("snr"))),
+            position_lat=pos_lat,
+            position_lon=pos_lon,
+            position_source=str(pos_source) if pos_source is not None else None,
+            position_status=str(pos_status) if pos_status is not None else None,
+            position_timestamp=pos_ts,
         )
         return self.ingest_normalized(normalized)
 
@@ -578,8 +638,132 @@ class TelemetryIngestor:
 
         # Link health is observed from packet arrival, not measured by a sensor.
         put("communication_state", t.communication_state, derived)
+
+        # ------------------------------------------------------------------
+        # RADIO METRICS ARE PER-RADIO. A Wi-Fi number is not a LoRa number.
+        #
+        # Both radios used to write into one shared `rssi_dbm` / `snr_db` pair, so a
+        # Wi-Fi RSSI and a LoRa RSSI were indistinguishable downstream and the HMI
+        # could show a Wi-Fi reading under a V2V heading. The metric now follows the
+        # TRANSPORT the frame actually arrived on:
+        #
+        #   DIRECT_WIFI           -> wifi_rssi_dbm. No LoRa radio was involved, so
+        #                            lora_rssi_dbm and lora_snr_db stay UNAVAILABLE.
+        #   V2V / SERIAL_GATEWAY  -> lora_rssi_dbm + lora_snr_db, measured by the
+        #                            receiving LoRa modem (packetRssi / packetSnr).
+        #   EMULATOR              -> neither. An emulated frame crossed no radio.
+        #
+        # A value is never copied between radios, and an absent metric is left absent
+        # rather than filled in from the other radio.
+        # ------------------------------------------------------------------
+        if t.transport == Transport.DIRECT_WIFI:
+            put("wifi_rssi_dbm", t.rssi, observed)
+        elif t.transport in (Transport.V2V, Transport.SERIAL_GATEWAY):
+            put("lora_rssi_dbm", t.rssi, observed)
+            put("lora_snr_db", t.snr, observed)
+
+        # LEGACY, retained so existing consumers keep working. Ambiguous by
+        # construction - it does not say which radio produced it. New code must read
+        # the per-radio fields above.
         put("rssi_dbm", t.rssi, observed)
         put("snr_db", t.snr, observed)
+
+        # First-class GNSS position handling (Rules 1-12)
+        if t.position_lat is not None and t.position_lon is not None:
+            is_valid_lat = math.isfinite(t.position_lat) and -90.0 <= t.position_lat <= 90.0
+            is_valid_lon = math.isfinite(t.position_lon) and -180.0 <= t.position_lon <= 180.0
+            pos_src_ok = (t.position_source or "GNSS").upper() in ("GNSS", "GPS")
+            pos_stat_ok = (t.position_status or "VALID").upper() in ("VALID", "OK", "FIX")
+
+            if is_valid_lat and is_valid_lon and pos_src_ok and pos_stat_ok:
+                # POSITIVE EVIDENCE, NOT ABSENCE OF DENIAL.
+                #
+                # A fix is physical only when the vehicle is on the documented
+                # receiver allowlist. `is_simulated` alone is not enough: it defaults
+                # to False whenever a caller omits it, so trusting it made silence
+                # equivalent to a hardware claim.
+                physical_fix = (
+                    not t.is_simulated
+                    and origin == Source.HARDWARE
+                    and t.vehicle_id in GNSS_EQUIPPED_VEHICLES
+                )
+                pos_origin = "HARDWARE" if physical_fix else "SOFTWARE_ONLY"
+
+                # The guard covers this field too. A HARDWARE stamp without a verified
+                # receiver is a programming error, not a data condition.
+                assert not (
+                    pos_origin == "HARDWARE" and t.vehicle_id not in GNSS_EQUIPPED_VEHICLES
+                ), "position_gnss stamped HARDWARE for a vehicle with no verified receiver"
+                gnss_payload = {
+                    "latitude": float(t.position_lat),
+                    "longitude": float(t.position_lon),
+                    "source": "GNSS",
+                    "status": "VALID",
+                    "timestamp": t.position_timestamp if t.position_timestamp is not None else ts,
+                    "received_at": t.received_at,
+                    "origin": pos_origin,
+                    "transport": t.transport,
+                }
+                fields["position_gnss"] = Sourced(
+                    value=gnss_payload,
+                    timestamp=t.position_timestamp if t.position_timestamp is not None else ts,
+                    # The wrapper is what every consumer reads for provenance, so it
+                    # must say the same thing as the payload above. Stamping the
+                    # wrapper HARDWARE while the payload said SOFTWARE_ONLY is how a
+                    # synthetic coordinate reached the frontend as a physical fix.
+                    source=observed if physical_fix else Source.SIMULATION,
+                    quality=quality,
+                    origin=origin if physical_fix else None,
+                    clock_domain=domain,
+                )
+            else:
+                logger.warning(
+                    "GNSS position rejected (Rule 9 invalid coordinate/status/source): vehicle=%s lat=%s lon=%s status=%s source=%s",
+                    t.vehicle_id, t.position_lat, t.position_lon, t.position_status, t.position_source,
+                )
+
+        # Pass 2: Physical local odometry calculation
+        if t.vehicle_id == "TRUCK_01":
+            calc = self.odometry_calculators.get("TRUCK_01")
+            if calc is not None:
+                odom_payload = calc.update(
+                    timestamp=ts,
+                    pulse_count=t.pulse_count,
+                    delta_pulses=t.delta_pulses,
+                    gz_rad_s=t.gz_rad_s,
+                    is_simulated=t.is_simulated,
+                )
+                fields["position_odom"] = Sourced(
+                    value=odom_payload,
+                    timestamp=ts,
+                    source=Source.DERIVED,
+                    origin=Source.SIMULATION if t.is_simulated else Source.HARDWARE,
+                    quality=Quality.GOOD if odom_payload.get("status") == "VALID" else Quality.STALE,
+                    clock_domain=domain,
+                )
+        elif t.vehicle_id == "TRUCK_02":
+            fields["position_odom"] = Sourced(
+                value={
+                    "x_m": None,
+                    "y_m": None,
+                    "heading_rad": None,
+                    "distance_m": None,
+                    "timestamp": ts,
+                    "source": "UNKNOWN",
+                    "origin": "UNKNOWN",
+                    "provenance_label": "UNAVAILABLE",
+                    "method": "NONE",
+                    "status": "UNAVAILABLE",
+                    "origin_type": "NONE",
+                    "reason": "TRUCK_02 odometry is not supported in Pass 2",
+                    "verification_label": "CONTRACT VERIFIED",
+                },
+                timestamp=ts,
+                source=Source.UNKNOWN,
+                origin=Source.UNKNOWN,
+                quality=Quality.UNKNOWN,
+                clock_domain=domain,
+            )
 
         # Bookkeeping that must never be confused with a measurement time.
         fields["received_at"] = Sourced(
@@ -610,5 +794,16 @@ def _opt_float(value: Any) -> Optional[float]:
         return None
     try:
         return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _opt_int(value: Any) -> Optional[int]:
+    """Best-effort int. Returns None for absent/unparseable values."""
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        val = int(value)
+        return val if math.isfinite(val) else None
     except (TypeError, ValueError):
         return None

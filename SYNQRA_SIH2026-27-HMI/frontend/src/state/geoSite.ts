@@ -37,6 +37,8 @@
  * Pure and framework-free, so it is testable without a DOM (M4D-C).
  */
 
+import { osmLayers } from "./osmLayers";
+
 // ---------------------------------------------------------------------------
 // provenance — three chains that must never be merged
 // ---------------------------------------------------------------------------
@@ -246,6 +248,9 @@ export interface GeoFeature {
 export type LayerId =
   | "SITE_EXTENT"
   | "OSM_CONTEXT_ROADS"
+  | "OSM_SITE_AREAS"
+  | "OSM_SITE_ROADS"
+  | "OSM_TOWNSHIP_ROADS"
   | "SYNTHETIC_PIT"
   | "SYNTHETIC_BENCHES"
   | "SYNTHETIC_HAUL_ROADS"
@@ -262,6 +267,7 @@ export interface MapLayer {
   name: string;
   provenance: GeoProvenance;
   features: GeoFeature[];
+  defaultVisible?: boolean | undefined;
   /** Stated when a layer has no data, so absence is explained rather than blank. */
   unavailableReason?: string | undefined;
 }
@@ -322,7 +328,7 @@ function syntheticFeature(
     geometryType,
     coordinates,
     provenance: "SYNTHETIC_FOR_DEMO",
-    source: "Invented for demonstration. Not NMDC infrastructure.",
+    source: "Invented for demonstration. SYNTHETIC — NOT NMDC INFRASTRUCTURE.",
     notes,
   };
 }
@@ -362,6 +368,7 @@ function buildSyntheticLayers(extent: DecimalExtent): MapLayer[] {
     name,
     provenance: "SYNTHETIC_FOR_DEMO",
     features,
+    defaultVisible: false,
   });
 
   return [
@@ -655,15 +662,7 @@ export function bailadilaDeposit5(): GeoSite {
           },
         ],
       },
-      {
-        id: "OSM_CONTEXT_ROADS",
-        name: "Contextual roads (OpenStreetMap)",
-        provenance: "OPEN_DATA_OSM",
-        features: [],
-        unavailableReason:
-          "No OpenStreetMap extract has been imported. Nothing is drawn. OSM roads are " +
-          "public context, never NMDC haul-road geometry.",
-      },
+      ...osmLayers(),
       ...buildSyntheticLayers(decimal),
       {
         id: "VEHICLES",
@@ -678,9 +677,11 @@ export function bailadilaDeposit5(): GeoSite {
   };
 }
 
-/** Layers carrying at least one feature. A declared-but-empty layer is not drawn. */
+/** Layers carrying at least one feature and visible by default. */
 export function drawableLayers(site: GeoSite): MapLayer[] {
-  return site.layers.filter((layer) => layer.features.length > 0);
+  return site.layers.filter(
+    (layer) => layer.features.length > 0 && layer.defaultVisible !== false,
+  );
 }
 
 /** Layers that exist in the model but have no data, with the reason each states. */

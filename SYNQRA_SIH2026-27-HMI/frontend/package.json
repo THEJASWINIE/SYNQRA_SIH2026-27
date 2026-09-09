@@ -3,9 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "FOG-ORCHESTRATOR 2.0 Task 1 — HMI frontend (M1 foundation)",
+  "description": "FOG-ORCHESTRATOR 2.0 Task 1 — HMI frontend (Three-HMI target suite)",
   "scripts": {
     "dev": "vite",
+    "dev:truck01": "vite --port 3001 --open /truck01.html",
+    "dev:truck02": "vite --port 3002 --open /truck02.html",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",

@@ -94,6 +94,51 @@ describe("LIVE never receives a position", () => {
     expect(provider.positionFor(fast).position).toBeNull();
     expect(provider.positionFor(stopped).position).toBeNull();
   });
+
+  it("SOFTWARE-ONLY / SYNTHETIC INPUT — returns physical position when valid positionGnss is supplied", () => {
+    const gnssVehicle: VehicleState = {
+      ...vehicle("TRUCK_01"),
+      positionGnss: {
+        latitude: 18.6812,
+        longitude: 81.1855,
+        source: "GNSS",
+        status: "VALID",
+        timestamp: 1770000000.0,
+      },
+    };
+    const result = new PhysicalVehiclePositionProvider().positionFor(gnssVehicle);
+    expect(result.position).toEqual({ lat: 18.6812, lon: 81.1855 });
+    expect(result.provenance).toBe("PHYSICAL");
+    expect(result.reason).toBe("Physical GNSS fix");
+  });
+
+  it("SOFTWARE-ONLY / SYNTHETIC INPUT — returns UNAVAILABLE when positionGnss status is invalid or coordinates out of range", () => {
+    const invalidStatusVehicle: VehicleState = {
+      ...vehicle("TRUCK_01"),
+      positionGnss: {
+        latitude: 18.6812,
+        longitude: 81.1855,
+        source: "GNSS",
+        status: "NO_FIX",
+        timestamp: 1770000000.0,
+      },
+    };
+    const outOfBoundsVehicle: VehicleState = {
+      ...vehicle("TRUCK_01"),
+      positionGnss: {
+        latitude: 195.0,
+        longitude: 81.1855,
+        source: "GNSS",
+        status: "VALID",
+        timestamp: 1770000000.0,
+      },
+    };
+    const provider = new PhysicalVehiclePositionProvider();
+    expect(provider.positionFor(invalidStatusVehicle).position).toBeNull();
+    expect(provider.positionFor(invalidStatusVehicle).provenance).toBe("UNAVAILABLE");
+    expect(provider.positionFor(outOfBoundsVehicle).position).toBeNull();
+    expect(provider.positionFor(outOfBoundsVehicle).provenance).toBe("UNAVAILABLE");
+  });
 });
 
 // ---------------------------------------------------------------------------

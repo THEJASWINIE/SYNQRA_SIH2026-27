@@ -71,11 +71,19 @@ VEHICLE_PROJECTION_FIELDS = (
     "stop_envelope_m",
     "warning_fault",
     "communication_state",
+    # Per-radio metrics. Separated at ingestion by transport, and separated here too -
+    # a Wi-Fi reading must never reach the HMI under a LoRa heading.
+    "wifi_rssi_dbm",
+    "lora_rssi_dbm",
+    "lora_snr_db",
+    # LEGACY, ambiguous about which radio produced it. Retained for existing consumers.
     "rssi_dbm",
     "snr_db",
     "sequence",
     "received_at",
     "telemetry_transport",
+    "position_gnss",
+    "position_odom",
 )
 
 ROAD_PROJECTION_FIELDS = (

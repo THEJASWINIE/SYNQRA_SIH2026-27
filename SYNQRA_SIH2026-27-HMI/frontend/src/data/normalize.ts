@@ -157,6 +157,45 @@ export function normalizeTwinVehicle(raw: RawTwinVehicle): VehicleState {
 
   const roadId = stringOf("road_id");
 
+  const gnssField = field("position_gnss");
+  const rawGnss = gnssField?.available && typeof gnssField.value === "object" && gnssField.value !== null
+    ? (gnssField.value as Record<string, unknown>)
+    : null;
+  const positionGnss = rawGnss && typeof rawGnss.latitude === "number" && typeof rawGnss.longitude === "number"
+    ? {
+        latitude: rawGnss.latitude,
+        longitude: rawGnss.longitude,
+        source: String(rawGnss.source ?? "GNSS"),
+        status: String(rawGnss.status ?? "VALID"),
+        timestamp: typeof rawGnss.timestamp === "number" ? rawGnss.timestamp : null,
+        receivedAt: typeof rawGnss.received_at === "number" ? rawGnss.received_at : null,
+        origin: typeof rawGnss.origin === "string" ? rawGnss.origin : null,
+        transport: typeof rawGnss.transport === "string" ? rawGnss.transport : null,
+      }
+    : null;
+
+  const odomField = field("position_odom");
+  const rawOdom = odomField && typeof odomField.value === "object" && odomField.value !== null
+    ? (odomField.value as Record<string, unknown>)
+    : null;
+  const positionOdom = rawOdom
+    ? {
+        xM: typeof rawOdom.x_m === "number" ? rawOdom.x_m : null,
+        yM: typeof rawOdom.y_m === "number" ? rawOdom.y_m : null,
+        headingRad: typeof rawOdom.heading_rad === "number" ? rawOdom.heading_rad : null,
+        distanceM: typeof rawOdom.distance_m === "number" ? rawOdom.distance_m : null,
+        timestamp: typeof rawOdom.timestamp === "number" ? rawOdom.timestamp : null,
+        source: String(rawOdom.source ?? "UNKNOWN"),
+        origin: String(rawOdom.origin ?? "UNKNOWN"),
+        provenanceLabel: String(rawOdom.provenance_label ?? "UNAVAILABLE"),
+        method: String(rawOdom.method ?? "NONE"),
+        status: String(rawOdom.status ?? "UNAVAILABLE"),
+        originType: String(rawOdom.origin_type ?? "NONE"),
+        verificationLabel: typeof rawOdom.verification_label === "string" ? rawOdom.verification_label : undefined,
+        reason: typeof rawOdom.reason === "string" ? rawOdom.reason : undefined,
+      }
+    : null;
+
   return {
     vehicleId: raw.vehicle_id,
     timestamp,
@@ -168,6 +207,8 @@ export function normalizeTwinVehicle(raw: RawTwinVehicle): VehicleState {
       segmentId: roadId,
       offsetM: numberOf("position_s"),
     },
+    positionGnss,
+    positionOdom,
     speedMps: numberOf("speed_mps"),
     accelMps2: numberOf("acceleration_mps2"),
     gradeRad: null,

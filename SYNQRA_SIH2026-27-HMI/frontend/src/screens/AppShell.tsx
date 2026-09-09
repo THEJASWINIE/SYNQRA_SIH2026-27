@@ -41,7 +41,7 @@ import { FailureInjectionLab } from "./FailureInjectionLab";
  * the mechanism by which a declared-but-unbuilt screen says so instead of rendering an
  * empty dashboard, and a future S8 would use it again.
  */
-const OVERVIEW_ID = "overview"; // S1 Operations
+const OVERVIEW_ID = "overview"; // S1 Digital Twin
 export const VEHICLE_ID = "vehicle"; // S2 Vehicle
 const BOTTLENECK_ID = "bottleneck"; // S3 Bottleneck & Queue
 const DISPATCH_ID = "dispatch"; // S4 Dispatch & Slots
@@ -190,7 +190,7 @@ export function AppShell() {
           aria-current={screenId === OVERVIEW_ID ? "page" : undefined}
           onClick={() => setScreenId(OVERVIEW_ID)}
         >
-          S1 Operations
+          S1 Digital Twin
         </button>
         <button
           type="button"

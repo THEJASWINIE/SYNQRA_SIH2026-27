@@ -24,6 +24,7 @@
  */
 
 import { communicationText, vehicleProvenanceLabel } from "../state/dataStatus";
+import { hardwareReadouts, hasAnyHardwareReadout } from "../state/hardwareTelemetry";
 import {
   EmptyState,
   FreshnessIndicator,
@@ -295,6 +296,46 @@ export function VehicleDetail({
             {safety ? <StatusBadge token={riskToken(safety.riskLevel)} prefix="RISK" /> : null}
             <FreshnessIndicator view={vehicleFreshness} />
           </div>
+        </Panel>
+
+        {/*
+          PHYSICAL SENSOR TELEMETRY — the fields the ESP32 actually reports.
+
+          Sourced entirely from the Twin's per-field provenance; nothing here is computed,
+          converted or defaulted. A quantity this prototype has no sensor for (position,
+          heading, GNSS, visibility, friction) gets no row at all rather than a permanently
+          blank one, and the note below says so explicitly.
+        */}
+        <Panel title="Physical sensor telemetry" note="reported by the vehicle — never computed here">
+          {hasAnyHardwareReadout(vehicle) ? null : (
+            <EmptyState
+              headline="NO HARDWARE TELEMETRY SUPPLIED"
+              detail="The Twin carries no sensor field for this vehicle. Nothing is substituted."
+            />
+          )}
+          <dl className="fields">
+            {hardwareReadouts(vehicle).map((row) => (
+              <div className="field" key={row.label}>
+                <dt>{row.label}</dt>
+                <dd className={row.available ? undefined : "dim"}>
+                  {row.value}
+                  {row.available && row.unit ? (
+                    <span className="metric-unit"> {row.unit}</span>
+                  ) : null}
+                </dd>
+                <div className="faint">
+                  {row.available ? `${row.provenance} · ${row.freshness}` : row.freshness}
+                  {row.available && row.ageS !== null ? ` · ${row.ageS.toFixed(1)} s old` : ""}
+                </div>
+                {row.reason ? <div className="faint">{row.reason}</div> : null}
+              </div>
+            ))}
+          </dl>
+          <p className="faint">
+            This prototype has no GNSS, visibility, fog or friction sensor. Those quantities
+            are not listed here because nothing measures them — see the Safety / Environment
+            screen, which reports them as UNAVAILABLE rather than as a number.
+          </p>
         </Panel>
 
         {/* FR-005 — headway. AMB-001 governs every line of this panel. */}

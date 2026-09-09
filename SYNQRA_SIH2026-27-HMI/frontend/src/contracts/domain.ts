@@ -60,10 +60,39 @@ export interface VehiclePosition {
   offsetM: number | null;
 }
 
+export interface PositionGnss {
+  latitude: number;
+  longitude: number;
+  source: string;
+  status: string;
+  timestamp: number | null;
+  receivedAt?: number | null;
+  origin?: string | null;
+  transport?: string | null;
+}
+
+export interface PositionOdom {
+  xM: number | null;
+  yM: number | null;
+  headingRad: number | null;
+  distanceM: number | null;
+  timestamp: number | null;
+  source: string;
+  origin: string;
+  provenanceLabel: string;
+  method: string;
+  status: string;
+  originType: string;
+  verificationLabel?: string | undefined;
+  reason?: string | undefined;
+}
+
 export interface VehicleState {
   vehicleId: VehicleId;
   timestamp: Iso8601;
   position: VehiclePosition;
+  positionGnss?: PositionGnss | null;
+  positionOdom?: PositionOdom | null;
   /**
    * P6.1: `null` means the canonical Twin has no value for this field.
    * UNAVAILABLE is distinct from 0 and must never be rendered as a number.

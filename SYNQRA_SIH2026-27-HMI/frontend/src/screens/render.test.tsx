@@ -420,7 +420,13 @@ describe("App shell — first paint, before any data has arrived", () => {
     expect(grey).toContain("Bailadila Deposit-5");
   });
 
-  it("renders the empty-fleet state rather than an empty page", () => {
+  it("renders S1 in a 2-panel grid container (Mine Site and Fleet)", () => {
+    expect(html).toContain('class="grid-2"');
+    expect(html).toContain("Bailadila Deposit-5");
+    expect(html).toContain("Fleet");
+  });
+
+  it("renders the empty-fleet state when no vehicles are supplied", () => {
     expect(grey).toContain("NO VEHICLES SUPPLIED");
   });
 
@@ -432,7 +438,7 @@ describe("App shell — first paint, before any data has arrived", () => {
 
   it("offers navigation to the six primary screens", () => {
     for (const label of [
-      "S1 Operations",
+      "S1 Digital Twin",
       "S2 Vehicle",
       "S3 Bottleneck",
       "S4 Dispatch",

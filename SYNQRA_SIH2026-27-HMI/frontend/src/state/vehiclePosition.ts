@@ -30,7 +30,7 @@ import type { VehicleState } from "../contracts/domain";
 import type { DecimalExtent, LonLat } from "./geoSite";
 
 /** How a position was obtained. Distinct from the geographic provenance of a feature. */
-export type PositionProvenance = "PHYSICAL" | "SIMULATED" | "REPLAY" | "UNAVAILABLE";
+export type PositionProvenance = "PHYSICAL" | "SIMULATED" | "REPLAY" | "UNAVAILABLE" | "SOFTWARE_ONLY_SYNTHETIC";
 
 export interface VehiclePosition {
   vehicleId: string;
@@ -64,6 +64,29 @@ export class PhysicalVehiclePositionProvider implements VehiclePositionProvider 
   readonly kind = "PHYSICAL" as const;
 
   positionFor(vehicle: VehicleState): VehiclePosition {
+    const gnss = vehicle.positionGnss;
+    if (
+      gnss &&
+      (gnss.status === "VALID" || gnss.status === "OK" || gnss.status === "FIX") &&
+      typeof gnss.latitude === "number" &&
+      Number.isFinite(gnss.latitude) &&
+      typeof gnss.longitude === "number" &&
+      Number.isFinite(gnss.longitude) &&
+      gnss.latitude >= -90 &&
+      gnss.latitude <= 90 &&
+      gnss.longitude >= -180 &&
+      gnss.longitude <= 180
+    ) {
+      const origin = gnss.origin ?? vehicle.provenance?.position_gnss?.origin;
+      const isSynthetic = origin === "SOFTWARE_ONLY" || origin === "SOFTWARE_ONLY_SYNTHETIC" || origin === "SIMULATION";
+      return {
+        vehicleId: vehicle.vehicleId,
+        position: { lon: gnss.longitude, lat: gnss.latitude },
+        provenance: isSynthetic ? "SOFTWARE_ONLY_SYNTHETIC" as PositionProvenance : "PHYSICAL",
+        reason: isSynthetic ? "SOFTWARE TEST · SYNTHETIC GNSS" : "Physical GNSS fix",
+      };
+    }
+
     return {
       vehicleId: vehicle.vehicleId,
       position: null,

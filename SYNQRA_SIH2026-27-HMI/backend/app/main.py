@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from collections import deque
 from typing import Dict, Any, List, Optional
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -42,6 +42,54 @@ app = FastAPI(
 #     HMI_CORS_ORIGINS=http://192.168.4.2:5173
 # or set `HMI_CORS_ORIGINS=*` to restore the previous wildcard explicitly.
 _cors_origins = settings.cors_origin_list
+# ---------------------------------------------------------------------------
+# OPERATOR IDENTITY. Separate from vehicle identity, and separate from telemetry.
+#
+# The registry answers exactly one question for this backend: may the holder of
+# this token command this vehicle? It never touches telemetry, never appears in a
+# payload, and runs BEFORE the command gateway - which remains the sole safety
+# authority. Permission and safety are different questions.
+# ---------------------------------------------------------------------------
+# Denial reasons owned by THIS layer, for the states the registry cannot report on
+# its own behalf: it is missing, it raised, or it answered with something
+# unusable. Each one means the same thing to a caller - no command was issued.
+DENY_REGISTRY_UNAVAILABLE = "AUTHORIZATION_UNAVAILABLE"
+DENY_REGISTRY_ERROR = "AUTHORIZATION_ERROR"
+DENY_REGISTRY_MALFORMED = "AUTHORIZATION_INDETERMINATE"
+
+operator_registry = None
+try:
+    # The registry lives at the repository root. Resolve it from THIS file rather
+    # than relying on the Twin bootstrap having already extended sys.path - that
+    # runs later in this module, and an ordering assumption here would silently
+    # disable a security control.
+    import os as _os
+    import sys as _sys
+
+    _repo_root = _os.path.dirname(
+        _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    )
+    if _repo_root not in _sys.path:
+        _sys.path.insert(0, _repo_root)
+
+    from operator_registry import build_demo_registry  # noqa: E402
+
+    operator_registry = build_demo_registry()
+    logging.getLogger("hmi.backend").info(
+        "[OPERATOR] command authorization ACTIVE (%d demo operators)",
+        len(operator_registry.operators()),
+    )
+except Exception as _op_exc:  # noqa: BLE001
+    # The HMI still STARTS without the registry - read-only screens, telemetry and
+    # observability keep working, and an operator can still see the fleet.
+    #
+    # What does NOT keep working is commanding a vehicle. `POST /api/commands`
+    # refuses with 503 while the registry is absent, before the command gateway is
+    # reached. A missing authorizer is a closed door, not an open one.
+    logging.getLogger("hmi.backend").error(
+        "[OPERATOR] registry unavailable - ALL COMMANDS WILL BE REJECTED: %s", _op_exc
+    )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
@@ -86,40 +134,54 @@ class HardwareTelemetryPayload(BaseModel):
     gx: float = Field(0.0, description="Gyroscope X")
     gy: float = Field(0.0, description="Gyroscope Y")
     gz: float = Field(0.0, description="Gyroscope Z")
-    accel_x: Any = Field(None, description="Physical relay acceleration X alias")
-    accel_y: Any = Field(None, description="Physical relay acceleration Y alias")
-    accel_z: Any = Field(None, description="Physical relay acceleration Z alias")
-    gyro_x: Any = Field(None, description="Physical relay gyroscope X alias")
-    gyro_y: Any = Field(None, description="Physical relay gyroscope Y alias")
-    gyro_z: Any = Field(None, description="Physical relay gyroscope Z alias")
-    rssi: int = Field(-75, description="RSSI in dBm")
-    snr: float = Field(9.5, description="SNR in dB")
+    accel_x: Optional[float] = Field(None, description="Physical relay acceleration X alias")
+    accel_y: Optional[float] = Field(None, description="Physical relay acceleration Y alias")
+    accel_z: Optional[float] = Field(None, description="Physical relay acceleration Z alias")
+    gyro_x: Optional[float] = Field(None, description="Physical relay gyroscope X alias")
+    gyro_y: Optional[float] = Field(None, description="Physical relay gyroscope Y alias")
+    gyro_z: Optional[float] = Field(None, description="Physical relay gyroscope Z alias")
+    # NO DEFAULT. A radio metric nobody measured must stay absent.
+    #
+    # These were `-75` and `9.5`. TRUCK_02's firmware sends neither field, so every
+    # TRUCK_02 frame arrived carrying those two constants, and the ingestor stamped them
+    # `observed` - a fabricated signal strength presented as a measurement. `None` flows
+    # through `TelemetryIngestor.put()`, which returns early on None, so the field stays
+    # UNAVAILABLE instead of becoming a number.
+    rssi: Optional[int] = Field(None, description="RSSI in dBm. Absent when not measured.")
+    snr: Optional[float] = Field(None, description="SNR in dB. Absent when not measured.")
     source: str = Field(..., description="Source path: DIRECT_WIFI or V2V_VIA_TRUCK_02")
     timestamp: float = Field(default_factory=time.time, description="Source timestamp")
+    latitude: Any = Field(None, description="Optional GNSS latitude")
+    longitude: Any = Field(None, description="Optional GNSS longitude")
+    position_source: Any = Field(None, description="Optional position source tag")
+    position_status: Any = Field(None, description="Optional position fix status")
+    is_simulated: Any = Field(None, description="Optional synthetic test flag")
+    pulse_count: Optional[int] = Field(None, description="Cumulative wheel encoder pulse count")
+    delta_pulses: Optional[int] = Field(None, description="Interval wheel encoder pulse delta")
 
     @property
     def effective_ax(self) -> float:
-        return float(self.accel_x) if self.accel_x is not None else float(self.ax)
+        return self.accel_x if self.accel_x is not None else self.ax
 
     @property
     def effective_ay(self) -> float:
-        return float(self.accel_y) if self.accel_y is not None else float(self.ay)
+        return self.accel_y if self.accel_y is not None else self.ay
 
     @property
     def effective_az(self) -> float:
-        return float(self.accel_z) if self.accel_z is not None else float(self.az)
+        return self.accel_z if self.accel_z is not None else self.az
 
     @property
     def effective_gx(self) -> float:
-        return float(self.gyro_x) if self.gyro_x is not None else float(self.gx)
+        return self.gyro_x if self.gyro_x is not None else self.gx
 
     @property
     def effective_gy(self) -> float:
-        return float(self.gyro_y) if self.gyro_y is not None else float(self.gy)
+        return self.gyro_y if self.gyro_y is not None else self.gy
 
     @property
     def effective_gz(self) -> float:
-        return float(self.gyro_z) if self.gyro_z is not None else float(self.gz)
+        return self.gyro_z if self.gyro_z is not None else self.gz
 
 
 # =====================================================================
@@ -179,6 +241,7 @@ try:  # pragma: no cover - exercised via the root test suite
     from twin_projection import build_vehicle_projection as _build_vehicle_projection  # noqa: E402
 
     command_gateway = CommandGateway(store=twin_store)
+
     IngestTransport = _IngestTransport
     build_twin_snapshot = _build_twin_snapshot
     build_vehicle_projection = _build_vehicle_projection
@@ -473,6 +536,9 @@ def get_observability() -> Dict[str, Any]:
         if twin_store is not None else None,
         "telemetry_ingest": dict(twin_ingestor.stats) if twin_ingestor is not None else None,
         "command_gateway": dict(command_gateway.stats) if command_gateway is not None else None,
+        "command_authorization": (
+            "ACTIVE" if operator_registry is not None else "UNAVAILABLE_COMMANDS_REJECTED"
+        ),
         "backend_cache_vehicles": len(vehicle_telemetry_store),
         "websocket_clients": len(active_websockets),
         "command_history_length": len(command_history),
@@ -574,8 +640,8 @@ def get_vehicles() -> Dict[str, Any]:
     return {"vehicles": result, "count": len(result), "mode": active_mode, "timestamp": now}
 
 
-@app.post("/api/telemetry", tags=["telemetry"])
-async def ingest_telemetry(request: Request) -> Dict[str, Any]:
+@app.post("/api/telemetry", response_model=None, tags=["telemetry"])
+async def ingest_telemetry(request: Request) -> Response | Dict[str, Any]:
     """Ingests vehicle telemetry payload from mock telemetry generator or external source."""
     # D005: bounded receive — reject oversized body BEFORE any parsing/mutation
     raw_body = await _read_bounded_body(request, MAX_TELEMETRY_BODY_BYTES)
@@ -669,8 +735,8 @@ async def ingest_telemetry(request: Request) -> Dict[str, Any]:
     return {"status": "INGESTED", "vehicle_id": vid, "timestamp": canonical["received_at"]}
 
 
-@app.post("/api/hardware/telemetry", tags=["telemetry"])
-async def ingest_hardware_telemetry(payload: HardwareTelemetryPayload) -> Dict[str, Any]:
+@app.post("/api/hardware/telemetry", response_model=None, tags=["telemetry"])
+async def ingest_hardware_telemetry(payload: HardwareTelemetryPayload) -> Response | Dict[str, Any]:
     """
     Ingests canonical vehicle telemetry from physical Wi-Fi Direct or V2V relay paths.
     Enforces deduplication by (vehicle_id, sequence), source priority (DIRECT_WIFI > V2V_VIA_TRUCK_02),
@@ -813,6 +879,7 @@ async def ingest_hardware_telemetry(payload: HardwareTelemetryPayload) -> Dict[s
 
     # P3: forward to the canonical Twin. This endpoint is the physical-device path, so the
     # observation is HARDWARE unless the caller declares otherwise.
+    is_sim = bool(payload.is_simulated) if payload.is_simulated is not None else False
     forward_to_twin(
         {
             "vehicle_id": vid,
@@ -826,8 +893,12 @@ async def ingest_hardware_telemetry(payload: HardwareTelemetryPayload) -> Dict[s
             "communication_state": canonical_record["communication_state"],
             "data_quality": canonical_record["data_quality"],
             "source": source_val,
+            "latitude": payload.latitude,
+            "longitude": payload.longitude,
+            "position_source": payload.position_source,
+            "position_status": payload.position_status,
         },
-        is_simulated=False,
+        is_simulated=is_sim,
     )
 
     await broadcast_twin_update(vid)
@@ -967,9 +1038,131 @@ def get_hardware_sequence(vehicle_id: str = "TRUCK_01") -> Dict[str, Any]:
     }
 
 
+class OperatorSessionRequest(BaseModel):
+    operator_id: str = Field(..., description="Operator requesting a session")
+    secret: str = Field(..., description="Shared development secret (env FOG_OPERATOR_SECRET)")
+
+
+@app.post("/api/operator/session", tags=["operator"])
+async def open_operator_session(req: OperatorSessionRequest) -> Dict[str, Any]:
+    """
+    Exchange the shared development secret for an operator token.
+
+    PROTOTYPE AUTHENTICATION. The secret lives in the environment, never in source
+    control, and the token lives in memory. See operator_registry.py for the full
+    list of what this does and does not protect against.
+    """
+    if operator_registry is None:
+        raise HTTPException(status_code=503, detail="Operator registry unavailable")
+
+    token = operator_registry.issue_token(req.operator_id, req.secret)
+    if token is None:
+        # Deliberately uninformative: do not reveal whether the operator exists.
+        raise HTTPException(status_code=401, detail="Authentication failed")
+
+    operator = operator_registry.operator(req.operator_id)
+    assignment = operator_registry.active_assignment_for_operator(req.operator_id)
+    return {
+        "token": token,
+        "operator": {
+            "operator_id": operator.operator_id,
+            "name": operator.name,
+            "role": operator.role,
+            "provenance": operator.provenance,
+        },
+        "assigned_vehicle_id": assignment.vehicle_id if assignment else None,
+        "shift_id": assignment.shift_id if assignment else None,
+    }
+
+
+def _bearer_token(request: Request) -> Optional[str]:
+    """The token, taken ONLY from the Authorization header. Never from a body."""
+    header = request.headers.get("authorization") or ""
+    if header.lower().startswith("bearer "):
+        return header[7:].strip()
+    return None
+
+
+@app.get("/api/operator/context", tags=["operator"])
+async def operator_context(request: Request) -> Dict[str, Any]:
+    """Who the server believes the caller is, and what they are assigned to."""
+    if operator_registry is None:
+        raise HTTPException(status_code=503, detail="Operator registry unavailable")
+
+    operator = operator_registry.operator_for_token(_bearer_token(request))
+    if operator is None:
+        raise HTTPException(status_code=401, detail="No authenticated operator")
+
+    assignment = operator_registry.active_assignment_for_operator(operator.operator_id)
+    return {
+        "operator": {
+            "operator_id": operator.operator_id,
+            "name": operator.name,
+            "role": operator.role,
+            "provenance": operator.provenance,
+        },
+        "assigned_vehicle_id": assignment.vehicle_id if assignment else None,
+        "shift_id": assignment.shift_id if assignment else None,
+        "assigned_at": assignment.assigned_at if assignment else None,
+    }
+
+
 @app.post("/api/commands", response_model=HMICommandResponse, tags=["command"])
-async def post_command(cmd: HMICommandRequest) -> HMICommandResponse:
+async def post_command(cmd: HMICommandRequest, request: Request) -> HMICommandResponse:
     """Processes HMI supervisory command (TARGET_SPEED, HOLD, STOP, RELEASE). Rejects duplicate command_id."""
+    # -----------------------------------------------------------------
+    # AUTHORIZATION RUNS FIRST, BEFORE THE COMMAND GATEWAY.
+    #
+    # Identity comes from the bearer token the server itself issued. The request
+    # body cannot supply it, so changing `vehicle_id` in the frontend - or adding
+    # an `operator_id` field - gains nothing. An operator commands only the
+    # vehicle they are assigned to.
+    #
+    # This decides PERMISSION. The gateway still decides SAFETY, unchanged.
+    # -----------------------------------------------------------------
+    # FAIL CLOSED. If there is nobody to ask, the answer is no.
+    #
+    # A dashboard may degrade gracefully when a dependency is missing. A command
+    # path may not: an absent authorizer must never read as a permissive one.
+    # Every path out of this block that is not an explicit ALLOW raises before
+    # `command_gateway.submit` is ever reached.
+    _authlog = logging.getLogger("hmi.backend")
+
+    if operator_registry is None:
+        _authlog.error(
+            "[COMMAND DENIED] vehicle=%s reason=%s - authorization registry unavailable",
+            cmd.vehicle_id, DENY_REGISTRY_UNAVAILABLE,
+        )
+        raise HTTPException(
+            status_code=503,
+            detail="Command not authorized: %s" % DENY_REGISTRY_UNAVAILABLE,
+        )
+
+    try:
+        decision = operator_registry.authorize_command(_bearer_token(request), cmd.vehicle_id)
+    except Exception as exc:  # noqa: BLE001 - a broken authorizer is a closed one
+        _authlog.error(
+            "[COMMAND DENIED] vehicle=%s reason=%s - %s",
+            cmd.vehicle_id, DENY_REGISTRY_ERROR, exc,
+        )
+        raise HTTPException(
+            status_code=503,
+            detail="Command not authorized: %s" % DENY_REGISTRY_ERROR,
+        )
+
+    if decision is None or not getattr(decision, "allowed", False):
+        # A malformed decision object is treated exactly like a denial.
+        reason = getattr(decision, "reason", None) or DENY_REGISTRY_MALFORMED
+        operator_id = getattr(decision, "operator_id", None)
+        _authlog.warning(
+            "[COMMAND DENIED] operator=%s vehicle=%s reason=%s",
+            operator_id, cmd.vehicle_id, reason,
+        )
+        raise HTTPException(
+            status_code=403 if operator_id else 401,
+            detail="Command not authorized: %s" % reason,
+        )
+
     valid_actions = ["TARGET_SPEED", "HOLD", "STOP", "RELEASE"]
     if cmd.action.upper() not in valid_actions:
         raise HTTPException(status_code=400, detail=f"Invalid action '{cmd.action}'. Must be one of {valid_actions}")
@@ -996,7 +1189,7 @@ async def post_command(cmd: HMICommandRequest) -> HMICommandResponse:
                 command_id=cmd.command_id,
                 created_at=now,
                 action=cmd.action.upper(),
-                target_speed_mps=float(cmd.target_speed or 0.0),
+                target_speed_mps=cmd.target_speed or 0.0,
                 source=CommandSource.OPERATOR,
                 reason=cmd.reason,
                 mode="HARDWARE" if HMI_MODE == "LIVE" else "SIMULATION",
@@ -1221,16 +1414,19 @@ async def websocket_endpoint(websocket: WebSocket):
                 accepted_record["received_at"] = time.time()
                 accepted_record["source"] = "SIMULATION"
                 accepted_record["provenance_source"] = "SIMULATION"
-                vehicle_telemetry_store[result.vehicle_id] = accepted_record
+                target_vid = result.vehicle_id
+                if target_vid is not None:
+                    vehicle_telemetry_store[target_vid] = accepted_record
 
                 await websocket.send_text(json.dumps({
                     "type": "telemetry_accepted",
-                    "vehicle_id": result.vehicle_id,
+                    "vehicle_id": target_vid,
                     "sequence": result.sequence,
                     "source": "SIMULATION",
                 }))
 
-                await broadcast_twin_update(result.vehicle_id)
+                if target_vid is not None:
+                    await broadcast_twin_update(target_vid)
 
                 bc = json.dumps({"type": "telemetry_update", "data": accepted_record})
                 # A dead peer must not kill this connection. Same defensive pattern the

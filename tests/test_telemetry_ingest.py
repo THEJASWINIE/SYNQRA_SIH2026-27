@@ -615,3 +615,143 @@ def test_parser_arrival_stamp_is_not_promoted_to_measurement_time(ingestor, stor
         hw("TRUCK_01", 43, source_timestamp=received.value - 5.0), Transport.V2V
     )
     assert store.get_vehicle_field("TRUCK_01", "rpm").timestamp == received.value - 5.0
+
+
+# ---------------------------------------------------------------------
+# 19. GNSS position ingestion & validation (Rules 1-12)
+# ---------------------------------------------------------------------
+
+def test_software_only_synthetic_input_valid_gnss_position_ingestion(ingestor, store):
+    """SOFTWARE-ONLY / SYNTHETIC INPUT: Valid GNSS position is accepted and written as position_gnss."""
+    record = hw("TRUCK_01", 100, latitude=18.6812, longitude=81.1855, position_source="GNSS", position_status="VALID")
+    result = ingestor.ingest_parsed_record(record, Transport.DIRECT_WIFI, is_simulated=False)
+    assert result.accepted
+    pos = store.get_vehicle_field("TRUCK_01", "position_gnss")
+    assert pos is not None
+    assert pos.value["latitude"] == 18.6812
+    assert pos.value["longitude"] == 81.1855
+    assert pos.value["source"] == "GNSS"
+    assert pos.value["status"] == "VALID"
+
+
+def test_software_only_synthetic_input_out_of_bounds_gnss_position_rejected(ingestor, store):
+    """SOFTWARE-ONLY / SYNTHETIC INPUT: Rule 9: Out of bounds latitude is rejected and does not overwrite twin."""
+    record = hw("TRUCK_01", 101, latitude=195.0, longitude=81.1855, position_source="GNSS", position_status="VALID")
+    result = ingestor.ingest_parsed_record(record, Transport.DIRECT_WIFI, is_simulated=False)
+    assert result.accepted  # packet as a whole accepted, but position field rejected
+    pos = store.get_vehicle_field("TRUCK_01", "position_gnss")
+    assert pos is None or pos.value is None
+
+
+# ---------------------------------------------------------------------------
+# NEGATIVE PROVENANCE REGRESSION - a coordinate must EARN the HARDWARE label
+#
+# The hole these close: the HTTP hardware ingress treated an OMITTED simulation
+# flag as "this is real hardware", so any unauthenticated client that posted a
+# latitude and longitude got a position stamped HARDWARE, which the HMI then
+# rendered as a PHYSICAL GNSS fix. No sensor on this prototype produces a
+# position at all, so every such fix was fabricated.
+#
+# The rule now is positive evidence, not absence of denial.
+# ---------------------------------------------------------------------------
+
+
+def test_position_gnss_is_in_the_hardware_guard():
+    """The existing hardware truth guard must cover the geographic position too."""
+    from telemetry_ingest import NEVER_FROM_HARDWARE
+
+    assert "position_gnss" in NEVER_FROM_HARDWARE
+
+
+def test_ambiguous_client_coordinates_never_become_hardware(ingestor, store):
+    """
+    THE CRITICAL ONE.
+
+    A payload carrying valid coordinates but NO explicit physical-GNSS evidence must
+    never be stamped HARDWARE, even when the packet arrives on the physical-device
+    transport with is_simulated=False. Omission is not evidence.
+    """
+    record = hw(
+        "TRUCK_01",
+        700,
+        latitude=18.6812,
+        longitude=81.1855,
+        position_source="GNSS",
+        position_status="VALID",
+    )
+    result = ingestor.ingest_parsed_record(record, Transport.DIRECT_WIFI, is_simulated=False)
+    assert result.accepted
+
+    pos = store.get_vehicle_field("TRUCK_01", "position_gnss")
+    assert pos is not None, "the position should still be ingested, just not as hardware"
+
+    # The Sourced wrapper - what every consumer reads for provenance.
+    assert pos.source is not Source.HARDWARE, "an unevidenced coordinate was stamped HARDWARE"
+    assert pos.origin is not Source.HARDWARE, "an unevidenced coordinate got HARDWARE origin"
+
+    # The inner payload the frontend reads to decide PHYSICAL vs SYNTHETIC.
+    assert pos.value["origin"] == "SOFTWARE_ONLY"
+
+
+def test_explicitly_synthetic_coordinates_stay_software_only(ingestor, store):
+    """An explicitly synthetic payload is SOFTWARE_ONLY and can never be promoted."""
+    record = hw(
+        "TRUCK_01",
+        701,
+        latitude=18.6812,
+        longitude=81.1855,
+        position_source="GNSS",
+        position_status="VALID",
+    )
+    result = ingestor.ingest_parsed_record(record, Transport.DIRECT_WIFI, is_simulated=True)
+    assert result.accepted
+
+    pos = store.get_vehicle_field("TRUCK_01", "position_gnss")
+    assert pos is not None
+    assert pos.value["origin"] == "SOFTWARE_ONLY"
+    assert pos.source is not Source.HARDWARE
+    assert pos.origin is not Source.HARDWARE
+
+
+def test_a_vehicle_with_a_verified_receiver_can_still_report_a_physical_fix(
+    ingestor, store, monkeypatch
+):
+    """
+    The future physical path stays open.
+
+    Fitting a real receiver is a one-line change to the documented allowlist, and this
+    proves the mechanism works - so the guard above is a locked door, not a bricked wall.
+    """
+    import telemetry_ingest
+
+    monkeypatch.setattr(
+        telemetry_ingest, "GNSS_EQUIPPED_VEHICLES", frozenset({"TRUCK_01"}), raising=True
+    )
+
+    record = hw(
+        "TRUCK_01",
+        702,
+        latitude=18.6812,
+        longitude=81.1855,
+        position_source="GNSS",
+        position_status="VALID",
+    )
+    result = ingestor.ingest_parsed_record(record, Transport.DIRECT_WIFI, is_simulated=False)
+    assert result.accepted
+
+    pos = store.get_vehicle_field("TRUCK_01", "position_gnss")
+    assert pos is not None
+    assert pos.value["origin"] == "HARDWARE"
+    assert pos.source is Source.HARDWARE
+
+
+def test_no_vehicle_on_this_prototype_has_a_verified_receiver():
+    """
+    Hardware truth: the allowlist is empty because no vehicle carries a GNSS receiver.
+
+    If this ever fails, someone claimed a receiver exists. That claim needs physical
+    evidence, not a code edit.
+    """
+    from telemetry_ingest import GNSS_EQUIPPED_VEHICLES
+
+    assert GNSS_EQUIPPED_VEHICLES == frozenset()

@@ -84,7 +84,7 @@ function renderAll(v: VehicleState): Record<string, string> {
     renderToString(<HmiContext.Provider value={value}>{children}</HmiContext.Provider>);
 
   return {
-    "S1 Operations": wrap(<OperationsOverview onSelectVehicle={() => {}} />),
+    "S1 Digital Twin": wrap(<OperationsOverview onSelectVehicle={() => {}} />),
     "S2 Vehicle Detail": wrap(<VehicleDetail vehicleId={VEHICLE_ID} onBack={() => {}} />),
     "S3 Safety / Environment": wrap(<SafetyEnvironment vehicleId={VEHICLE_ID} />),
     "S4 Dispatch": wrap(<DispatchSlots />),
@@ -126,7 +126,7 @@ describe("provenance agrees across every screen (§9)", () => {
   it("S1 and S2 now show provenance at all", () => {
     // Before Phase 8 neither did, so a simulated speed and a measured one looked identical
     // on the two most-used screens in the HMI.
-    expect(screens["S1 Operations"]).toContain("PHYSICAL (derived)");
+    expect(screens["S1 Digital Twin"]).toContain("PHYSICAL (derived)");
     expect(screens["S2 Vehicle Detail"]).toContain("PHYSICAL (derived)");
   });
 });

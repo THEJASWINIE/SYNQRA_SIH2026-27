@@ -129,20 +129,30 @@ class TestMasterSecurityAudit:
         assert resp_docs.status_code == 200
         assert "swagger-ui" in resp_docs.text.lower()
 
-    def test_audit_authentication_absence_documented_limitation(self):
-        """7. Explicitly audits and confirms that authentication is not present on core endpoints."""
-        # Telemetry ingestion does not require Bearer token
+    def test_audit_command_authentication_now_required(self):
+        """
+        7. Audits which endpoints require authentication.
+
+        This previously asserted authentication was ABSENT everywhere and recorded
+        that as a documented limitation. Commands are now authenticated, so the
+        assertion is inverted rather than deleted - the audit still runs, it just
+        records the current truth.
+
+        Telemetry ingestion remains UNAUTHENTICATED. That is a real, still-open
+        limitation, asserted here so it cannot quietly be forgotten.
+        """
+        # Telemetry ingestion still requires no Bearer token. Documented limitation.
         resp_telem = client.post("/api/telemetry", json={"vehicle_id": "TRUCK_01", "speed": 1.0})
         assert resp_telem.status_code == 200
 
-        # Commands endpoint does not require auth headers
+        # Commands now REQUIRE an authenticated operator.
         resp_cmd = client.post("/api/commands", json={
             "command_id": "CMD-AUTH-AUDIT-01",
             "vehicle_id": "TRUCK_01",
             "action": "STOP",
             "target_speed": 0.0
         })
-        assert resp_cmd.status_code == 200
+        assert resp_cmd.status_code == 401, "an unauthenticated command must be refused"
 
         # Verification: System operates in open prototype/sandbox mode (documented architectural limitation)
         # Authentication is scheduled for production deployment (M12).

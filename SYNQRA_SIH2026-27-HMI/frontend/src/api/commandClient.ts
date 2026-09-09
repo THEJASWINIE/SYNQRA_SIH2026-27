@@ -15,6 +15,7 @@
 
 import type { CommandOutcome, CommandRequestPayload } from "../state/dispatchCommand";
 import { API_BASE_URL } from "./healthClient";
+import { authHeader } from "./operatorClient";
 
 /** Mirrors `backend/app/main.py::HMICommandResponse`. */
 export interface CommandResponseBody {
@@ -100,6 +101,12 @@ export interface SubmitOptions {
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
   signal?: AbortSignal;
+  /**
+   * Bearer token to authenticate as. Defaults to the session token held by
+   * `api/operatorClient`. Passing `null` sends the request unauthenticated, which the
+   * backend refuses - useful only for proving that it does.
+   */
+  token?: string | null;
 }
 
 /**
@@ -126,9 +133,19 @@ export async function submitCommand(
 
   try {
     const signal = options.signal ?? controller?.signal;
+    /**
+     * IDENTITY TRAVELS IN THE HEADER, NEVER IN THE BODY.
+     *
+     * The backend reads the operator only from `Authorization` (`_bearer_token`), so a
+     * body field claiming an operator id would be ignored. Sending no header is a valid
+     * state and produces an honest 401 rather than a silently unauthenticated command.
+     */
     const response = await doFetch(`${API_BASE_URL}/api/commands`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeader(options.token === undefined ? undefined : options.token),
+      },
       body: JSON.stringify(payload),
       ...(signal ? { signal } : {}),
     });
@@ -141,9 +158,24 @@ export async function submitCommand(
     }
 
     if (!response.ok) {
+      /**
+       * An authorization refusal is a REJECTION, not a malformed request.
+       *
+       * 401 (no authenticated operator), 403 (not assigned to this vehicle) and 503
+       * (authorization registry unavailable - fail closed) all mean the same operational
+       * thing: no command was issued and no vehicle was reached. They are reported as
+       * REJECTED with the backend's own words, and NOT as INVALID, which would tell the
+       * operator to go and fix a payload that was fine.
+       *
+       * No new lifecycle state is introduced for this (root CLAUDE.md - the command
+       * lifecycle is fixed).
+       */
+      const refusedByAuthorization =
+        response.status === 401 || response.status === 403 || response.status === 503;
+
       // 400 (invalid action) and 422 (schema violation) are real gateway refusals.
       return {
-        outcome: "INVALID",
+        outcome: refusedByAuthorization ? "REJECTED" : "INVALID",
         message: describeErrorBody(body, response.status),
         backendStatus: null,
         httpStatus: response.status,

@@ -60,6 +60,9 @@ interface LayerStyle {
 const LAYER_STYLE: Record<LayerId, LayerStyle> = {
   SITE_EXTENT: { stroke: "#38bdf8", fill: "none", width: 2, dash: "none" },
   OSM_CONTEXT_ROADS: { stroke: "#a78bfa", fill: "none", width: 2, dash: "10 6" },
+  OSM_SITE_AREAS: { stroke: "#34d399", fill: "rgba(52,211,153,0.12)", width: 2, dash: "8 4" },
+  OSM_SITE_ROADS: { stroke: "#a78bfa", fill: "none", width: 2, dash: "10 6" },
+  OSM_TOWNSHIP_ROADS: { stroke: "#6b7280", fill: "none", width: 1, dash: "4 4" },
   SYNTHETIC_PIT: { stroke: "#f0a35e", fill: "rgba(240,163,94,0.10)", width: 2, dash: "6 4" },
   SYNTHETIC_BENCHES: { stroke: "#b07d4a", fill: "rgba(176,125,74,0.10)", width: 1, dash: "4 4" },
   SYNTHETIC_HAUL_ROADS: { stroke: "#d8c9a3", fill: "none", width: 3, dash: "6 4" },
@@ -90,7 +93,22 @@ export function GeoSiteMap({
   onSelectVehicle?: (vehicleId: string) => void;
 }) {
   const extent = toDecimalExtent(site.extent);
-  const projection = screenProjection(extent, VIEW_W, VIEW_H);
+  const paddedExtent = {
+    west: extent.west - (extent.east - extent.west) * 0.06,
+    east: extent.east + (extent.east - extent.west) * 0.06,
+    south: extent.south - (extent.north - extent.south) * 0.06,
+    north: extent.north + (extent.north - extent.south) * 0.06,
+  };
+  const projection = screenProjection(paddedExtent, VIEW_W, VIEW_H);
+  const extNW = projection.project({ lon: extent.west, lat: extent.north });
+  const extSE = projection.project({ lon: extent.east, lat: extent.south });
+  const extBox = {
+    x: extNW.x,
+    y: extNW.y,
+    width: extSE.x - extNW.x,
+    height: extSE.y - extNW.y,
+  };
+
   const size = extentSizeMetres(extent);
   const drawable = drawableLayers(site);
   const missing = unavailableLayers(site);
@@ -148,25 +166,25 @@ export function GeoSiteMap({
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         role="img"
         aria-label={`Mine site: ${drawable.length} layers drawn, ${placed.length} vehicles placed, ${unplaced.length} position unavailable`}
-        style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}`, maxHeight: "70vh", width: "100%" }}
+        style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}`, maxHeight: "52vh", width: "100%" }}
       >
         <title>Bailadila Deposit-5 geospatial prototype</title>
 
         {/*
-          THE PUBLISHED EXTENT. Drawn as a rectangle because it IS a rectangle of four
-          published bounds — not because the lease is rectangular. The label says so.
+          THE PUBLISHED EXTENT. Drawn as a rectangle inside the padded viewport so all
+          four corners and bounds are completely visible without clipping.
         */}
         <rect
           className="geo-extent"
-          x={0}
-          y={0}
-          width={VIEW_W}
-          height={VIEW_H}
+          x={extBox.x}
+          y={extBox.y}
+          width={extBox.width}
+          height={extBox.height}
           fill="none"
           stroke="#38bdf8"
           strokeWidth={2}
         />
-        <text className="geo-extent-label" x={10} y={22} fill="#38bdf8" fontSize={14}>
+        <text className="geo-extent-label" x={extBox.x + 10} y={extBox.y + 22} fill="#38bdf8" fontSize={14}>
           PUBLISHED LEASE COORDINATE EXTENT — not a lease boundary
         </text>
 
@@ -228,15 +246,20 @@ export function GeoSiteMap({
           const point = projection.project(
             entry.position as NonNullable<VehiclePosition["position"]>,
           );
+          const labelText =
+            entry.provenance === "SOFTWARE_ONLY_SYNTHETIC"
+              ? `${entry.vehicleId} · SOFTWARE TEST · SYNTHETIC GNSS`
+              : `${entry.vehicleId} · ${entry.provenance}`;
+          const fill = entry.provenance === "SOFTWARE_ONLY_SYNTHETIC" ? "#f59e0b" : "#fbbf24";
           return (
             <g
               key={entry.vehicleId}
               onClick={onSelectVehicle ? () => onSelectVehicle(entry.vehicleId) : undefined}
               style={onSelectVehicle ? { cursor: "pointer" } : undefined}
             >
-              <rect x={point.x - 6} y={point.y - 6} width={12} height={12} fill="#fbbf24" />
+              <rect x={point.x - 6} y={point.y - 6} width={12} height={12} fill={fill} />
               <text x={point.x + 12} y={point.y + 4} fill="#f0f6fc" fontSize={12}>
-                {entry.vehicleId} · {entry.provenance}
+                {labelText}
               </text>
             </g>
           );

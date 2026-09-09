@@ -1,5 +1,5 @@
 /**
- * S1 Operations - THE LIVE MINE SITE DIGITAL TWIN.
+ * S1 Digital Twin - THE LIVE MINE SITE DIGITAL TWIN.
  *
  * This screen answers one question: what is happening in the mine right now?
  *
@@ -53,52 +53,40 @@ export function OperationsOverview({
   );
 
   return (
-    <section className="hmi-screen" aria-label="Operations">
-      {/*
-        S1 IS THE LIVE MINE SITE DIGITAL TWIN.
+    <section className="hmi-screen" aria-label="Digital Twin">
+      <div className="grid-2">
+        <GeoSiteMap
+          site={geoSite}
+          positions={geoPositions}
+          mode={state.connection.provider}
+          onSelectVehicle={onSelectVehicle}
+        />
 
-        Deliberately reduced to two things: the 2D mine site, and the fleet operating in
-        it. Alerts, fog, bottleneck and KPI panels were moved off S1 - each already has a
-        dedicated screen (S5 Alerts, S3 Bottleneck, S6 Diagnostics), and duplicating them
-        here made the map a secondary citizen on the screen that is supposed to BE the
-        twin. Nothing was deleted; every panel is still reachable.
-
-        The abstract topology MineMap was also removed from S1. It rendered a graph in
-        topology units beside a geographic map of the same mine, which invited the reader
-        to conflate two different coordinate systems. MineMap itself is untouched and is
-        still used by the Digital Twin screen.
-      */}
-      <GeoSiteMap
-        site={geoSite}
-        positions={geoPositions}
-        mode={state.connection.provider}
-        onSelectVehicle={onSelectVehicle}
-      />
-
-      {/* THE FLEET OPERATING IN THAT SITE. Live vehicles only. */}
-      <Panel
-        title="Fleet"
-        note={`${fleet.total} vehicles · ${fleet.withPosition} positioned · ${fleet.overSafeSpeed} over safe speed`}
-      >
-        {vehicles.length === 0 ? (
-          <EmptyState
-            headline="NO VEHICLES SUPPLIED"
-            detail="No vehicle state has been received for this scenario yet."
-          />
-        ) : (
-          <div className="grid-auto">
-            {vehicles.map((vehicle) => (
-              <VehicleCard
-                key={vehicle.vehicleId}
-                vehicle={vehicle}
-                safety={state.safety[vehicle.vehicleId]}
-                freshness={fresh(vehicle.timestamp)}
-                onSelect={onSelectVehicle}
-              />
-            ))}
-          </div>
-        )}
-      </Panel>
+        {/* THE FLEET OPERATING IN THAT SITE. Live vehicles only. */}
+        <Panel
+          title="Fleet"
+          note={`${fleet.total} vehicles · ${fleet.withPosition} positioned · ${fleet.overSafeSpeed} over safe speed`}
+        >
+          {vehicles.length === 0 ? (
+            <EmptyState
+              headline="NO VEHICLES SUPPLIED"
+              detail="No vehicle state has been received for this scenario yet."
+            />
+          ) : (
+            <div className="grid-auto">
+              {vehicles.map((vehicle) => (
+                <VehicleCard
+                  key={vehicle.vehicleId}
+                  vehicle={vehicle}
+                  safety={state.safety[vehicle.vehicleId]}
+                  freshness={fresh(vehicle.timestamp)}
+                  onSelect={onSelectVehicle}
+                />
+              ))}
+            </div>
+          )}
+        </Panel>
+      </div>
     </section>
   );
 }

@@ -531,6 +531,25 @@ def _backend_on_path():
         sys.path.insert(0, backend)
 
 
+def _supervisor_headers():
+    """
+    A bearer token for the DEMO supervisor.
+
+    These tests exercise the COMMAND GATEWAY, not authorization, so they
+    authenticate as a supervisor - a role with fleet-wide command permission - and
+    leave every gateway assertion unchanged.
+    """
+    import os
+
+    os.environ.setdefault("FOG_OPERATOR_SECRET", "test-secret-not-a-real-credential")
+    from app.main import operator_registry
+
+    if operator_registry is None:
+        return {}
+    token = operator_registry.issue_token("SUP_001", os.environ["FOG_OPERATOR_SECRET"])
+    return {"Authorization": "Bearer %s" % token} if token else {}
+
+
 def test_hmi_command_endpoint_does_not_author_vehicle_state():
     _backend_on_path()
 
@@ -551,6 +570,7 @@ def test_hmi_command_endpoint_does_not_author_vehicle_state():
             "/api/commands",
             json={"command_id": "HMI_STOP_1", "vehicle_id": "TRUCK_02",
                   "action": "STOP", "target_speed": 0.0, "reason": "operator"},
+            headers=_supervisor_headers(),
         )
         assert resp.status_code == 200
 
@@ -576,6 +596,7 @@ def test_hmi_endpoint_rejects_unknown_vehicle():
             "/api/commands",
             json={"command_id": "HMI_UNKNOWN_1", "vehicle_id": "TRUCK_47",
                   "action": "STOP", "target_speed": 0.0, "reason": "operator"},
+            headers=_supervisor_headers(),
         )
     assert resp.status_code == 200
     assert resp.json()["status"] == CommandStatus.UNKNOWN_VEHICLE
