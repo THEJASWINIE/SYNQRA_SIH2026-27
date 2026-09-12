@@ -1,0 +1,110 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 - Road Network Configuration
+# Representative Simulation Haul-Road Network Segments
+#
+# Each segment must contain:
+#   id, from_node, to_node, length_m, grade_pct, curve_radius_m, width_m,
+#   direction_mode, speed_limit_mps, surface_state, visibility_m,
+#   friction_mu, friction_sigma
+# ==============================================================================
+
+roads:
+  segments:
+    - id: "ROAD_01_SHOVEL1_TO_INT1"
+      from_node: "SHOVEL_01"
+      to_node: "INTERSECTION_01"
+      length_m: 600.0                  # [SIMULATION SCENARIO] Length in meters
+      grade_pct: 0.0                   # [SIMULATION SCENARIO] Flat pit floor
+      curve_radius_m: 1000.0           # [SIMULATION SCENARIO] Straight section
+      width_m: 16.0                    # [SIMULATION SCENARIO] Dual lane width
+      direction_mode: "bidirectional"  # unidirectional | bidirectional | single_lane_alternating
+      speed_limit_mps: 11.11           # 40 km/h baseline mine speed limit
+      surface_state: "dry"             # dry | damp | wet | saturated
+      visibility_m: 50.0               # Initial visibility
+      friction_mu: 0.65                # Initial nominal friction
+      friction_sigma: 0.05             # Friction uncertainty standard deviation
+
+    - id: "ROAD_02_SHOVEL2_TO_INT1"
+      from_node: "SHOVEL_02"
+      to_node: "INTERSECTION_01"
+      length_m: 450.0
+      grade_pct: 1.5
+      curve_radius_m: 600.0
+      width_m: 14.0
+      direction_mode: "bidirectional"
+      speed_limit_mps: 11.11
+      surface_state: "dry"
+      visibility_m: 50.0
+      friction_mu: 0.65
+      friction_sigma: 0.05
+
+    - id: "ROAD_03_INT1_TO_SWITCH1"
+      from_node: "INTERSECTION_01"
+      to_node: "SWITCHBACK_01"
+      length_m: 800.0
+      grade_pct: 6.25                  # Standard uphill loaded haul ramp
+      curve_radius_m: 500.0
+      width_m: 14.0
+      direction_mode: "bidirectional"
+      speed_limit_mps: 8.33            # 30 km/h
+      surface_state: "dry"
+      visibility_m: 50.0
+      friction_mu: 0.65
+      friction_sigma: 0.05
+
+    - id: "ROAD_04_SWITCH1_TO_INT2"
+      from_node: "SWITCHBACK_01"
+      to_node: "INTERSECTION_02"
+      length_m: 250.0
+      grade_pct: 8.0                   # Steep hairpin curve
+      curve_radius_m: 45.0             # Tight switchback turn
+      width_m: 8.5                     # Narrow single-lane road
+      direction_mode: "single_lane_alternating" # Tier-2 slot reservation mandatory
+      speed_limit_mps: 8.33            # 30 km/h (within retarder and lateral rollover stability envelope)
+      surface_state: "dry"
+      visibility_m: 50.0
+      friction_mu: 0.65
+      friction_sigma: 0.05
+
+    - id: "ROAD_05_INT2_TO_BUFFER1"
+      from_node: "INTERSECTION_02"
+      to_node: "BUFFER_01"
+      length_m: 1200.0
+      grade_pct: 8.0                   # 8% sustained downhill grade
+      curve_radius_m: 350.0
+      width_m: 14.0
+      direction_mode: "bidirectional"
+      speed_limit_mps: 8.33            # 30 km/h
+      surface_state: "dry"
+      visibility_m: 50.0
+      friction_mu: 0.65
+      friction_sigma: 0.05
+
+    - id: "ROAD_06_BUFFER1_TO_CRUSHER1"
+      from_node: "BUFFER_01"
+      to_node: "CRUSHER_01"
+      length_m: 300.0
+      grade_pct: 2.0
+      curve_radius_m: 800.0
+      width_m: 16.0
+      direction_mode: "bidirectional"
+      speed_limit_mps: 5.56            # 20 km/h
+      surface_state: "dry"
+      visibility_m: 50.0
+      friction_mu: 0.65
+      friction_sigma: 0.05
+
+    - id: "ROAD_07_INT2_TO_DUMP1"
+      from_node: "INTERSECTION_02"
+      to_node: "DUMP_01"
+      length_m: 900.0
+      grade_pct: 3.0
+      curve_radius_m: 400.0
+      width_m: 14.0
+      direction_mode: "bidirectional"
+      speed_limit_mps: 8.33
+      surface_state: "dry"
+      visibility_m: 50.0
+      friction_mu: 0.65
+      friction_sigma: 0.05
+

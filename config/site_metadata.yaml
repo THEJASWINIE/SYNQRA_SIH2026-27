@@ -1,0 +1,99 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 — SITE PROVENANCE & GEOSPATIAL TRUTH METADATA
+# Bailadila Iron Ore Mine, Deposit-5, Bacheli
+# ==============================================================================
+# This configuration file locks authoritative site identity, lease extent,
+# coordinate bounding extents, CRS/datum handling, provenance classifications,
+# and operational disclaimers into the Digital Twin architecture.
+#
+# SCIENTIFIC HONESTY & PROVENANCE INVARIANT:
+# Digital Twin simulation/model of Bailadila Iron Ore Mine, Deposit-5, Bacheli
+# using verified site metadata together with explicitly labelled synthetic/modelled geometry.
+# ==============================================================================
+
+site:
+  name: "Bailadila Iron Ore Mine, Deposit-5, Bacheli"
+  operator: "NMDC Limited"
+  location: "Bacheli, South Bastar Dantewada District, Chhattisgarh, India"
+  description: "Digital Twin simulation/model of Bailadila Iron Ore Mine, Deposit-5, Bacheli using verified site metadata together with explicitly labelled synthetic/modelled geometry."
+  classification: "VERIFIED_PRIMARY"
+
+lease:
+  extent_ha: 540.05
+  extent_class: "VERIFIED_PRIMARY"
+  geometry_type: "BOUNDING_EXTENT"
+  boundary_polygon_available: false
+  boundary_polygon_fabrication_allowed: false
+  note: "540.05 ha is the verified lease area from official statutory clearance. The exact lease boundary polygon is NOT inferred from this area value."
+
+coordinates:
+  latitude_min: "18°40'00.54\" N"
+  latitude_max: "18°41'50.38\" N"
+  longitude_min: "81°10'41.83\" E"
+  longitude_max: "81°12'31.89\" E"
+  coordinate_geometry: "BOUNDING_EXTENT"
+  classification: "VERIFIED_PRIMARY"
+  note: "These four coordinates represent a coordinate EXTENT / bounding extent. They do NOT represent four verified lease-boundary vertices. Do NOT connect these coordinates to form a lease boundary polygon."
+
+crs:
+  source_crs: "UNSTATED_BY_SOURCE"
+  source_crs_status: "UNSTATED_BY_SOURCE"
+  rendering_crs: "WGS84"
+  rendering_crs_status: "ASSUMED_WGS84_UNVERIFIED"
+  exact_flag: "ASSUMED_WGS84_UNVERIFIED"
+  note: "The source document does not establish the CRS/datum sufficiently to claim a verified WGS84 boundary. Rendered coordinates assume WGS84 without empirical verification."
+
+integrity:
+  lease_polygon_available: false
+  lease_polygon_fabrication_allowed: false
+  survey_grade_accuracy_claim: false
+  real_time_nmdc_twin_claim: false
+  visual_bounding_extent_label: "Coordinate Bounding Extent — NOT Lease Boundary"
+
+provenance:
+  site_identity: "VERIFIED_PRIMARY"
+  lease_extent: "VERIFIED_PRIMARY"
+  coordinate_extent: "VERIFIED_PRIMARY"
+  source_crs: "UNSTATED_BY_SOURCE"
+  rendering_crs: "ASSUMED_WGS84_UNVERIFIED"
+  osm_geometry: "OPEN_DATA_OSM"
+  osm_derived_geometry: "DERIVED_FROM_OSM"
+  mine_specific_geometry: "SYNTHETIC_FOR_DEMO"
+  terrain: "SYNTHETIC_FOR_DEMO"
+  haul_roads: "SYNTHETIC_FOR_DEMO"
+  switchbacks: "SYNTHETIC_FOR_DEMO"
+  crusher: "SYNTHETIC_FOR_DEMO"
+  dump: "SYNTHETIC_FOR_DEMO"
+  shovel_locations: "SYNTHETIC_FOR_DEMO"
+  mine_faces: "SYNTHETIC_FOR_DEMO"
+  benches: "SYNTHETIC_FOR_DEMO"
+  intersections: "SYNTHETIC_FOR_DEMO"
+  buffers: "SYNTHETIC_FOR_DEMO"
+  internal_mine_zones: "SYNTHETIC_FOR_DEMO"
+  vehicle_routes: "SYNTHETIC_FOR_DEMO"
+
+telemetry:
+  real_physical_vehicle_positions: "UNAVAILABLE"
+  simulated_vehicle_positions: "AVAILABLE"
+  simulation_position_source: "DIGITAL_TWIN_SIMULATION"
+  vehicle_position_label: "Simulated Vehicle Position"
+  nmdc_live_operational_data: "NOT_CLAIMED"
+  live_nmdc_telemetry: "UNAVAILABLE"
+  live_nmdc_vehicle_tracking: "UNAVAILABLE"
+  live_nmdc_production_data: "NOT_CONNECTED"
+  data_stream_classification: "SIMULATION_SCENARIO"
+
+sources:
+  primary:
+    organization: "MoEF&CC"
+    document_type: "Environmental Clearance"
+    hosting_domain: "nmdc.co.in"
+    evidence_class: "VERIFIED_PRIMARY"
+    verification_status: "VERIFIED / PRIMARY"
+    site_reference: "Bailadila Iron Ore Mine, Deposit-5, Bacheli"
+    lease_extent_ha: 540.05
+    coordinate_extent:
+      lat_min: "18°40'00.54\" N"
+      lat_max: "18°41'50.38\" N"
+      lon_min: "81°10'41.83\" E"
+      lon_max: "81°12'31.89\" E"

@@ -1,0 +1,70 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 - Service & Infrastructure Node Configuration
+# Representative Simulation Mine Network
+# Node Types: SHOVEL, CRUSHER, DUMP_POINT, INTERSECTION, SWITCHBACK, BUFFER
+# ==============================================================================
+
+nodes:
+  - id: "SHOVEL_01"
+    type: "SHOVEL"                     # Loading source node
+    description: "Pit Bench Shovel 01"
+    service_rate_vph: 15.0             # [MODEL CONFIG] ~1365 tph at 91 t payload baseline
+    queue_max: 8                       # [MODEL CONFIG] Maximum loading bay buffer capacity
+    criticality: 0.8                   # [MODEL CONFIG] Weight in bottleneck score calculation
+    location_local: [0.0, 0.0, -120.0]
+
+  - id: "SHOVEL_02"
+    type: "SHOVEL"
+    description: "Pit Bench Shovel 02"
+    service_rate_vph: 15.0             # [MODEL CONFIG]
+    queue_max: 8                       # [MODEL CONFIG]
+    criticality: 0.8                   # [MODEL CONFIG]
+    location_local: [150.0, -50.0, -120.0]
+
+  - id: "INTERSECTION_01"
+    type: "INTERSECTION"
+    description: "Pit Floor Haul Confluence"
+    service_rate_vph: 45.0             # [MODEL CONFIG] Unconstrained flow ceiling
+    queue_max: 6                       # [MODEL CONFIG]
+    criticality: 0.6                   # [MODEL CONFIG]
+    location_local: [600.0, 0.0, -120.0]
+
+  - id: "SWITCHBACK_01"
+    type: "SWITCHBACK"
+    description: "Ramp Hairpin Switchback Turn 1"
+    service_rate_vph: 20.0             # [MODEL CONFIG] Single-lane throughput ceiling
+    queue_max: 4                       # [MODEL CONFIG]
+    criticality: 0.9                   # [MODEL CONFIG] High conflict sensitivity
+    location_local: [1400.0, 200.0, -70.0]
+
+  - id: "INTERSECTION_02"
+    type: "INTERSECTION"
+    description: "Upper Haul Junction"
+    service_rate_vph: 40.0             # [MODEL CONFIG]
+    queue_max: 5                       # [MODEL CONFIG]
+    criticality: 0.6                   # [MODEL CONFIG]
+    location_local: [1650.0, 250.0, -50.0]
+
+  - id: "BUFFER_01"
+    type: "BUFFER"
+    description: "Pre-Crusher Staging & Holding Yard"
+    service_rate_vph: 60.0             # [MODEL CONFIG] High capacity surge area for arrival shaping
+    queue_max: 20                      # [MODEL CONFIG] Large parking capacity
+    criticality: 0.4                   # [MODEL CONFIG]
+    location_local: [2850.0, 400.0, 40.0]
+
+  - id: "CRUSHER_01"
+    type: "CRUSHER"                    # Unloading primary destination
+    description: "Primary Gyro Crusher Pocket 01"
+    service_rate_vph: 18.0             # [MODEL CONFIG] ~1638 tph at 91 t payload baseline
+    queue_max: 6                       # [MODEL CONFIG] Tipping pad queue capacity
+    criticality: 1.0                   # [MODEL CONFIG] Highest criticality node in network
+    location_local: [3150.0, 450.0, 45.0]
+
+  - id: "DUMP_01"
+    type: "DUMP_POINT"
+    description: "Waste Overburden Dump Pocket"
+    service_rate_vph: 25.0             # [MODEL CONFIG]
+    queue_max: 10                      # [MODEL CONFIG]
+    criticality: 0.5                   # [MODEL CONFIG]
+    location_local: [2500.0, -300.0, 10.0]

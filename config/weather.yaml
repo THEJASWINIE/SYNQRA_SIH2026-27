@@ -1,0 +1,45 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 - Weather & Environment Configuration
+# Fog Visibility Fields, Road Surface Wetness, and Friction States
+# ==============================================================================
+
+weather:
+  # Visibility Levels (m)
+  visibility_levels:
+    clear: 50.0                        # [SIMULATION SCENARIO] Normal unobstructed sight distance
+    moderate_fog: 35.0                 # [SIMULATION SCENARIO] 30-50m sight distance
+    dense_fog: 15.0                    # [SIMULATION SCENARIO] 10-30m core stress level
+    extreme_fog: 7.5                   # [SIMULATION SCENARIO] 5-10m worst-case visibility
+
+  # Road Surface State to Friction & Rolling Resistance Mapping
+  # Open research note: Site-specific continuous friction telemetry is [UNKNOWN].
+  # Values below represent conservative engineering models.
+  surface_friction_mapping:
+    dry:
+      mu_mean: 0.65                    # [MODEL CONFIG / ASSUMPTION] Dry compacted haul road
+      mu_sigma: 0.05                   # [MODEL CONFIG] Friction uncertainty variance
+      rolling_resistance: 0.020        # [MODEL CONFIG]
+    damp:
+      mu_mean: 0.50                    # [MODEL CONFIG / ASSUMPTION]
+      mu_sigma: 0.06                   # [MODEL CONFIG]
+      rolling_resistance: 0.025        # [MODEL CONFIG]
+    wet:
+      mu_mean: 0.35                    # [MODEL CONFIG / ASSUMPTION] Wet lateritic surface
+      mu_sigma: 0.08                   # [MODEL CONFIG]
+      rolling_resistance: 0.035        # [MODEL CONFIG]
+    saturated_slurry:
+      mu_mean: 0.20                    # [MODEL CONFIG / ASSUMPTION] Heavy monsoon muddy condition
+      mu_sigma: 0.05                   # [MODEL CONFIG]
+      rolling_resistance: 0.050        # [MODEL CONFIG]
+
+  # Safety Bounds
+  safety_floors:
+    mu_floor: 0.18                     # [MODEL CONFIG] Hard lower bound conservative safety floor
+    k_sigma: 1.645                     # [MODEL CONFIG] 95% one-sided lower confidence bound multiplier
+
+  # Weather Forecast Uncertainty Model
+  forecast:
+    lead_times_min: [1, 5, 10, 15, 20, 30, 45, 60] # [SIMULATION SCENARIO] Lead horizons tested
+    base_error_pct: 10.0               # [MODEL CONFIG] Nominal prediction error
+    error_sweep_pct: [0, 10, 20, 30, 40, 50] # [SIMULATION SCENARIO] Uncertainty stress sweep
+    fallback_error_threshold_pct: 50.0 # [MODEL CONFIG] Revert to robust worst-case when error > 50%

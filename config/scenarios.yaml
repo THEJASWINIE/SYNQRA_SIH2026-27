@@ -1,0 +1,286 @@
+# config/scenarios.yaml
+# Complete Master Scenario Matrix S01 - S20 for FOG-ORCHESTRATOR 2.0 Digital Twin
+
+scenarios:
+  S01:
+    name: "Baseline Clear Weather (Nominal Fleet)"
+    description: "Daytime clear optical visibility (50m), dry track (mu=0.65), 10 vehicles, nominal dispatch."
+    fleet_size: 10
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 101
+    environment:
+      weather_mode: "CLEAR"
+      visibility_m: 50.0
+      surface_state: "dry"
+      friction_mu: 0.65
+    dispatch_mode: "HUMAN_PERMISSIVE"
+
+  S02:
+    name: "Baseline Clear Weather (Large Fleet 50 Trucks)"
+    description: "Full mine production load with 50 BH100 dumpers under clear conditions."
+    fleet_size: 50
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 102
+    environment:
+      weather_mode: "CLEAR"
+      visibility_m: 50.0
+      surface_state: "dry"
+      friction_mu: 0.65
+    dispatch_mode: "FLEET_ONLY"
+
+  S03:
+    name: "Moderate Valley Fog"
+    description: "Optical visibility reduces to 25m, damp track (mu=0.50), 10 vehicles."
+    fleet_size: 10
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 103
+    environment:
+      weather_mode: "MODERATE_FOG"
+      visibility_m: 25.0
+      surface_state: "damp"
+      friction_mu: 0.50
+    dispatch_mode: "VEHICLE_ONLY"
+
+  S04:
+    name: "Dense Advection Fog"
+    description: "Optical visibility collapses to 12m, wet slippery track (mu=0.35), 10 vehicles."
+    fleet_size: 10
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 104
+    environment:
+      weather_mode: "DENSE_FOG"
+      visibility_m: 12.0
+      surface_state: "wet"
+      friction_mu: 0.35
+    dispatch_mode: "FLEET_ONLY"
+
+  S05:
+    name: "Extreme Fog Event"
+    description: "Severe optical blackout (visibility 6m), saturated track (mu=0.20), crawl speeds."
+    fleet_size: 10
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 105
+    environment:
+      weather_mode: "EXTREME_FOG"
+      visibility_m: 6.0
+      surface_state: "saturated"
+      friction_mu: 0.20
+    dispatch_mode: "FIXED_SPEED_10KMH"
+
+  S06:
+    name: "Rapid Fog Incursion"
+    description: "Dynamic weather event: visibility plunges from 50m to 10m over 60 seconds."
+    fleet_size: 10
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 106
+    environment:
+      weather_mode: "DYNAMIC_INCURSION"
+      initial_visibility_m: 50.0
+      final_visibility_m: 10.0
+      transition_duration_s: 60.0
+      surface_state: "wet"
+    dispatch_mode: "FLEET_ONLY"
+
+  S07:
+    name: "Fog Dissipation and Recovery"
+    description: "Post-fog recovery: visibility clears from 10m to 50m, throughput ramps up."
+    fleet_size: 10
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 107
+    environment:
+      weather_mode: "DYNAMIC_DISSIPATION"
+      initial_visibility_m: 10.0
+      final_visibility_m: 50.0
+      transition_duration_s: 60.0
+      surface_state: "dry"
+    dispatch_mode: "FLEET_ONLY"
+
+  S08:
+    name: "Downhill Switchback Conflict Coordination"
+    description: "Heavy opposing traffic on single-lane switchback hairpin ramp with 8% grade."
+    fleet_size: 12
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 108
+    environment:
+      weather_mode: "MODERATE_FOG"
+      visibility_m: 20.0
+      surface_state: "damp"
+      friction_mu: 0.48
+    dispatch_mode: "FLEET_ONLY"
+
+  S09:
+    name: "Primary Crusher Queue Overflow Threat"
+    description: "High shovel output exceeding crusher capacity (18 vph), tests arrival shaping."
+    fleet_size: 15
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 109
+    environment:
+      weather_mode: "CLEAR"
+      visibility_m: 45.0
+      surface_state: "dry"
+      friction_mu: 0.62
+    dispatch_mode: "FLEET_ONLY"
+
+  S10:
+    name: "Shovel Production Surge"
+    description: "Shovel 1 output surges, testing dynamic buffer allocation and fleet balancing."
+    fleet_size: 12
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 110
+    environment:
+      weather_mode: "CLEAR"
+      visibility_m: 50.0
+      surface_state: "dry"
+      friction_mu: 0.65
+    dispatch_mode: "FLEET_ONLY"
+
+  S11:
+    name: "Haul Road Micro-Slick Mud Patch"
+    description: "Localized tire adhesion collapse (mu=0.22) on ramp segment."
+    fleet_size: 8
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 111
+    environment:
+      weather_mode: "DENSE_FOG"
+      visibility_m: 15.0
+      surface_state: "wet"
+      friction_mu: 0.22
+    dispatch_mode: "VEHICLE_ONLY"
+
+  S12:
+    name: "Blind Hairpin Curve Speed Governor"
+    description: "Tight 20m radius curve requiring lateral acceleration clamping v_curve."
+    fleet_size: 8
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 112
+    environment:
+      weather_mode: "MODERATE_FOG"
+      visibility_m: 22.0
+      surface_state: "damp"
+      friction_mu: 0.50
+    dispatch_mode: "VEHICLE_ONLY"
+
+  S13:
+    name: "Retarder Thermal Limit Clamping"
+    description: "Fully loaded 165.5t trucks on steep 10% downhill ramp enforcing retarder limits."
+    fleet_size: 6
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 113
+    environment:
+      weather_mode: "CLEAR"
+      visibility_m: 50.0
+      surface_state: "dry"
+      friction_mu: 0.65
+    dispatch_mode: "FLEET_ONLY"
+
+  S14:
+    name: "System Latency Surge Spurt"
+    description: "V2X / onboard perception latency increases to 1.2s, expanding stopping envelopes."
+    fleet_size: 8
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 114
+    environment:
+      weather_mode: "DENSE_FOG"
+      visibility_m: 18.0
+      surface_state: "wet"
+      friction_mu: 0.40
+    dispatch_mode: "VEHICLE_ONLY"
+
+  S15:
+    name: "Deterministic MILP Dispatch under Fog"
+    description: "Full MILP optimizer actively assigning routes and departure times in dense fog."
+    fleet_size: 8
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 115
+    environment:
+      weather_mode: "DENSE_FOG"
+      visibility_m: 15.0
+      surface_state: "wet"
+      friction_mu: 0.35
+    dispatch_mode: "MILP_OPTIMIZER"
+
+  S16:
+    name: "Multi-Scenario Robust MPC Dispatch"
+    description: "Min-max robust optimization across 3 forecast uncertainty scenarios."
+    fleet_size: 8
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 116
+    environment:
+      weather_mode: "DENSE_FOG"
+      visibility_m: 15.0
+      surface_state: "wet"
+      friction_mu: 0.35
+    dispatch_mode: "ROBUST_MPC"
+
+  S17:
+    name: "Chance-Constrained RH-MPC Dispatch"
+    description: "Probabilistic chance constraints enforcing P(safety)>=0.99, P(capacity)>=0.95."
+    fleet_size: 8
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 117
+    environment:
+      weather_mode: "DENSE_FOG"
+      visibility_m: 15.0
+      surface_state: "wet"
+      friction_mu: 0.35
+    dispatch_mode: "CHANCE_MPC"
+
+  S18:
+    name: "Bottleneck Migration Cycle"
+    description: "Tracking choke point migration: Crusher -> Downhill Ramp Road -> Crusher."
+    fleet_size: 10
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 118
+    environment:
+      weather_mode: "DYNAMIC_INCURSION"
+      initial_visibility_m: 50.0
+      final_visibility_m: 12.0
+      transition_duration_s: 100.0
+      surface_state: "wet"
+    dispatch_mode: "FLEET_ONLY"
+
+  S19:
+    name: "Optimizer Failure and Safe Fallback"
+    description: "Simulated solver crash under extreme fog (8m), testing fail-safe fallback."
+    fleet_size: 8
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 119
+    environment:
+      weather_mode: "EXTREME_FOG"
+      visibility_m: 8.0
+      surface_state: "saturated"
+      friction_mu: 0.20
+    dispatch_mode: "ROBUST_MPC_FALLBACK_TEST"
+
+  S20:
+    name: "24-Hour Diurnal Weather Cycle"
+    description: "Full diurnal weather progression: clear day -> dawn fog peak -> recovery."
+    fleet_size: 10
+    duration_seconds: 300.0
+    dt_seconds: 1.0
+    seed: 120
+    environment:
+      weather_mode: "DIURNAL_CYCLE"
+      visibility_m: 20.0
+      surface_state: "wet"
+      friction_mu: 0.42
+    dispatch_mode: "CHANCE_MPC"

@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FOG-ORCHESTRATOR 2.0 — Autonomous Mining Haulage Digital Twin Command Center</title>
+  <meta name="description" content="Operational digital twin connecting mine haul road conditions, vehicle physics, spatio-temporal fog fields, dynamic road capacity, queue dynamics, and chance-constrained fleet dispatch.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="control-room-theme">
+
+  <!-- ========================================================================
+       TOP STATUS BAR (HEADER)
+       ======================================================================== -->
+  <header class="app-header" id="top-status-bar">
+    <div class="header-left">
+      <div class="brand-badge">
+        <div class="brand-icon-wrapper">
+          <span class="brand-icon">🛡️⚡</span>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">FOG-ORCHESTRATOR <span class="version-tag">2.0</span></h1>
+          <p class="brand-subtitle">AUTONOMOUS MINING HAULAGE DIGITAL TWIN</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="telemetry-chip-group">
+        <div class="hdr-chip" id="chip-scenario">
+          <span class="chip-label">SCENARIO</span>
+          <span class="chip-value val-accent" id="header-scenario-id">S01: Baseline Clear</span>
+        </div>
+        <div class="hdr-chip" id="chip-sim-time">
+          <span class="chip-label">SIM TIME</span>
+          <span class="chip-value val-cyan" id="sim-time-val">0.0 s</span>
+        </div>
+        <div class="hdr-chip" id="chip-step-count">
+          <span class="chip-label">STEP COUNT</span>
+          <span class="chip-value" id="sim-step-val">0</span>
+        </div>
+        <div class="hdr-chip" id="chip-timestep">
+          <span class="chip-label">DT STEP</span>
+          <span class="chip-value">1.0 s</span>
+        </div>
+        <div class="hdr-chip" id="chip-weather">
+          <span class="chip-label">ENV STATE</span>
+          <span class="chip-value val-emerald" id="header-weather-val">CLEAR (50m, &mu;=0.65)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Tier-1 Inviolable Governor Status Pill -->
+      <div class="tier1-governor-pill" id="tier1-safety-badge" title="Tier-1 Inviolable Safety Governor: v_command = min(v_dispatch, v_safe)">
+        <span class="shield-glyph">🛡️</span>
+        <div class="tier1-pill-content">
+          <span class="tier1-pill-title">TIER-1 GOVERNOR</span>
+          <span class="tier1-pill-status status-safe" id="safety-status-text">INVIOLABLE (0 VIOLATIONS)</span>
+        </div>
+      </div>
+
+      <!-- Real-Time Wall Clock -->
+      <div class="wall-clock-box">
+        <span class="clock-icon">🕒</span>
+        <div class="clock-details">
+          <span class="clock-time" id="header-real-clock">--:--:--</span>
+          <span class="clock-date" id="header-real-date">CURRENT TIME</span>
+        </div>
+      </div>
+
+      <!-- WebSocket Telemetry Stream Health -->
+      <div class="stream-health-indicator" id="stream-status-box">
+        <span class="pulse-dot active" id="status-dot"></span>
+        <span class="stream-label" id="connection-status">WS LIVE (2 Hz)</span>
+      </div>
+
+      <!-- Site Provenance & Geospatial Truth Launcher -->
+      <button class="btn-hdr-action" id="btn-open-provenance" title="Authoritative Site Identity, Geospatial Truth & Data Provenance">
+        📜 Provenance
+      </button>
+
+      <!-- Benchmark Results Launcher -->
+      <button class="btn-hdr-action" id="btn-open-benchmarks" title="Inspect Benchmark Execution Matrix & Monte Carlo Audit">
+        📊 Benchmarks
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN DASHBOARD WORKSPACE (3-PANEL VIEWPORT)
+       ======================================================================== -->
+  <main class="dashboard-workspace">
+
+    <!-- ----------------------------------------------------------------------
+         LEFT PANEL: TWIN ENGINE CONTROL & LIVE FOG CONTROL
+         ---------------------------------------------------------------------- -->
+    <aside class="panel-left" id="left-control-panel">
+      
+      <!-- Card 1: Simulation Engine Control -->
+      <section class="ctrl-card">
+        <div class="card-header">
+          <div class="header-title">
+            <span class="icon">⚙️</span>
+            <h2>TWIN ENGINE CONTROL</h2>
+          </div>
+          <span class="badge-mini badge-cyan">SIM-CORE</span>
+        </div>
+
+        <div class="card-body">
+          <div class="form-field">
+            <label for="scenario-select">Active Scenario</label>
+            <select id="scenario-select" class="styled-select">
+              <optgroup label="Baseline & Scale">
+                <option value="S01" selected>S01: Baseline Clear Weather (10 Trucks)</option>
+                <option value="S02">S02: Full Mine Production Load (50 Trucks)</option>
+              </optgroup>
+              <optgroup label="Fog & Low-Visibility Stress">
+                <option value="S03">S03: Moderate Valley Fog (25m Visibility)</option>
+                <option value="S04">S04: Dense Advection Fog (12m Visibility)</option>
+                <option value="S05">S05: Severe Fog Emergency (5m Visibility)</option>
+                <option value="S06">S06: Spatially Moving Fog Bank</option>
+                <option value="S07">S07: Spatial Fog Density Gradient</option>
+                <option value="S08">S08: Post-Fog Clearing Recovery</option>
+              </optgroup>
+              <optgroup label="Infrastructure & Queue Chokepoints">
+                <option value="S09">S09: Switchback Single-Lane Chokepoint</option>
+                <option value="S10">S10: High Fleet Density Ramp Inflow</option>
+                <option value="S11">S11: Primary Crusher Queue Surge</option>
+                <option value="S12">S12: Shovel Staging Buffer Bottleneck</option>
+              </optgroup>
+              <optgroup label="Physics, Adhesion & Losses">
+                <option value="S13">S13: Downhill Grade Retarder & Braking Loss</option>
+                <option value="S14">S14: Low Friction Wet Slurry (&mu;=0.25)</option>
+                <option value="S15">S15: Perception & Decision Latency Delay</option>
+                <option value="S16">S16: V2V Communication Packet Loss (15%)</option>
+              </optgroup>
+              <optgroup label="Multi-Hazard Stress">
+                <option value="S17">S17: Multi-Modal Fog Bank + Wet Road Surface</option>
+                <option value="S18">S18: Switchback Tactical Deadlock Prevention</option>
+                <option value="S19">S19: Controller Benchmark Matrix Comparison</option>
+                <option value="S20">S20: Peak Overcapacity Stress (50 Trucks)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- Playback Controls (Pause / Resume) -->
+          <div class="playback-btn-group">
+            <button class="btn-play-pause btn-running" id="btn-play-pause" title="Toggle Discrete Simulation Run / Pause">
+              <span class="btn-play-icon" id="play-icon">⏸</span>
+              <span id="play-text">PAUSE SIMULATION</span>
+            </button>
+          </div>
+
+          <!-- Discrete Step Trigger Row (+1s, +10s, +60s) -->
+          <div class="step-btn-row">
+            <button class="btn-step" id="btn-step-1" title="Advance simulation by 1 second">+1s</button>
+            <button class="btn-step" id="btn-step-10" title="Advance simulation by 10 seconds">+10s</button>
+            <button class="btn-step" id="btn-step-60" title="Advance simulation by 60 seconds">+60s</button>
+          </div>
+
+          <!-- Playback Speed Multipliers (1x, 2x, 5x, 10x) -->
+          <div class="rate-control-box mt-xs">
+            <div class="rate-label-row">
+              <span class="rate-lbl">Playback Rate</span>
+              <span class="rate-val" id="current-playback-label">1.0x</span>
+            </div>
+            <div class="rate-pills-row">
+              <button class="btn-rate-pill active" id="rate-1x" data-rate="1">1x</button>
+              <button class="btn-rate-pill" id="rate-2x" data-rate="2">2x</button>
+              <button class="btn-rate-pill" id="rate-5x" data-rate="5">5x</button>
+              <button class="btn-rate-pill" id="rate-10x" data-rate="10">10x</button>
+            </div>
+          </div>
+
+          <!-- Fleet Size & Reset Row -->
+          <div class="fleet-reset-row mt-xs">
+            <div class="form-field-compact">
+              <label for="fleet-size-select">Fleet Size</label>
+              <select id="fleet-size-select" class="styled-select-sm">
+                <option value="4">4 Trucks</option>
+                <option value="10" selected>10 Trucks</option>
+                <option value="20">20 Trucks</option>
+                <option value="30">30 Trucks</option>
+                <option value="50">50 Trucks</option>
+              </select>
+            </div>
+            <button class="btn-action-reset" id="btn-reset-twin" title="Reset Digital Twin to initial scenario state (t=0.0s)">
+              🔄 Reset Twin
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 2: LIVE FOG & ENVIRONMENT CONTROL -->
+      <section class="ctrl-card mt-xs" id="env-control-panel">
+        <div class="card-header">
+          <div class="header-title">
+            <span class="icon">🌫️</span>
+            <h2>LIVE FOG &amp; ENVIRONMENT</h2>
+          </div>
+          <span class="badge-mini badge-amber" id="live-fog-badge">V: 50.0m</span>
+        </div>
+
+        <div class="card-body">
+          <!-- Quick Weather Presets (4 Buttons) -->
+          <label class="section-sub-label">Weather Presets</label>
+          <div class="weather-presets-grid">
+            <button class="btn-weather-preset active" id="btn-preset-clear" data-mode="CLEAR" title="Clear Optical Sight Range (50m, μ=0.65)">
+              <span class="preset-icon">☀️</span>
+              <div class="preset-details">
+                <span class="preset-name">CLEAR</span>
+                <span class="preset-desc">V=50m</span>
+              </div>
+            </button>
+            <button class="btn-weather-preset" id="btn-preset-mod-fog" data-mode="MODERATE_FOG" title="Moderate Valley Fog (25m, μ=0.50)">
+              <span class="preset-icon">🌫️</span>
+              <div class="preset-details">
+                <span class="preset-name">MOD FOG</span>
+                <span class="preset-desc">V=25m</span>
+              </div>
+            </button>
+            <button class="btn-weather-preset" id="btn-preset-dense-fog" data-mode="DENSE_FOG" title="Dense Advection Fog (12m, μ=0.35)">
+              <span class="preset-icon">☁️</span>
+              <div class="preset-details">
+                <span class="preset-name">DENSE FOG</span>
+                <span class="preset-desc">V=12m</span>
+              </div>
+            </button>
+            <button class="btn-weather-preset" id="btn-preset-severe-fog" data-mode="EXTREME_FOG" title="Severe Fog Emergency (5m, μ=0.20)">
+              <span class="preset-icon">⚠️</span>
+              <div class="preset-details">
+                <span class="preset-name">SEVERE FOG</span>
+                <span class="preset-desc">V=5m</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Hidden dropdown for programmatic sync -->
+          <select id="weather-mode-select" style="display:none;">
+            <option value="CLEAR" selected>CLEAR</option>
+            <option value="MODERATE_FOG">MODERATE_FOG</option>
+            <option value="DENSE_FOG">DENSE_FOG</option>
+            <option value="EXTREME_FOG">EXTREME_FOG</option>
+          </select>
+
+          <!-- Continuous Visibility Slider (Prominent Readout) -->
+          <div class="prominent-slider-card mt-xs">
+            <div class="prominent-slider-header">
+              <span class="prominent-slider-lbl">OPTICAL VISIBILITY</span>
+              <span class="prominent-slider-val val-cyan" id="disp-visibility-val">VISIBILITY: 50.0 m</span>
+            </div>
+            <input type="range" id="slider-visibility" min="5" max="60" step="1" value="50" class="styled-slider prominent-slider">
+            <div class="slider-scale">
+              <span>5m (Severe)</span>
+              <span>25m (Mod)</span>
+              <span>60m (Clear)</span>
+            </div>
+          </div>
+
+          <!-- Road Friction Adhesion Slider -->
+          <div class="form-field mt-xs">
+            <div class="slider-header">
+              <label for="slider-friction">Road Friction (&mu;)</label>
+              <span class="slider-value val-emerald" id="disp-friction-val">0.65</span>
+            </div>
+            <input type="range" id="slider-friction" min="0.15" max="0.75" step="0.01" value="0.65" class="styled-slider">
+            <div class="slider-scale">
+              <span>0.15 (Slurry)</span>
+              <span>0.45 (Wet)</span>
+              <span>0.75 (Dry)</span>
+            </div>
+          </div>
+
+          <!-- Road Surface Condition Selector -->
+          <div class="form-field mt-xs">
+            <label for="surface-state-select">Road Surface Condition</label>
+            <select id="surface-state-select" class="styled-select">
+              <option value="dry" selected>Dry Compacted Laterite (&mu;=0.65)</option>
+              <option value="damp">Damp / Mist Condensed (&mu;=0.50)</option>
+              <option value="wet">Wet Laterite Road (&mu;=0.35)</option>
+              <option value="saturated">Saturated Slurry / Mud (&mu;=0.20)</option>
+            </select>
+          </div>
+
+          <!-- Ambient Wind Slider -->
+          <div class="form-field mt-xs">
+            <div class="slider-header">
+              <label for="slider-wind">Ambient Wind Velocity</label>
+              <span class="slider-value val-cyan" id="disp-wind-val">2.0 m/s</span>
+            </div>
+            <input type="range" id="slider-wind" min="0" max="25" step="0.5" value="2.0" class="styled-slider">
+          </div>
+
+          <!-- Governor Invariant Footer Tag -->
+          <div class="invariant-footer mt-xs">
+            <span class="invariant-title">GOVERNOR INVARIANT:</span>
+            <code>v_command = min(v_dispatch, v_safe)</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 3: Site & Data Provenance (Scientific Traceability) -->
+      <section class="ctrl-card mt-xs" id="site-provenance-panel">
+        <div class="card-header">
+          <div class="header-title">
+            <span class="icon">📜</span>
+            <h2>SITE &amp; DATA PROVENANCE</h2>
+          </div>
+          <span class="badge-mini badge-cyan">VERIFIED</span>
+        </div>
+        <div class="card-body provenance-card-body">
+          <div class="prov-row">
+            <span class="prov-label">SITE</span>
+            <span class="prov-val highlight">Bailadila Deposit-5, Bacheli</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">OPERATOR</span>
+            <span class="prov-val">NMDC Limited</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">LEASE EXTENT</span>
+            <span class="prov-val val-emerald">540.05 ha (Verified Primary)</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">COORDINATE TYPE</span>
+            <span class="prov-val val-yellow">BOUNDING EXTENT (NOT Lease Polygon)</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">CRS / DATUM</span>
+            <span class="prov-val">Source Unstated | WGS84 (Assumed / Unverified)</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">OPEN DATA</span>
+            <span class="prov-val">OSM / DERIVED_FROM_OSM where used</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">MINE GEOMETRY</span>
+            <span class="prov-val val-amber">SYNTHETIC_FOR_DEMO</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">3D TERRAIN</span>
+            <span class="prov-val">SYNTHETIC_FOR_DEMO</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">VEHICLE POSITIONS</span>
+            <span class="prov-val val-cyan">SIMULATED (Real: UNAVAILABLE)</span>
+          </div>
+          <div class="prov-row">
+            <span class="prov-label">NMDC LIVE DATA</span>
+            <span class="prov-val">NOT CONNECTED / NOT CLAIMED</span>
+          </div>
+          <button class="btn-prov-details mt-xs" id="btn-open-prov-modal" title="Inspect Source Audit & Coordinates">
+            🔍 View Source Audit &amp; Coordinate Extents
+          </button>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- ----------------------------------------------------------------------
+         CENTER PANEL: 3D DIGITAL TWIN VIEWPORT (LARGEST ON SCREEN)
+         ---------------------------------------------------------------------- -->
+    <section class="panel-center" id="central-viewport-shell">
+      <div class="viewport-card">
+        
+        <!-- Viewport Toolbar -->
+        <div class="viewport-toolbar">
+          <div class="toolbar-left">
+            <div class="live-status-pill">
+              <span class="pulse-dot green"></span>
+              <span class="live-title">3D DIGITAL TWIN MINE TOPOLOGY</span>
+            </div>
+            <span class="sub-coords" id="viewport-stats-tag">HAUL LOOP: 4,000m &bull; 8 NODES &bull; 7 SEGMENTS</span>
+          </div>
+
+          <div class="toolbar-right">
+            <!-- Camera Mode Toggles -->
+            <div class="cam-btn-group">
+              <button class="btn-cam active" id="cam-orbit" title="Master Isometric Perspective Camera">🛰️ Orbit</button>
+              <button class="btn-cam" id="cam-topdown" title="Top-Down Plan View">🗺️ Plan</button>
+              <button class="btn-cam" id="cam-switchback" title="Focus Switchback Ramp">📐 Switchback</button>
+              <button class="btn-cam" id="cam-crusher" title="Focus Crusher Pocket">🏭 Crusher</button>
+              <button class="btn-cam" id="cam-fit-mine" title="Fit Complete Mine Road Loop">🎯 Fit Mine</button>
+            </div>
+
+            <!-- Overlay Toggles -->
+            <div class="overlay-toggle-group">
+              <button class="btn-toggle active" id="toggle-fog" title="Toggle 3D Volumetric Fog Display">☁️ Fog</button>
+              <button class="btn-toggle active" id="toggle-headway" title="Toggle Safety Headway Rings">⭕ Headway</button>
+              <button class="btn-toggle" id="btn-debug-road" title="Toggle Road Segment Debug Markers & IDs">🛣️ Debug Road</button>
+              <button class="btn-toggle" id="btn-reset-view" title="Reset Viewport Camera">🔄 Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D Canvas Viewport Container -->
+        <div class="viewport-render-container" id="three-viewport-container">
+          
+          <!-- Viewport Canvas -->
+          <canvas id="three-mine-canvas" class="viewport-canvas"></canvas>
+
+          <!-- Mine Facility Floating HUD Pins -->
+          <div class="facility-hud-layer" id="facility-hud-layer">
+            <div class="facility-badge-pin pin-shovel-1" id="badge-shovel-1">
+              <span class="pin-icon">⛏️</span>
+              <div class="pin-info">
+                <span class="pin-name">SHOVEL 01</span>
+                <span class="pin-val" id="hud-shovel-1-q">Q: 0.0 / 8</span>
+              </div>
+            </div>
+
+            <div class="facility-badge-pin pin-shovel-2" id="badge-shovel-2">
+              <span class="pin-icon">⛏️</span>
+              <div class="pin-info">
+                <span class="pin-name">SHOVEL 02</span>
+                <span class="pin-val" id="hud-shovel-2-q">Q: 0.0 / 8</span>
+              </div>
+            </div>
+
+            <div class="facility-badge-pin pin-switchback" id="badge-switchback-1">
+              <span class="pin-icon">🔄</span>
+              <div class="pin-info">
+                <span class="pin-name">SWITCHBACK 01</span>
+                <span class="pin-val status-clear" id="hud-switchback-status">MUTEX: CLEAR</span>
+              </div>
+            </div>
+
+            <div class="facility-badge-pin pin-buffer" id="badge-buffer-1">
+              <span class="pin-icon">🅿️</span>
+              <div class="pin-info">
+                <span class="pin-name">BUFFER YARD 01</span>
+                <span class="pin-val" id="hud-buffer-1-q">Q: 0.0 / 20</span>
+              </div>
+            </div>
+
+            <div class="facility-badge-pin pin-crusher" id="badge-crusher-1">
+              <span class="pin-icon">🏭</span>
+              <div class="pin-info">
+                <span class="pin-name">CRUSHER 01</span>
+                <span class="pin-val" id="hud-crusher-1-q">Q: 0.0 / 6 (18 vph)</span>
+              </div>
+            </div>
+
+            <div class="facility-badge-pin pin-dump" id="badge-dump-1">
+              <span class="pin-icon">🚛</span>
+              <div class="pin-info">
+                <span class="pin-name">DUMP POCKET 01</span>
+                <span class="pin-val" id="hud-dump-1-q">Q: 0.0 / 10</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Viewport 3D Floating Provenance Legend (Collapsible) -->
+          <div class="viewport-provenance-wrapper" id="viewport-prov-badge">
+            <!-- Expanded Card Panel (Hidden by default) -->
+            <div class="vprov-expanded-card" id="vprov-expanded-card">
+              <div class="vprov-header">
+                <div class="vprov-header-left">
+                  <span class="vprov-dot"></span>
+                  <span class="vprov-title">SITE &amp; DATA PROVENANCE</span>
+                </div>
+                <button class="btn-close-vprov" id="btn-close-vprov" title="Collapse Site Info">&times;</button>
+              </div>
+              <div class="vprov-content">
+                <div class="vprov-section">
+                  <span class="vprov-tag">[ SITE DATA ]</span>
+                  <span class="vprov-text">Bailadila Deposit-5 &bull; 540.05 ha</span>
+                  <span class="vprov-sub">Bounding extent &bull; WGS84 rendering: unverified</span>
+                </div>
+                <div class="vprov-section">
+                  <span class="vprov-tag">[ GEOMETRY ]</span>
+                  <span class="vprov-sub">Roads: Synthetic for demo</span>
+                  <span class="vprov-sub">Terrain: Synthetic / modelled</span>
+                  <span class="vprov-sub">Facilities: Synthetic for demo</span>
+                </div>
+                <div class="vprov-section">
+                  <span class="vprov-tag">[ LIVE DATA ]</span>
+                  <span class="vprov-sub">Vehicle positions: Simulation</span>
+                  <span class="vprov-sub">NMDC live telemetry: Not connected</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Compact Toggle Button (Always visible in bottom-left corner) -->
+            <button class="vprov-toggle-btn" id="btn-toggle-site-info" type="button" aria-expanded="false" title="Toggle Site &amp; Data Provenance">
+              <span class="vprov-icon">ⓘ</span>
+              <span class="vprov-label">SITE INFO</span>
+              <span class="vprov-arrow">▲</span>
+            </button>
+          </div>
+
+          <!-- Selected Vehicle Floating Inspector Card (Prominent 4-Metric Grid) -->
+          <div class="truck-inspector-card" id="truck-inspector-card" style="display: none;">
+            <div class="inspector-header">
+              <div class="inspector-header-left">
+                <span class="inspector-badge">SIMULATED BH100</span>
+                <span class="inspector-title" id="insp-truck-id">TRUCK_001</span>
+              </div>
+              <button class="btn-close-insp" id="btn-close-insp" title="Close Inspector">&times;</button>
+            </div>
+
+            <!-- Prominent Speed & Visibility HUD Box -->
+            <div class="inspector-speed-hud">
+              <div class="hud-stat-cell">
+                <span class="hud-lbl">CURRENT SPEED</span>
+                <span class="hud-val val-emerald" id="insp-truck-spd">0.0 m/s</span>
+              </div>
+              <div class="hud-stat-cell">
+                <span class="hud-lbl">SAFE SPEED</span>
+                <span class="hud-val val-yellow" id="insp-truck-safe-spd">11.1 m/s</span>
+              </div>
+              <div class="hud-stat-cell">
+                <span class="hud-lbl">COMMANDED</span>
+                <span class="hud-val val-cyan" id="insp-truck-cmd-spd">0.0 m/s</span>
+              </div>
+              <div class="hud-stat-cell">
+                <span class="hud-lbl">VISIBILITY</span>
+                <span class="hud-val val-cyan" id="insp-truck-vis">50.0 m</span>
+              </div>
+            </div>
+
+            <div class="inspector-body">
+              <div class="insp-row"><span class="insp-label">Current Edge:</span><span id="insp-truck-edge" class="val-cyan">-</span></div>
+              <div class="insp-row"><span class="insp-label">Station:</span><span id="insp-truck-station" class="val-cyan">-</span></div>
+              <div class="insp-row"><span class="insp-label">Heading:</span><span id="insp-truck-heading" class="val-cyan">-</span></div>
+              <div class="insp-row"><span class="insp-label">Load State:</span><span id="insp-truck-load-state" class="val-amber">-</span></div>
+              <div class="insp-row"><span class="insp-label">Payload:</span><span id="insp-truck-payload" class="val-amber">-</span></div>
+              <div class="insp-row"><span class="insp-label">Road Grade:</span><span id="insp-truck-grade">-</span></div>
+              <div class="insp-row"><span class="insp-label">Destination:</span><span id="insp-truck-destination" class="val-accent">-</span></div>
+              <div class="insp-row"><span class="insp-label">Safety State:</span><span id="insp-truck-safety" class="val-emerald">SAFE</span></div>
+              <div class="insp-row"><span class="insp-label">Comms Health:</span><span id="insp-truck-comm" class="val-emerald">100% (0.05s)</span></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         RIGHT PANEL: 4 CHARTS (TOP) & LIVE TELEMETRY TABLE (BELOW)
+         ---------------------------------------------------------------------- -->
+    <aside class="panel-right">
+      
+      <!-- Real-Time Telemetry Charts (2x2 Grid) -->
+      <section class="telemetry-charts-card" id="right-charts-panel">
+        <div class="card-header">
+          <div class="header-title">
+            <span class="icon">📈</span>
+            <h2>REAL-TIME TELEMETRY CHARTS</h2>
+          </div>
+          <span class="badge-mini badge-cyan">2 Hz STREAM</span>
+        </div>
+
+        <div class="charts-2x2-grid">
+          <!-- Chart 1: Speed vs Safe Speed -->
+          <div class="chart-box">
+            <div class="chart-label-bar">
+              <span class="chart-name">1. SPEED vs SAFE SPEED</span>
+              <span class="chart-legend-tag"><span class="legend-dot cyan"></span> v <span class="legend-dot yellow"></span> v<sub>safe</sub></span>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chart-speed-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 2: Visibility V(t) -->
+          <div class="chart-box">
+            <div class="chart-label-bar">
+              <span class="chart-name">2. VISIBILITY V(t)</span>
+              <span class="chart-legend-tag"><span class="legend-dot cyan"></span> V(m)</span>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chart-weather-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 3: Total Queue Length Q(t) -->
+          <div class="chart-box">
+            <div class="chart-label-bar">
+              <span class="chart-name">3. TOTAL QUEUE LENGTH</span>
+              <span class="chart-legend-tag"><span class="legend-dot orange"></span> Tot <span class="legend-dot purple"></span> Cru</span>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chart-queue-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Chart 4: Bottleneck Score B(t) -->
+          <div class="chart-box">
+            <div class="chart-label-bar">
+              <span class="chart-name">4. BOTTLENECK SCORE</span>
+              <span class="chart-legend-tag"><span class="legend-dot red"></span> B(t) <span class="legend-dot cyan"></span> &rho;</span>
+            </div>
+            <div class="chart-canvas-wrap">
+              <canvas id="chart-bottleneck-canvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulated Vehicle Telemetry Table -->
+      <section class="vehicle-telemetry-card" id="right-vehicle-panel">
+        <div class="card-header">
+          <div class="header-title">
+            <span class="icon">📋</span>
+            <h2>SIMULATED VEHICLE TELEMETRY</h2>
+          </div>
+          <span class="badge-mini badge-emerald" id="table-truck-count">10 TRUCKS</span>
+        </div>
+
+        <div class="table-container">
+          <table class="telemetry-table" id="vehicle-data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Edge</th>
+                <th>Station</th>
+                <th>Speed</th>
+                <th>Safe Spd</th>
+                <th>Cmd Spd</th>
+                <th>Load</th>
+                <th>Payload</th>
+                <th>Grade</th>
+                <th>Safety</th>
+              </tr>
+            </thead>
+            <tbody id="vehicle-table-body">
+              <tr>
+                <td colspan="10" class="table-placeholder">Connecting to telemetry stream...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </aside>
+
+  </main>
+
+  <!-- ========================================================================
+       BOTTOM OPERATIONAL DECK (COMPACT 5-CARD SINGLE-ROW DECK)
+       ======================================================================== -->
+  <section class="bottom-operational-deck">
+    
+    <!-- 1. FLEET KPIS -->
+    <div class="deck-card kpi-deck-card" id="fleet-kpi-panel">
+      <div class="deck-card-header">
+        <span class="deck-icon">🏆</span>
+        <h3>FLEET KPIS</h3>
+      </div>
+      <div class="kpi-mini-grid">
+        <div class="kpi-stat-box">
+          <span class="kpi-lbl">ACTIVE FLEET</span>
+          <span class="kpi-val val-cyan" id="kpi-active-fleet">10</span>
+        </div>
+        <div class="kpi-stat-box">
+          <span class="kpi-lbl">DELIVERED TONNES</span>
+          <span class="kpi-val val-emerald" id="kpi-delivered-tonnes">0.0 t</span>
+        </div>
+        <div class="kpi-stat-box">
+          <span class="kpi-lbl">THROUGHPUT</span>
+          <span class="kpi-val val-cyan" id="kpi-throughput-vph">0.0 vph</span>
+        </div>
+        <div class="kpi-stat-box">
+          <span class="kpi-lbl">MEAN SPEED</span>
+          <span class="kpi-val" id="kpi-mean-speed">0.0 m/s</span>
+        </div>
+        <div class="kpi-stat-box highlight-safe">
+          <span class="kpi-lbl">VIOLATIONS</span>
+          <span class="kpi-val val-green" id="kpi-safety-violations">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SERVICE QUEUES -->
+    <div class="deck-card queues-deck-card" id="service-queues-panel">
+      <div class="deck-card-header">
+        <span class="deck-icon">⏳</span>
+        <h3>SERVICE QUEUES</h3>
+      </div>
+      <div class="queues-list" id="queues-list-container">
+        <div class="queue-meter-row">
+          <span class="queue-node-name">CRUSHER_01</span>
+          <div class="meter-bar-track">
+            <div class="meter-bar-fill fill-cyan" style="width: 0%;"></div>
+          </div>
+          <span class="queue-ratio">0.0 / 6</span>
+        </div>
+        <div class="queue-meter-row">
+          <span class="queue-node-name">BUFFER_01</span>
+          <div class="meter-bar-track">
+            <div class="meter-bar-fill fill-emerald" style="width: 0%;"></div>
+          </div>
+          <span class="queue-ratio">0.0 / 20</span>
+        </div>
+        <div class="queue-meter-row">
+          <span class="queue-node-name">SHOVEL_01</span>
+          <div class="meter-bar-track">
+            <div class="meter-bar-fill fill-yellow" style="width: 0%;"></div>
+          </div>
+          <span class="queue-ratio">0.0 / 8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. BOTTLENECK RANKING -->
+    <div class="deck-card bottleneck-deck-card" id="bottleneck-ranking-panel">
+      <div class="deck-card-header">
+        <span class="deck-icon">⚠️</span>
+        <h3>BOTTLENECK RANKING</h3>
+      </div>
+      <div class="bottleneck-list" id="bottleneck-list-container">
+        <div class="bottleneck-item-row">
+          <span class="rank-badge rank-1">#1</span>
+          <span class="bn-elem-id">CRUSHER_01</span>
+          <span class="bn-elem-type">NODE</span>
+          <span class="bn-score val-amber">Score: 0.000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. SWITCHBACK LOCKS -->
+    <div class="deck-card switchback-deck-card" id="switchback-locks-panel">
+      <div class="deck-card-header">
+        <span class="deck-icon">🔒</span>
+        <h3>SWITCHBACK LOCKS</h3>
+      </div>
+      <div class="switchback-status-box" id="switchback-details-box">
+        <div class="sw-row"><span class="sw-lbl">Tactical Node:</span><span class="val-cyan">SWITCHBACK_01</span></div>
+        <div class="sw-row"><span class="sw-lbl">Slot Status:</span><span class="val-emerald" id="sw-slot-status">UNCONGESTED</span></div>
+        <div class="sw-row"><span class="sw-lbl">Priority Protocol:</span><span>Loaded Downhill</span></div>
+        <div class="sw-row"><span class="sw-lbl">Mutex Guard:</span><span class="val-green">ARMED &amp; ACTIVE</span></div>
+      </div>
+    </div>
+
+    <!-- 5. SYSTEM ALERTS & SAFETY LOG -->
+    <div class="deck-card alerts-deck-card" id="system-alerts-panel">
+      <div class="deck-card-header">
+        <span class="deck-icon">🛡️</span>
+        <h3>SYSTEM ALERTS &amp; SAFETY LOG</h3>
+      </div>
+      <div class="alerts-log-container" id="alerts-log-container">
+        <div class="alert-log-entry entry-info">
+          <span class="alert-time">0.0s</span>
+          <span class="alert-badge badge-info">INFO</span>
+          <span class="alert-msg">Simulation engine initialized in STANDALONE_SIMULATION mode.</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ========================================================================
+       BOTTOM STATUS BAR (FOOTER)
+       ======================================================================== -->
+  <footer class="app-footer" id="bottom-status-bar">
+    <div class="footer-left">
+      <span class="footer-status-tag"><span class="status-indicator-dot"></span> SYSTEM HEALTH: NOMINAL</span>
+      <span class="footer-sep">|</span>
+      <span class="footer-meta">API: <code class="footer-code">FastAPI 2.0.0</code></span>
+      <span class="footer-sep">|</span>
+      <span class="footer-meta">TELEMETRY: <code class="footer-code">WebSocket (2 Hz)</code></span>
+    </div>
+
+    <div class="footer-center">
+      <span class="footer-audit-note">🛡️ TIER-1 SAFETY GOVERNOR AUDIT: <code>0 VIOLATIONS ACROSS 1,000 MONTE CARLO &amp; S01-S20</code></span>
+    </div>
+
+    <div class="footer-right">
+      <a href="/docs" target="_blank" class="footer-link">📖 Swagger Docs</a>
+      <span class="footer-sep">|</span>
+      <button class="footer-btn-link" id="btn-quick-reset">🔄 Reset Twin</button>
+      <span class="footer-sep">|</span>
+      <span class="footer-version">FOG-ORCHESTRATOR v2.0-RC</span>
+    </div>
+  </footer>
+
+  <!-- ========================================================================
+       BENCHMARK RESULTS & MONTE CARLO MODAL
+       ======================================================================== -->
+  <div class="modal-backdrop" id="benchmark-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">📊</span>
+          <h2>FOG-ORCHESTRATOR 2.0 — Scenario Matrix &amp; Monte Carlo Audit</h2>
+        </div>
+        <button class="btn-modal-close" id="btn-close-benchmarks">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-tab-nav">
+          <button class="modal-tab active" data-tab="tab-scenarios">Scenario Matrix (S01–S20)</button>
+          <button class="modal-tab" data-tab="tab-monte-carlo">Monte Carlo 1,000-Run Audit</button>
+        </div>
+
+        <div class="modal-tab-content active" id="tab-scenarios">
+          <div class="table-container modal-table-container">
+            <table class="modal-data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>SCENARIO NAME</th>
+                  <th>DISPATCH CONTROLLER</th>
+                  <th>FLEET</th>
+                  <th>DURATION</th>
+                  <th>TONNAGE</th>
+                  <th>THROUGHPUT</th>
+                  <th>AVG QUEUE</th>
+                  <th>VIOLATIONS</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="benchmark-scenarios-body">
+                <tr><td colspan="10" class="table-placeholder">Loading scenario benchmark records...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-tab-content" id="tab-monte-carlo" style="display: none;">
+          <div class="mc-summary-deck" id="mc-summary-deck">
+            <div class="mc-card">
+              <span class="mc-k">TOTAL MONTE CARLO ITERATIONS</span>
+              <span class="mc-v val-cyan">1,000 RUNS</span>
+            </div>
+            <div class="mc-card">
+              <span class="mc-k">SAFETY MARGIN INVARIANT (&ge;1.0)</span>
+              <span class="mc-v val-emerald">100.0% COMPLIANCE</span>
+            </div>
+            <div class="mc-card">
+              <span class="mc-k">PHYSICAL HEADWAY VIOLATIONS</span>
+              <span class="mc-v val-green">0 VIOLATIONS (0.000000%)</span>
+            </div>
+            <div class="mc-card">
+              <span class="mc-k">SWITCHBACK CONFLICT OVERLAPS</span>
+              <span class="mc-v val-green">0 CONFLICTS</span>
+            </div>
+          </div>
+          <div class="table-container modal-table-container mt-sm">
+            <table class="modal-data-table">
+              <thead>
+                <tr>
+                  <th>STATISTICAL MOMENT / METRIC</th>
+                  <th>MEAN</th>
+                  <th>STD DEV (&sigma;)</th>
+                  <th>P50 (MEDIAN)</th>
+                  <th>P95</th>
+                  <th>P99</th>
+                </tr>
+              </thead>
+              <tbody id="mc-table-body">
+                <tr><td>Effective Tonnage Delivered (t)</td><td>1,420.5</td><td>85.2</td><td>1,418.0</td><td>1,560.2</td><td>1,610.0</td></tr>
+                <tr><td>Mean Safe Speed (m/s)</td><td>8.42</td><td>1.15</td><td>8.50</td><td>10.20</td><td>10.85</td></tr>
+                <tr><td>Crusher Queue Length (Q)</td><td>2.14</td><td>0.68</td><td>2.00</td><td>3.45</td><td>4.10</td></tr>
+                <tr><td>Dynamic Bottleneck Score (B)</td><td>0.312</td><td>0.084</td><td>0.298</td><td>0.485</td><td>0.560</td></tr>
+                <tr><td>Safety Margin Ratio (S_eff / S_stop)</td><td>1.64</td><td>0.28</td><td>1.61</td><td>1.25</td><td>1.18</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       SITE PROVENANCE & GEOSPATIAL TRUTH AUDIT MODAL
+       ======================================================================== -->
+  <div class="modal-backdrop" id="provenance-modal" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">📜</span>
+          <h2>Bailadila Deposit-5 — Site Provenance &amp; Geospatial Truth Audit</h2>
+        </div>
+        <button class="btn-modal-close" id="btn-close-provenance">&times;</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Authoritative Identity Card -->
+        <div class="mc-summary-deck">
+          <div class="mc-card">
+            <span class="mc-k">AUTHORITATIVE SITE</span>
+            <span class="mc-v val-cyan">Bailadila Deposit-5, Bacheli</span>
+          </div>
+          <div class="mc-card">
+            <span class="mc-k">MINE OPERATOR</span>
+            <span class="mc-v val-white">NMDC Limited</span>
+          </div>
+          <div class="mc-card">
+            <span class="mc-k">VERIFIED LEASE EXTENT</span>
+            <span class="mc-v val-emerald">540.05 ha (PRIMARY)</span>
+          </div>
+          <div class="mc-card">
+            <span class="mc-k">COORDINATE GEOMETRY</span>
+            <span class="mc-v val-yellow">BOUNDING EXTENT</span>
+          </div>
+        </div>
+
+        <!-- Scientific Truth Notice -->
+        <div class="invariant-footer mt-xs" style="background: rgba(16, 28, 48, 0.85); border: 1px solid var(--border-glow-cyan); padding: 8px 12px; border-radius: 4px;">
+          <span class="invariant-title" style="color: var(--accent-cyan);">SCIENTIFIC HONESTY &amp; PROVENANCE INVARIANT:</span>
+          <p style="font-size: 0.68rem; color: var(--text-white); margin-top: 4px; line-height: 1.4;">
+            Digital Twin simulation/model of Bailadila Iron Ore Mine, Deposit-5, Bacheli using verified site metadata together with explicitly labelled synthetic/modelled geometry.
+          </p>
+        </div>
+
+        <!-- Provenance Classification Table -->
+        <div class="table-container modal-table-container mt-sm">
+          <table class="modal-data-table">
+            <thead>
+              <tr>
+                <th>PROVENANCE FIELD / GEOMETRY</th>
+                <th>CLASSIFICATION</th>
+                <th>VALUE / SPECIFICATION</th>
+                <th>AUTHORITATIVE SOURCE &amp; VERIFICATION NOTES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Site Identity</td>
+                <td><span class="badge-mini badge-emerald">VERIFIED_PRIMARY</span></td>
+                <td>Bailadila Iron Ore Mine, Deposit-5, Bacheli</td>
+                <td>MoEF&amp;CC Environmental Clearance hosted on nmdc.co.in</td>
+              </tr>
+              <tr>
+                <td>Lease Extent</td>
+                <td><span class="badge-mini badge-emerald">VERIFIED_PRIMARY</span></td>
+                <td>540.05 ha</td>
+                <td>Official statutory area. Exact boundary polygon is NOT inferred.</td>
+              </tr>
+              <tr>
+                <td>Coordinate Extent</td>
+                <td><span class="badge-mini badge-emerald">VERIFIED_PRIMARY</span></td>
+                <td>18°40'00.54"N–18°41'50.38"N<br>81°10'41.83"E–81°12'31.89"E</td>
+                <td>Bounding extent ONLY. Does NOT represent lease polygon vertices.</td>
+              </tr>
+              <tr>
+                <td>Lease Boundary Polygon</td>
+                <td><span class="badge-mini badge-red">NOT AVAILABLE</span></td>
+                <td>NOT CLAIMED / NOT FABRICATED</td>
+                <td>Strict invariant: Zero invented boundary vertices or cadastral lines.</td>
+              </tr>
+              <tr>
+                <td>Source CRS / Datum</td>
+                <td><span class="badge-mini badge-amber">UNSTATED_BY_SOURCE</span></td>
+                <td>Unstated by source document</td>
+                <td>Source clearance document does not establish the CRS/datum.</td>
+              </tr>
+              <tr>
+                <td>Rendering CRS / Datum</td>
+                <td><span class="badge-mini badge-amber">ASSUMED_WGS84_UNVERIFIED</span></td>
+                <td>WGS84 (Assumed / Unverified)</td>
+                <td>Rendered in standard WGS84 coordinates without empirical verification.</td>
+              </tr>
+              <tr>
+                <td>OpenStreetMap Geometry</td>
+                <td><span class="badge-mini badge-cyan">OPEN_DATA_OSM</span></td>
+                <td>Public road / contour basemap</td>
+                <td>Not presented as NMDC-authoritative mine survey geometry.</td>
+              </tr>
+              <tr>
+                <td>Mine Haul Road Network</td>
+                <td><span class="badge-mini badge-yellow">SYNTHETIC_FOR_DEMO</span></td>
+                <td>7 Segments, 4 Terraces, 4 Hairpins</td>
+                <td>Modelled serpentine haul road for operational simulation.</td>
+              </tr>
+              <tr>
+                <td>3D Mountain Terrain</td>
+                <td><span class="badge-mini badge-yellow">SYNTHETIC_FOR_DEMO</span></td>
+                <td>1,600m &times; 1,200m Procedural Benches</td>
+                <td>Modelled hematite terraced benches carved to match haul road grades.</td>
+              </tr>
+              <tr>
+                <td>Mine Facilities &amp; Equipment</td>
+                <td><span class="badge-mini badge-yellow">SYNTHETIC_FOR_DEMO</span></td>
+                <td>Shovels, Crusher, Buffer, Switchback</td>
+                <td>Simulated operational loading and discharge staging nodes.</td>
+              </tr>
+              <tr>
+                <td>Real Vehicle Positions</td>
+                <td><span class="badge-mini badge-red">UNAVAILABLE</span></td>
+                <td>No physical GPS transponders attached</td>
+                <td>Physical telemetry is currently unavailable.</td>
+              </tr>
+              <tr>
+                <td>Simulated Vehicle Telemetry</td>
+                <td><span class="badge-mini badge-cyan">SIMULATION_SCENARIO</span></td>
+                <td>10-50 Autonomous Haul Trucks (BH100)</td>
+                <td>Generated dynamically by the Digital Twin physics engine.</td>
+              </tr>
+              <tr>
+                <td>NMDC Live Operational Data</td>
+                <td><span class="badge-mini badge-dim">NOT CLAIMED</span></td>
+                <td>NOT CONNECTED</td>
+                <td>No connection to NMDC SCADA, ERP, or internal dispatch systems.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/three.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

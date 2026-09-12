@@ -1,0 +1,18 @@
+{
+  "scenario_id": "S18",
+  "scenario_name": "Bottleneck Migration Cycle",
+  "dispatch_mode": "FLEET_ONLY",
+  "fleet_size": 10,
+  "duration_seconds": 300.0,
+  "total_steps": 300,
+  "production_tonnes": 183.0,
+  "throughput_vph": 24.0,
+  "safety_violations_count": 0,
+  "average_queue_length": 0.0,
+  "peak_queue_length": 0.0,
+  "average_node_utilization": 0.0,
+  "estimated_travel_time_s": 406.0815111226201,
+  "primary_bottleneck_id": "ROAD_03_INT1_TO_SWITCH1",
+  "bottleneck_migrations_count": 1,
+  "execution_status": "COMPLETED_SUCCESS"
+}

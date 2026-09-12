@@ -1,0 +1,13 @@
+# FOG-ORCHESTRATOR 2.0 Task 2 - Dependencies
+numpy>=1.24.0
+scipy>=1.10.0  # Open-source MILP solver with HiGHS backend (scipy.optimize.milp)
+pandas>=2.0.0
+matplotlib>=3.7.0
+plotly>=5.14.0
+networkx>=3.1
+pyyaml>=6.0
+pydantic>=2.0.0
+fastapi>=0.100.0
+uvicorn>=0.22.0
+websockets>=11.0
+pytest>=7.3.0

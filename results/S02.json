@@ -1,0 +1,18 @@
+{
+  "scenario_id": "S02",
+  "scenario_name": "Baseline Clear Weather (Large Fleet 50 Trucks)",
+  "dispatch_mode": "FLEET_ONLY",
+  "fleet_size": 50,
+  "duration_seconds": 300.0,
+  "total_steps": 300,
+  "production_tonnes": 732.0,
+  "throughput_vph": 96.0,
+  "safety_violations_count": 0,
+  "average_queue_length": 0.0,
+  "peak_queue_length": 0.0,
+  "average_node_utilization": 0.0,
+  "estimated_travel_time_s": 334.0115905065318,
+  "primary_bottleneck_id": "ROAD_03_INT1_TO_SWITCH1",
+  "bottleneck_migrations_count": 1,
+  "execution_status": "COMPLETED_SUCCESS"
+}

@@ -1,0 +1,18 @@
+{
+  "scenario_id": "S20",
+  "scenario_name": "24-Hour Diurnal Weather Cycle",
+  "dispatch_mode": "CHANCE_MPC",
+  "fleet_size": 10,
+  "duration_seconds": 300.0,
+  "total_steps": 300,
+  "production_tonnes": 183.0,
+  "throughput_vph": 24.0,
+  "safety_violations_count": 0,
+  "average_queue_length": 0.0,
+  "peak_queue_length": 0.0,
+  "average_node_utilization": 0.0,
+  "estimated_travel_time_s": 506.0843668840359,
+  "primary_bottleneck_id": "ROAD_03_INT1_TO_SWITCH1",
+  "bottleneck_migrations_count": 2,
+  "execution_status": "COMPLETED_SUCCESS"
+}
