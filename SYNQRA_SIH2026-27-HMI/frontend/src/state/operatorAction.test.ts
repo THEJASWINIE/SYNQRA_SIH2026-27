@@ -75,9 +75,22 @@ describe("P8 operator action — the safety-critical cases", () => {
   it("reports SLOW DOWN when actual exceeds safe", () => {
     const readout = deriveOperatorReadout(safety({ vSafe: 6.86, actualSpeed: 8.72 }), vehicle());
     expect(readout.action).toBe("SLOW_DOWN");
-    // Actual is NOT overwritten by safe.
-    expect(readout.actualSpeedMps).toBe(8.72);
+    // HMI-DATA-01: the band is judged on the operand the solver evaluated (8.72), the
+    // DISPLAYED actual speed is the Twin's canonical speed_mps (fixture: 5), and the
+    // two are kept apart and flagged - neither overwrites the other, and neither is
+    // overwritten by safe.
+    expect(readout.actualSpeedMps).toBe(5);
+    expect(readout.actualSpeed.source).toBe("TWIN_SPEED_MPS");
+    expect(readout.actualSpeed.evaluatedMps).toBe(8.72);
+    expect(readout.actualSpeed.disagreesWithEvaluated).toBe(true);
     expect(readout.safeSpeedMps).toBe(6.86);
+    // With a Twin speed that matches the solver's operand, the display shows it.
+    const agreed = deriveOperatorReadout(
+      safety({ vSafe: 6.86, actualSpeed: 8.72 }),
+      vehicle({ speedMps: 8.72 }),
+    );
+    expect(agreed.actualSpeedMps).toBe(8.72);
+    expect(agreed.actualSpeed.disagreesWithEvaluated).toBe(false);
   });
 
   it("reports CAUTION near the supplied ceiling and NORMAL well below it", () => {
@@ -95,9 +108,16 @@ describe("P8 operator action — the safety-critical cases", () => {
   });
 
   it("treats a zero actual speed as a real value, not as missing", () => {
-    const readout = deriveOperatorReadout(safety({ vSafe: 10, actualSpeed: 0 }), vehicle());
+    const readout = deriveOperatorReadout(
+      safety({ vSafe: 10, actualSpeed: 0 }),
+      vehicle({ speedMps: 0 }),
+    );
     expect(readout.action).toBe("NORMAL");
     expect(readout.actualSpeedMps).toBe(0);
+    // And with no Twin speed at all, the solver's zero is still a value, labelled as its.
+    const solverOnly = deriveOperatorReadout(safety({ vSafe: 10, actualSpeed: 0 }), null);
+    expect(solverOnly.actualSpeedMps).toBe(0);
+    expect(solverOnly.actualSpeed.source).toBe("SAFETY_EVALUATED");
   });
 });
 
@@ -115,7 +135,8 @@ describe("P8 operator action — reason wording", () => {
     expect(constraintText(undefined)).toBeNull();
     expect(constraintText("UNKNOWN")).toBeNull();
     // Supplied but unrecognised: honest and generic, never a specific invented cause.
-    expect(constraintText("SOMETHING_NEW")).toBe("SAFETY LIMIT ACTIVE");
+    expect(constraintText("SOMETHING_NEW")).toBe("SAFETY LIMIT ACTIVE (SOMETHING_NEW)");
+    expect(constraintText("NONE")).toBe("NONE");
   });
 });
 

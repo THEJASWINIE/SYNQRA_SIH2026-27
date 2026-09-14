@@ -42,6 +42,7 @@ import urllib.error
 import urllib.request
 
 from mock_vehicle_generator import MockVehicleGenerator
+from scene_position_sim import route_speed_mps, scene_telemetry_fields
 
 DEFAULT_URL = "http://127.0.0.1:8000"
 DEMO_VEHICLES = ("TRUCK_01", "TRUCK_02")
@@ -105,17 +106,39 @@ def run(url=DEFAULT_URL, hz=2.0, duration=None, quiet=False):
 
     try:
         while duration is None or (time.time() - started) < duration:
+            elapsed = time.time() - started
             for frame in generator.update(dt_s=interval):
                 vehicle_id = frame.get("vehicle_id")
                 if vehicle_id not in sequences:
                     continue
 
                 sequences[vehicle_id] += 1
-                # The ONE field being added. Everything else is the generator's own frame,
+                # The fields being added. Everything else is the generator's own frame,
                 # forwarded unchanged. Provenance is decided by the transport
                 # (/api/telemetry is the simulated ingress), never declared here.
                 payload = dict(frame)
                 payload["sequence"] = sequences[vehicle_id]
+                # MAP-02: the Digital Twin demonstration scene pose, so both trucks are
+                # visible on the mine map. `scene_position_sim` is deterministic in the
+                # elapsed demo time, and the ingestor stamps every scene pose SIMULATION -
+                # this is NOT a GNSS fix and is never presented as one.
+                payload.update(scene_telemetry_fields(vehicle_id, elapsed))
+
+                # DIGITAL-TWIN-OPERATIONAL-FLOW-01: the displayed "speed" must agree with
+                # how fast the truck actually moves on the mine plan. `MockVehicleGenerator`
+                # (deliberately left unmodified - three verify_* scripts import it) supplies
+                # its own independent sin/cos speed for HMI-only validation, which visibly
+                # disagreed with the route's constant progression speed. Overridden here,
+                # in the same place the scene pose is overridden, with the EXACT constant
+                # `scene_position_sim` uses to advance this vehicle's position - not a new
+                # or fabricated value. Only trucks with a demonstration route are touched;
+                # this endpoint (/api/telemetry) always ingests as SIMULATION (main.py
+                # forces is_simulated=True), so provenance is unchanged, and the physical
+                # hardware ingress (/api/hardware/telemetry) is a separate code path this
+                # producer never touches.
+                sim_speed = route_speed_mps(vehicle_id)
+                if sim_speed is not None:
+                    payload["speed_mps"] = sim_speed
 
                 status, body = _post(url, "/api/telemetry", payload)
                 posted += 1

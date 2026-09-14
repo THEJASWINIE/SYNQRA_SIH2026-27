@@ -109,8 +109,7 @@ function contextFrom(body: unknown): OperatorContext | null {
       role: typeof op.role === "string" ? op.role : "UNKNOWN",
       provenance: typeof op.provenance === "string" ? op.provenance : "UNKNOWN",
     },
-    assignedVehicleId:
-      typeof raw.assigned_vehicle_id === "string" ? raw.assigned_vehicle_id : null,
+    assignedVehicleId: typeof raw.assigned_vehicle_id === "string" ? raw.assigned_vehicle_id : null,
     shiftId: typeof raw.shift_id === "string" ? raw.shift_id : null,
     assignedAt: typeof raw.assigned_at === "string" ? raw.assigned_at : null,
   };

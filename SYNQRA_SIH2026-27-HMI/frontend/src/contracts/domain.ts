@@ -16,7 +16,6 @@
  */
 
 import type {
-  ActiveConstraint,
   AlertCategory,
   AlertOrigin,
   AlertSeverity,
@@ -87,12 +86,48 @@ export interface PositionOdom {
   reason?: string | undefined;
 }
 
+/**
+ * MAP-02 — the Digital Twin DEMONSTRATION scene pose.
+ *
+ * Metres east/north of the published extent's south-west corner (`SCENE_METRES`, the
+ * frame `minecast/spatialPosition.ts` defines). Produced by the backend's
+ * `scene_position_sim` and stamped SIMULATION on every path.
+ *
+ * It is NOT a GNSS fix, NOT physical, NOT surveyed, and deliberately carries no
+ * latitude/longitude of its own - the one conversion to map coordinates happens in
+ * `state/vehiclePosition.ts`, which labels the result SIMULATION · DIGITAL TWIN.
+ */
+export interface PositionScene {
+  xM: number | null;
+  yM: number | null;
+  headingRad: number | null;
+  /** "SCENE_METRES". Carried so a consumer can refuse an unexpected frame. */
+  frame: string;
+  status: string;
+  /** "SIMULATION" on every path. There is no hardware branch for a scene pose. */
+  source: string;
+  origin: string;
+  provenanceLabel: string;
+  method: string;
+  reason?: string | undefined;
+  /**
+   * MINE-ROUTES-02: the synthetic Digital Twin route the simulation sampled this pose
+   * from, and the direction along it (+1 outbound, -1 return). Route METADATA from the
+   * Twin, never a measurement; null when the Twin supplied none.
+   */
+  routeId?: string | null | undefined;
+  routeDirection?: number | null | undefined;
+  routeClassification?: string | null | undefined;
+}
+
 export interface VehicleState {
   vehicleId: VehicleId;
   timestamp: Iso8601;
   position: VehiclePosition;
   positionGnss?: PositionGnss | null;
   positionOdom?: PositionOdom | null;
+  /** MAP-02 Digital Twin demo pose. Never a measurement — see `PositionScene`. */
+  positionScene?: PositionScene | null;
   /**
    * P6.1: `null` means the canonical Twin has no value for this field.
    * UNAVAILABLE is distinct from 0 and must never be rendered as a number.
@@ -143,6 +178,17 @@ export interface TwinFieldProvenance {
 // 2. SafetyState — contract §3
 // ---------------------------------------------------------------------------
 
+/**
+ * HMI-SAFETY-01 — canonical safety state, as CONSUMED. Produced elsewhere, never here.
+ *
+ * Two producers feed this one shape, and neither is computed in the HMI:
+ *   - a `SafetyState` message (contract §3) from a safety producer / mock scenario;
+ *   - the canonical Twin projection, where the solver's outputs live as per-vehicle
+ *     fields (`v_safe_mps`, `safe_headway_m`, ...) - see `normalizeTwinSafety`.
+ *
+ * Every field is what its producer said. `null` means NOT SUPPLIED and is rendered as
+ * UNAVAILABLE - never as 0, NONE, LOW or SAFE.
+ */
 export interface SafetyState {
   vehicleId: VehicleId;
   /** [EXT] E-06 required for freshness (NFR-003). */
@@ -151,17 +197,36 @@ export interface SafetyState {
   vSafe: number | null;
   /** SUPPLIED BY TASK 2. Units unresolved — AMB-001 / E-19. Never computed here. */
   hSafe: number | null;
+  /**
+   * m/s — the speed operand the safety producer evaluated. Distinct from the canonical
+   * `VehicleState.speedMps` (see state/speedContract.ts). NaN when the producer had no
+   * speed (a Twin projection without `speed_mps`); never a substitute value.
+   */
   actualSpeed: number;
-  /** [EXT] E-04 FR-005 requires current headway; PDF §9 omits it. SUPPLIED. */
+  /** [EXT] E-04 FR-005 requires current headway; PDF §9 omits it. SUPPLIED. Not H_safe. */
   headwayCurrent: number | null;
-  /** [EXT] E-04 the pair partner FR-005 needs. */
+  /** [EXT] E-04 the pair partner FR-005 needs. Chosen by the producer, never by the HMI. */
   leadVehicleId: VehicleId | null;
-  activeConstraint: ActiveConstraint;
-  riskLevel: RiskLevel;
+  /**
+   * The constraint name EXACTLY as the producer supplied it (the governor's own
+   * vocabulary - STOPPING_DISTANCE, SITE_SPEED_LIMIT, ... - or the PDF §5 names in
+   * `ACTIVE_CONSTRAINTS`). Null when none was supplied. Never collapsed to UNKNOWN: a
+   * name the HMI has no wording for is still shown verbatim. `NONE` only when the
+   * producer explicitly said NONE.
+   */
+  activeConstraint: string | null;
+  /** Null when the producer supplied none. Never defaulted to LOW. */
+  riskLevel: RiskLevel | null;
   /** [EXT] E-05 supplied if Task 2 evaluates it. Task 1 never models headway. */
   headwayViolation: boolean | null;
   /** [EXT] E-05 supplied. Task 1 never computes the envelope. */
   envelopeViolation: boolean | null;
+  /**
+   * Per-field provenance when the slice came from the canonical Twin projection
+   * (`v_safe_mps`, `safe_headway_m`, ...). Absent for a contract §3 message, which
+   * carries none. Read for SIMULATION / PHYSICAL (derived) badges; never recomputed.
+   */
+  provenance?: Readonly<Record<string, TwinFieldProvenance>>;
 }
 
 // ---------------------------------------------------------------------------

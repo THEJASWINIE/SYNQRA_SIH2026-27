@@ -70,12 +70,27 @@ VEHICLE_PROJECTION_FIELDS = (
     "safe_headway_m",
     "stop_envelope_m",
     "warning_fault",
+    # HMI-SAFETY-01: the remaining outputs of the safety producer (contracts.py
+    # SafetyStateMessage: risk_level, active_constraint; FR-005: lead vehicle, headway and
+    # the two violation verdicts). Projected ONLY when a producer wrote them into the
+    # Twin - nothing here computes or defaults them, and today no producer on the HMI
+    # backend path does, so they are simply absent.
+    "risk_level",
+    "active_constraint",
+    "lead_vehicle_id",
+    "headway_m",
+    "headway_violation",
+    "envelope_violation",
     "communication_state",
     # Per-radio metrics. Separated at ingestion by transport, and separated here too -
     # a Wi-Fi reading must never reach the HMI under a LoRa heading.
     "wifi_rssi_dbm",
     "lora_rssi_dbm",
     "lora_snr_db",
+    # HMI-COMMS-01: the LoRa frame's sequence and the modem that received it
+    # (a vehicle id for a relayed frame, LORA_GATEWAY for the bench gateway).
+    "v2v_sequence",
+    "lora_receiver_id",
     # LEGACY, ambiguous about which radio produced it. Retained for existing consumers.
     "rssi_dbm",
     "snr_db",
@@ -84,6 +99,9 @@ VEHICLE_PROJECTION_FIELDS = (
     "telemetry_transport",
     "position_gnss",
     "position_odom",
+    # MAP-02: the Digital Twin demonstration scene pose (SCENE_METRES). Projected so the
+    # HMIs can draw both trucks; always stamped SIMULATION by the ingestor.
+    "position_scene",
 )
 
 ROAD_PROJECTION_FIELDS = (

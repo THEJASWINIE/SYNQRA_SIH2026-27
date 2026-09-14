@@ -16,6 +16,7 @@
  */
 
 import type { SafetyState, VehicleState } from "../contracts/domain";
+import { type ActualSpeed, resolveActualSpeed } from "./speedContract";
 
 /** The single dominant instruction shown to the operator. */
 export type OperatorAction =
@@ -53,8 +54,13 @@ export const CAUTION_RATIO = 0.88;
 
 export interface OperatorReadout {
   action: OperatorAction;
-  /** m/s, supplied. Null when the Twin has no value. */
+  /**
+   * m/s, the DISPLAYED actual speed per `speedContract`: the Twin's canonical
+   * `speed_mps` when it exists, else the solver's evaluated speed. Null when neither.
+   */
   actualSpeedMps: number | null;
+  /** Where `actualSpeedMps` came from, and the solver's own operand, kept apart. */
+  actualSpeed: ActualSpeed;
   /** m/s, supplied by Task 2 / fog_safe. Null when unavailable. NEVER computed here. */
   safeSpeedMps: number | null;
   /** Why the speed is restricted, in operator wording. Null when not supplied. */
@@ -81,11 +87,13 @@ const CONSTRAINT_TEXT: Record<string, string> = {
 /** Operator-readable wording for a supplied constraint. Never invents a cause. */
 export function constraintText(constraint: string | null | undefined): string | null {
   if (!constraint || constraint === "UNKNOWN") return null;
+  // An explicit NONE from the producer is a statement, not an absence.
+  if (constraint === "NONE") return "NONE";
   const mapped = CONSTRAINT_TEXT[constraint];
   if (mapped) return mapped;
   // A supplied-but-unrecognised constraint is still real; say something honest and
-  // generic rather than inventing a specific physical cause.
-  return "SAFETY LIMIT ACTIVE";
+  // generic, and show the producer's own name for it, rather than inventing a cause.
+  return `SAFETY LIMIT ACTIVE (${constraint})`;
 }
 
 /**
@@ -98,38 +106,38 @@ export function deriveOperatorReadout(
   safety: SafetyState | null | undefined,
   vehicle: VehicleState | null | undefined,
 ): OperatorReadout {
-  // Actual speed: prefer the safety slice (which carries actualSpeed alongside vSafe),
-  // fall back to the vehicle slice. Both are supplied; neither is computed.
-  const actualSpeedMps =
-    safety && Number.isFinite(safety.actualSpeed)
-      ? safety.actualSpeed
-      : (vehicle?.speedMps ?? null);
+  // HMI-DATA-01: the displayed actual speed is the canonical Twin `speed_mps`. The band
+  // below is judged on the operand the safety solver itself evaluated, so the HMI never
+  // re-judges the solver with a different number; the two are shown apart if they differ.
+  const actualSpeed = resolveActualSpeed(vehicle, safety);
+  const actualSpeedMps = actualSpeed.mps;
+  const comparedMps = actualSpeed.evaluatedMps ?? actualSpeedMps;
 
   const safeSpeedMps = safety?.vSafe ?? null;
   const reason = constraintText(safety?.activeConstraint);
 
   // No authoritative safe speed => the operator is told so. NEVER "NORMAL".
   if (safeSpeedMps === null || !Number.isFinite(safeSpeedMps)) {
-    return { action: "SAFETY_DATA_UNAVAILABLE", actualSpeedMps, safeSpeedMps: null, reason };
+    return { action: "SAFETY_DATA_UNAVAILABLE", actualSpeedMps, actualSpeed, safeSpeedMps: null, reason };
   }
 
   // A zero ceiling is an explicit instruction not to proceed.
   if (safeSpeedMps <= 0) {
-    return { action: "STOP", actualSpeedMps, safeSpeedMps, reason };
+    return { action: "STOP", actualSpeedMps, actualSpeed, safeSpeedMps, reason };
   }
 
   // Without an actual speed we cannot compare, so we cannot claim NORMAL either.
-  if (actualSpeedMps === null || !Number.isFinite(actualSpeedMps)) {
-    return { action: "SAFETY_DATA_UNAVAILABLE", actualSpeedMps: null, safeSpeedMps, reason };
+  if (comparedMps === null || !Number.isFinite(comparedMps)) {
+    return { action: "SAFETY_DATA_UNAVAILABLE", actualSpeedMps: null, actualSpeed, safeSpeedMps, reason };
   }
 
-  if (actualSpeedMps > safeSpeedMps) {
-    return { action: "SLOW_DOWN", actualSpeedMps, safeSpeedMps, reason };
+  if (comparedMps > safeSpeedMps) {
+    return { action: "SLOW_DOWN", actualSpeedMps, actualSpeed, safeSpeedMps, reason };
   }
-  if (actualSpeedMps >= safeSpeedMps * CAUTION_RATIO) {
-    return { action: "CAUTION", actualSpeedMps, safeSpeedMps, reason };
+  if (comparedMps >= safeSpeedMps * CAUTION_RATIO) {
+    return { action: "CAUTION", actualSpeedMps, actualSpeed, safeSpeedMps, reason };
   }
-  return { action: "NORMAL", actualSpeedMps, safeSpeedMps, reason };
+  return { action: "NORMAL", actualSpeedMps, actualSpeed, safeSpeedMps, reason };
 }
 
 /** m/s -> km/h, preserving UNAVAILABLE as null. Never substitutes a number. */

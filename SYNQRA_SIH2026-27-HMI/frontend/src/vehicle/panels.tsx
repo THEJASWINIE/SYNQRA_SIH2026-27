@@ -41,7 +41,11 @@ import {
 import { bailadilaDeposit5, toDecimalExtent } from "../state/geoSite";
 import { type HardwareReadout, hardwareReadouts } from "../state/hardwareTelemetry";
 import { ACTION_DETAIL, ACTION_LABEL, deriveOperatorReadout, toKmh } from "../state/operatorAction";
-import { providerForMode, type SystemMode } from "../state/vehiclePosition";
+import {
+  providerForMode,
+  resolveVehiclePosition,
+  type SystemMode,
+} from "../state/vehiclePosition";
 import { communicationLinks, LINK_STATE_GLYPH, type LinkStatus } from "./communication";
 import type { VehicleHmiConfig } from "./vehicleConfig";
 import type { VehicleProjection } from "./vehicleProjection";
@@ -125,12 +129,7 @@ export function CommunicationPanel({
   projection: VehicleProjection;
   mode: string;
 }) {
-  const links = communicationLinks(
-    projection.vehicle,
-    projection.peerVehicleId,
-    projection.connection.status,
-    mode,
-  );
+  const links = communicationLinks(projection.vehicle, projection.connection.status, mode);
   return (
     <Panel title="Communication">
       <div className="veh-links">
@@ -173,8 +172,8 @@ export function TelemetryPanel({
         <>
           {!config.transmitsEncoderDerivedSpeed ? (
             <p className="veh-note">
-              This vehicle's firmware does not transmit encoder-derived speed. Any speed shown
-              is PWM-derived — a commanded prototype velocity, not a measurement.
+              This vehicle's firmware does not transmit encoder-derived speed. Any speed shown is
+              PWM-derived — a commanded prototype velocity, not a measurement.
             </p>
           ) : null}
           <table className="data-table">
@@ -220,15 +219,21 @@ export function PositionPanel({
   mode: SystemMode;
 }) {
   const site = bailadilaDeposit5();
-  const provider = providerForMode(mode, toDecimalExtent(site.extent));
-  const position = projection.vehicle ? provider.positionFor(projection.vehicle) : null;
+  const extent = toDecimalExtent(site.extent);
+  const provider = providerForMode(mode, extent);
+  // Same resolver the map uses, so this panel can never contradict the marker beside it.
+  const position = projection.vehicle
+    ? resolveVehiclePosition(projection.vehicle, provider, extent)
+    : null;
 
   const heading = projection.vehicle?.provenance?.heading_rad;
   const headingState = fieldDataState(heading);
   const located = Boolean(position?.position);
 
   const odom = projection.vehicle?.positionOdom;
-  const odomValid = Boolean(odom && odom.status === "VALID" && typeof odom.xM === "number" && typeof odom.yM === "number");
+  const odomValid = Boolean(
+    odom && odom.status === "VALID" && typeof odom.xM === "number" && typeof odom.yM === "number",
+  );
 
   return (
     <Panel title="Position">
@@ -283,19 +288,31 @@ export function PositionPanel({
           </tr>
           <tr>
             <td>Local X (m)</td>
-            <td>{odomValid && typeof odom?.xM === "number" ? odom.xM.toFixed(3) : UNAVAILABLE_VALUE}</td>
+            <td>
+              {odomValid && typeof odom?.xM === "number" ? odom.xM.toFixed(3) : UNAVAILABLE_VALUE}
+            </td>
           </tr>
           <tr>
             <td>Local Y (m)</td>
-            <td>{odomValid && typeof odom?.yM === "number" ? odom.yM.toFixed(3) : UNAVAILABLE_VALUE}</td>
+            <td>
+              {odomValid && typeof odom?.yM === "number" ? odom.yM.toFixed(3) : UNAVAILABLE_VALUE}
+            </td>
           </tr>
           <tr>
             <td>Local Heading (rad)</td>
-            <td>{odomValid && typeof odom?.headingRad === "number" ? odom.headingRad.toFixed(3) : UNAVAILABLE_VALUE}</td>
+            <td>
+              {odomValid && typeof odom?.headingRad === "number"
+                ? odom.headingRad.toFixed(3)
+                : UNAVAILABLE_VALUE}
+            </td>
           </tr>
           <tr>
             <td>Distance Travelled (m)</td>
-            <td>{odomValid && typeof odom?.distanceM === "number" ? odom.distanceM.toFixed(3) : UNAVAILABLE_VALUE}</td>
+            <td>
+              {odomValid && typeof odom?.distanceM === "number"
+                ? odom.distanceM.toFixed(3)
+                : UNAVAILABLE_VALUE}
+            </td>
           </tr>
           <tr>
             <td>Provenance</td>
@@ -330,10 +347,26 @@ export function VehicleMapPanel({
   mode: SystemMode;
 }) {
   const site = bailadilaDeposit5();
-  const provider = providerForMode(mode, toDecimalExtent(site.extent));
-  // Only this vehicle. The peer is not drawn on an operator's own console.
-  const positions = projection.vehicle ? [provider.positionFor(projection.vehicle)] : [];
-  return <GeoSiteMap site={site} positions={positions} mode={mode} />;
+  const extent = toDecimalExtent(site.extent);
+  const provider = providerForMode(mode, extent);
+  // The fleet as the Twin carries it - this vehicle first, ringed as THIS VEHICLE, then
+  // the peer. Each marker keeps its own provenance; nothing is placed without a position.
+  // MAP-02: `resolveVehiclePosition` falls back to the Twin's explicitly simulated scene
+  // pose when the mode provider has none, so both trucks appear on both consoles.
+  const fleet = [projection.vehicle, projection.peer].filter(
+    (vehicle): vehicle is NonNullable<typeof vehicle> => vehicle !== null,
+  );
+  const positions = fleet.map((vehicle) => resolveVehiclePosition(vehicle, provider, extent));
+  return (
+    <Panel title={`Mine map — fleet (${projection.vehicleId})`}>
+      <GeoSiteMap
+        site={site}
+        positions={positions}
+        mode={mode}
+        ownVehicleId={projection.vehicleId}
+      />
+    </Panel>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -394,8 +427,7 @@ export function SafetyPanel({ projection }: { projection: VehicleProjection }) {
         </tbody>
       </table>
       <p className="veh-note faint">
-        Supplied by the safety subsystem through the Digital Twin. Never calculated in this
-        console.
+        Supplied by the safety subsystem through the Digital Twin. Never calculated in this console.
       </p>
     </Panel>
   );

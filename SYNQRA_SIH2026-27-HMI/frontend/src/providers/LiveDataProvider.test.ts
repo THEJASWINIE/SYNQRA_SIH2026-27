@@ -338,7 +338,9 @@ describe("LiveDataProvider message ingestion and validation pipeline", () => {
 
     expect(patches).toHaveLength(1);
     expect(patches[0]?.changes.vehicles?.["TRK-FUTURE"]?.mode).toBe("UNKNOWN");
-    expect(patches[0]?.changes.safety?.["TRK-FUTURE"]?.activeConstraint).toBe("UNKNOWN");
+    // HMI-SAFETY-01: the constraint NAME is the producer's and is kept verbatim (the
+    // governor's vocabulary is not the PDF's); an unrecognised risk band is still UNKNOWN.
+    expect(patches[0]?.changes.safety?.["TRK-FUTURE"]?.activeConstraint).toBe("QUANTUM_TUNNEL");
     expect(patches[0]?.changes.safety?.["TRK-FUTURE"]?.riskLevel).toBe("UNKNOWN");
   });
 

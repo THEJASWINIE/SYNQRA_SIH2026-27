@@ -94,6 +94,11 @@ NEVER_FROM_HARDWARE = frozenset(
         # prototype produces one. Listed here so the same guard that protects the
         # others protects the coordinate too - see GNSS_EQUIPPED_VEHICLES.
         "position_gnss",
+        # MAP-02: a Digital Twin SCENE pose is an invented demonstration coordinate.
+        # No instrument reports metres-from-the-extent-corner, so it can never be
+        # hardware-backed. It is written directly, always stamped SIMULATION, and this
+        # entry makes `put()` refuse it should anyone ever route it the ordinary way.
+        "position_scene",
     }
 )
 
@@ -231,6 +236,13 @@ class NormalizedTelemetry:
     rssi: Optional[float] = None
     snr: Optional[float] = None
 
+    # HMI-COMMS-01: WHO RECEIVED THE LoRa FRAME. The only truck-to-truck evidence this
+    # prototype produces is TRUCK_02 relaying TRUCK_01's LoRa frame over its own Wi-Fi
+    # (`source: V2V_VIA_TRUCK_02`, vehicle_B.ino). A frame heard by the bench serial
+    # gateway proves the sender's LoRa TX, not a vehicle-to-vehicle link, and is named
+    # LORA_GATEWAY so no consumer can mistake it for a peer. None for Wi-Fi/emulator.
+    lora_receiver_id: Optional[str] = None
+
     # Encoder pulse fields for physical local odometry (Pass 2)
     pulse_count: Optional[int] = None
     delta_pulses: Optional[int] = None
@@ -241,6 +253,18 @@ class NormalizedTelemetry:
     position_source: Optional[str] = None
     position_status: Optional[str] = None
     position_timestamp: Optional[float] = None
+
+    # MAP-02 Digital Twin SCENE pose: metres east/north of the published extent's
+    # south-west corner. A demonstration coordinate produced by `scene_position_sim`,
+    # never a measurement, and deliberately NOT a latitude/longitude so it can never be
+    # confused with a fix.
+    scene_x_m: Optional[float] = None
+    scene_y_m: Optional[float] = None
+    scene_heading_rad: Optional[float] = None
+    # MINE-ROUTES-02: which synthetic Digital Twin route the pose was sampled from, and
+    # which way along it (+1 outbound, -1 return). Metadata about the SIMULATION only.
+    scene_route_id: Optional[str] = None
+    scene_route_direction: Optional[int] = None
 
     @property
     def measurement_timestamp(self) -> float:
@@ -457,7 +481,28 @@ class TelemetryIngestor:
         pos_status = parsed.get("position_status", pos_dict.get("status"))
         pos_ts = _opt_float(parsed.get("position_timestamp", pos_dict.get("timestamp")))
 
+        # MAP-02 scene pose. Flat keys only: a scene coordinate is never nested under
+        # `position`, because that key belongs to the geographic contract above.
+        scene_x = _opt_float(parsed.get("scene_x_m"))
+        scene_y = _opt_float(parsed.get("scene_y_m"))
+        scene_heading = _opt_float(parsed.get("scene_heading_rad"))
+        raw_route = parsed.get("scene_route_id")
+        scene_route = str(raw_route)[:64] if isinstance(raw_route, str) and raw_route else None
+        raw_dir = _opt_int(parsed.get("scene_route_direction"))
+        scene_dir = raw_dir if raw_dir in (-1, 1) else None
+
         pulse_cnt = _opt_int(parsed.get("pulse_count", parsed.get("pulses", parsed.get("encoder_pulses"))))
+
+        # LoRa receiver identity, from the transport that actually carried the frame.
+        lora_receiver_id: Optional[str] = None
+        if transport == Transport.V2V:
+            src_tag = str(parsed.get("source", "")).upper()
+            if src_tag.startswith("V2V_VIA_"):
+                lora_receiver_id = src_tag[len("V2V_VIA_"):] or None
+            elif parsed.get("relay_vehicle_id"):
+                lora_receiver_id = str(parsed["relay_vehicle_id"]).upper()
+        elif transport == Transport.SERIAL_GATEWAY:
+            lora_receiver_id = "LORA_GATEWAY"
         delta_pulses = _opt_int(parsed.get("delta_pulses", parsed.get("pulses_delta")))
 
         normalized = NormalizedTelemetry(
@@ -477,6 +522,7 @@ class TelemetryIngestor:
             gz_rad_s=_opt_float(gyro.get("z")),
             pulse_count=pulse_cnt,
             delta_pulses=delta_pulses,
+            lora_receiver_id=lora_receiver_id,
             communication_state=parsed.get("communication_state") or parsed.get("communication_status"),
             raw_quality=parsed.get("data_quality"),
             rssi=_opt_float(comm.get("rssi", parsed.get("rssi"))),
@@ -486,6 +532,11 @@ class TelemetryIngestor:
             position_source=str(pos_source) if pos_source is not None else None,
             position_status=str(pos_status) if pos_status is not None else None,
             position_timestamp=pos_ts,
+            scene_x_m=scene_x,
+            scene_y_m=scene_y,
+            scene_heading_rad=scene_heading,
+            scene_route_id=scene_route,
+            scene_route_direction=scene_dir,
         )
         return self.ingest_normalized(normalized)
 
@@ -661,12 +712,19 @@ class TelemetryIngestor:
         elif t.transport in (Transport.V2V, Transport.SERIAL_GATEWAY):
             put("lora_rssi_dbm", t.rssi, observed)
             put("lora_snr_db", t.snr, observed)
+            # HMI-COMMS-01: the LoRa frame's own sequence and the modem that heard it.
+            # A V2V link needs a named vehicle at the receiving end; LORA_GATEWAY is not one.
+            put("v2v_sequence", t.sequence, observed)
+            put("lora_receiver_id", t.lora_receiver_id, derived)
 
         # LEGACY, retained so existing consumers keep working. Ambiguous by
         # construction - it does not say which radio produced it. New code must read
-        # the per-radio fields above.
+        # the per-radio fields above. A Wi-Fi frame crossed no LoRa radio, so its `snr`
+        # (the firmware's `remoteDataValid ? remoteSNR : 9.5f` fallback) is never stored
+        # as a measured SNR - HMI-COMMS-01.
         put("rssi_dbm", t.rssi, observed)
-        put("snr_db", t.snr, observed)
+        if t.transport != Transport.DIRECT_WIFI:
+            put("snr_db", t.snr, observed)
 
         # First-class GNSS position handling (Rules 1-12)
         if t.position_lat is not None and t.position_lon is not None:
@@ -720,6 +778,57 @@ class TelemetryIngestor:
                 logger.warning(
                     "GNSS position rejected (Rule 9 invalid coordinate/status/source): vehicle=%s lat=%s lon=%s status=%s source=%s",
                     t.vehicle_id, t.position_lat, t.position_lon, t.position_status, t.position_source,
+                )
+
+        # MAP-02: Digital Twin SCENE pose.
+        #
+        # ALWAYS SIMULATION, on every ingress, for every vehicle. There is deliberately no
+        # `physical_fix` branch here like the GNSS block above has: metres-from-the-
+        # extent-corner is a frame the Digital Twin invented for its own demonstration
+        # scene, and no sensor measures it. `is_simulated`, the transport and the caller's
+        # claims are all irrelevant - the answer is SIMULATION regardless, so there is no
+        # path by which a scene pose can reach a consumer stamped HARDWARE.
+        if t.scene_x_m is not None and t.scene_y_m is not None:
+            if math.isfinite(t.scene_x_m) and math.isfinite(t.scene_y_m):
+                fields["position_scene"] = Sourced(
+                    value={
+                        "x_m": float(t.scene_x_m),
+                        "y_m": float(t.scene_y_m),
+                        "heading_rad": (
+                            float(t.scene_heading_rad)
+                            if t.scene_heading_rad is not None and math.isfinite(t.scene_heading_rad)
+                            else None
+                        ),
+                        "frame": "SCENE_METRES",
+                        "status": "VALID",
+                        "source": "SIMULATION",
+                        "origin": "SIMULATION",
+                        "provenance_label": "SIMULATION · DIGITAL TWIN",
+                        "method": "DIGITAL_TWIN_SCENE_SIM",
+                        "reason": (
+                            "Digital Twin demonstration position in SCENE_METRES from the "
+                            "published extent's south-west corner. Not a GNSS fix, not a "
+                            "measurement, and not surveyed."
+                        ),
+                        # MINE-ROUTES-02: the synthetic route the simulation sampled this
+                        # pose from. Route metadata, never a measurement; absent when the
+                        # producer supplied none rather than defaulted.
+                        "route_id": t.scene_route_id,
+                        "route_direction": t.scene_route_direction,
+                        "route_classification": (
+                            "SYNTHETIC_DIGITAL_TWIN_ROUTE" if t.scene_route_id else None
+                        ),
+                    },
+                    timestamp=ts,
+                    source=Source.SIMULATION,
+                    origin=Source.SIMULATION,
+                    quality=quality,
+                    clock_domain=domain,
+                )
+            else:
+                logger.warning(
+                    "scene position rejected (non-finite): vehicle=%s x=%s y=%s",
+                    t.vehicle_id, t.scene_x_m, t.scene_y_m,
                 )
 
         # Pass 2: Physical local odometry calculation

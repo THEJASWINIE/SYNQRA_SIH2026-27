@@ -126,7 +126,7 @@ export function VehicleDetail({
   }
 
   const safety: SafetyState | undefined = state.safety[vehicleId];
-  const speed = speedView(safety);
+  const speed = speedView(safety, vehicle);
   const headway = headwayView(safety);
   const segmentId = vehicle.position.segmentId;
   const road: RoadState | undefined = segmentId ? state.road[segmentId] : undefined;
@@ -189,7 +189,7 @@ export function VehicleDetail({
           <div className="envelope-cell">
             <dt>Active constraint</dt>
             <dd className="envelope-value">
-              {safety ? (
+              {safety?.activeConstraint ? (
                 readable(safety.activeConstraint)
               ) : (
                 <span className="dim">{UNAVAILABLE}</span>
@@ -250,8 +250,8 @@ export function VehicleDetail({
             />
             <Field
               label="Risk"
-              value={safety ? safety.riskLevel : UNAVAILABLE}
-              note={safety ? "supplied — never re-banded" : undefined}
+              value={safety?.riskLevel ?? UNAVAILABLE}
+              note={safety?.riskLevel ? "supplied — never re-banded" : undefined}
             />
             {/* FR-003 AC2 — friction is never rendered bare. */}
             <Field
@@ -293,7 +293,7 @@ export function VehicleDetail({
             <Field label="Route" value={vehicle.routeId ?? UNAVAILABLE} />
           </dl>
           <div className="row-between">
-            {safety ? <StatusBadge token={riskToken(safety.riskLevel)} prefix="RISK" /> : null}
+            {safety?.riskLevel ? <StatusBadge token={riskToken(safety.riskLevel)} prefix="RISK" /> : null}
             <FreshnessIndicator view={vehicleFreshness} />
           </div>
         </Panel>

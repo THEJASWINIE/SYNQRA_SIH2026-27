@@ -72,6 +72,11 @@ export interface VehicleProjection {
    * vehicle's telemetry.
    */
   readonly peer: VehicleState | null;
+  /**
+   * The peer's CANONICAL safety state (HMI-SAFETY-01), when the producer supplied one.
+   * Read from the same `safety` slice as this vehicle's own; never derived here.
+   */
+  readonly peerSafety: SafetyState | null;
   readonly peerVehicleId: string | null;
 
   /** Shared, not vehicle-specific: this browser's link to the backend. */
@@ -115,13 +120,13 @@ export function projectVehicle(state: AppState, vehicleId: string): VehicleProje
   const commands = (state.commands ?? []).filter((command) => command.vehicleId === vehicleId);
 
   const dispatch =
-    Object.values(state.dispatch ?? {}).find((command) => command?.vehicleId === vehicleId) ??
-    null;
+    Object.values(state.dispatch ?? {}).find((command) => command?.vehicleId === vehicleId) ?? null;
 
   const events = (state.events ?? []).filter((event) => event.subjectId === vehicleId);
 
   const peerId = peerOf(vehicleId);
   const peer = peerId ? (state.vehicles?.[peerId] ?? null) : null;
+  const peerSafety = peerId ? (state.safety?.[peerId] ?? null) : null;
 
   return {
     vehicleId,
@@ -134,6 +139,7 @@ export function projectVehicle(state: AppState, vehicleId: string): VehicleProje
     dispatch,
     events,
     peer,
+    peerSafety,
     peerVehicleId: peerId,
     connection: state.connection,
   };

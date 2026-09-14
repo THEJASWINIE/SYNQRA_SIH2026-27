@@ -321,6 +321,8 @@ export const rawTwinVehicleSchema = z.object({
 
 export const RAW_SCHEMAS = {
   TwinVehicle: rawTwinVehicleSchema,
+  // HMI-SAFETY-01: the same Twin projection, read for its safety fields (normalizeTwinSafety).
+  TwinSafety: rawTwinVehicleSchema,
   VehicleState: rawVehicleStateSchema,
   SafetyState: rawSafetyStateSchema,
   RoadState: rawRoadStateSchema,

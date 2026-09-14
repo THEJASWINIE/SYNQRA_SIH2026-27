@@ -1175,3 +1175,1990 @@ button.vehicle-id {
   background: rgba(255, 255, 255, 0.02);
 }
 
+/* ===========================================================================
+   Dumper driver display (vehicle HMIs, spec §8-§11)
+   One dominant state banner + large value cells. No graphs. State is carried by
+   text and glyph as well as colour.
+   =========================================================================== */
+.drv { display: grid; gap: 12px; margin-bottom: 16px; }
+.drv-banner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "id state action" "why why why" "meta meta meta";
+  align-items: center;
+  gap: 4px 20px;
+  padding: 18px 22px;
+  border: 2px solid var(--line, #3a4048);
+  border-radius: 10px;
+  background: #171a1f;
+}
+.drv-banner-id { grid-area: id; font-size: 1.4rem; font-weight: 700; letter-spacing: 0.04em; }
+.drv-banner-state { grid-area: state; font-size: 2.6rem; font-weight: 800; letter-spacing: 0.06em; line-height: 1.1; }
+.drv-banner-action { grid-area: action; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.08em; text-align: right; }
+.drv-banner-why { grid-area: why; font-size: 1.05rem; }
+.drv-banner-meta { grid-area: meta; font-size: 0.85rem; letter-spacing: 0.04em; }
+.drv-grid { display: grid; gap: 12px; }
+.drv-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.drv-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.drv-cell {
+  padding: 14px 16px;
+  border: 1px solid var(--line, #3a4048);
+  border-radius: 8px;
+  background: #14171b;
+  min-width: 0;
+}
+.drv-cell-label { font-size: 0.78rem; letter-spacing: 0.1em; color: #9aa3ae; }
+.drv-cell-value { font-size: 1.7rem; font-weight: 700; margin-top: 4px; overflow-wrap: anywhere; }
+.drv-cell-em .drv-cell-value { font-size: 2.3rem; }
+.drv-cell-sub { font-size: 0.9rem; margin-top: 4px; color: #c4cbd3; }
+
+/* State colours. Each state also carries its text, so colour is reinforcement only. */
+.drv-safe .drv-banner { border-color: #2f8f5b; background: #10201a; }
+.drv-caution .drv-banner { border-color: #d3a41d; background: #241f0f; }
+.drv-following .drv-banner { border-color: #d3a41d; background: #241f0f; }
+.drv-slow-down .drv-banner { border-color: #e2741f; background: #2a1a0e; }
+.drv-stop .drv-banner { border-color: #e0463b; background: #2c1210; }
+.drv-degraded .drv-banner,
+.drv-data-stale .drv-banner,
+.drv-safety-data-unavailable .drv-banner { border-color: #c48be0; background: #1f1526; }
+.drv-slow-down .drv-banner-state,
+.drv-stop .drv-banner-state { font-size: 3.4rem; }
+
+.veh-details > summary {
+  cursor: pointer;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--line, #3a4048);
+  border-radius: 8px;
+  color: #9aa3ae;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 1100px) {
+  .drv-grid-3, .drv-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .drv-banner { grid-template-columns: 1fr; grid-template-areas: "id" "state" "action" "why" "meta"; }
+  .drv-banner-action { text-align: left; }
+}
+@media (max-width: 600px) {
+  .drv-grid-3, .drv-grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ===========================================================================
+   OPERATOR-HMI-01 — card-dashboard layout for the fixed TRUCK_01/TRUCK_02 consoles.
+   Scoped under .vehicle-hmi-standalone / .op-* so Control Room and Mine-Cast, which
+   share this stylesheet, are untouched. Every value shown under these classes still
+   comes from DriverScreen's own supplied data - this block is presentation only.
+   =========================================================================== */
+.op-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1.25rem;
+  background: var(--panel);
+  border-bottom: 2px solid var(--line);
+}
+.op-header-left { display: flex; align-items: center; gap: 0.6rem; }
+.op-brand-mark { font-size: 1.4rem; }
+.op-brand-title { font-weight: 800; letter-spacing: 0.04em; font-size: 0.95rem; }
+.op-brand-sub { font-size: 0.68rem; color: var(--text-faint); letter-spacing: 0.08em; }
+.op-header-center { text-align: center; flex: 1; min-width: 200px; }
+.op-header-page-title { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.05em; }
+.op-header-page-sub { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.12em; }
+.op-header-right { display: flex; align-items: center; gap: 0.9rem; }
+.op-live-badge { font-weight: 700; letter-spacing: 0.05em; padding: 2px 10px; border-radius: 999px; font-size: 0.78rem; }
+.op-live-live { color: var(--ok); border: 1px solid var(--ok); }
+.op-live-mock, .op-live-replay { color: var(--warn); border: 1px solid var(--warn); }
+.op-header-clock { font-size: 0.78rem; }
+.op-header-role { font-size: 0.68rem; letter-spacing: 0.1em; color: var(--text-faint); }
+
+.op-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--line);
+}
+
+.op-grid { display: grid; gap: 14px; margin-bottom: 14px; }
+.op-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.op-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.op-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #12151a;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.op-card-map { padding: 0; overflow: hidden; }
+.op-card-map .panel { border: 0; border-radius: 0; }
+.op-card-head { display: flex; align-items: center; gap: 10px; }
+.op-card-icon { font-size: 1.3rem; }
+.op-card-headings { flex: 1; min-width: 0; }
+.op-card-title { font-weight: 800; letter-spacing: 0.05em; font-size: 0.85rem; }
+.op-card-sub { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.06em; }
+.op-section-label { font-size: 0.72rem; letter-spacing: 0.1em; color: var(--text-faint); text-transform: uppercase; }
+.op-section-label-spaced { margin-top: 10px; }
+.op-peer-name { font-weight: 700; font-size: 1rem; }
+.op-row { display: flex; justify-content: space-between; gap: 10px; font-size: 0.85rem; padding: 2px 0; }
+.op-row-label { color: var(--text-dim); }
+.op-row-value { font-weight: 650; text-align: right; }
+.op-link-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.op-link-sub { font-size: 0.76rem; margin-top: -2px; }
+.op-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--line);
+}
+.op-pill-ok { color: var(--ok); border-color: var(--ok); }
+.op-pill-warn { color: var(--warn); border-color: var(--warn); }
+.op-pill-crit { color: var(--crit); border-color: var(--crit); }
+.op-pill-neutral { color: var(--text-dim); }
+.op-notes { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem; color: var(--text-dim); }
+.op-command-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; margin-top: 6px; }
+.op-btn { border: 0; border-radius: 8px; padding: 10px 18px; font-weight: 800; letter-spacing: 0.04em; cursor: pointer; font-size: 0.85rem; }
+.op-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.op-btn-hold { background: var(--warn); color: #1a1300; }
+.op-btn-stop { background: var(--crit); color: #2a0000; }
+.op-target-speed { display: flex; flex-direction: column; gap: 4px; }
+.op-target-input { display: flex; gap: 6px; }
+.op-target-input input { width: 110px; background: #0d0f12; border: 1px solid var(--line); border-radius: 6px; color: var(--text); padding: 6px 8px; }
+.op-target-unavailable { color: var(--text-faint); font-style: italic; }
+.op-command-status { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; }
+.op-command-result { margin-top: 8px; }
+.op-note { margin-top: 8px; }
+
+@media (max-width: 1200px) {
+  .op-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .op-grid-3, .op-grid-2 { grid-template-columns: 1fr; }
+  .op-header { flex-direction: column; align-items: flex-start; }
+  .op-header-center { text-align: left; }
+}
+
+/* ===========================================================================
+   CONTROL ROOM S1 — MINE-CAST INTEGRATION DECK.
+
+   Dense operations control-room layout matching the Mine-Cast visual language:
+   - 2D mine map as the dominant workspace
+   - Compact fleet panel on the left (sorted by vehicleId)
+   - Selected vehicle contextual panel on the right
+   - Compact top status strip with Digital Twin provenance
+   - Persistent footer disclosures
+   =========================================================================== */
+
+.cr-deck {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--bg-surface-dark, #0b1120);
+  color: var(--text-primary, #f1f5f9);
+  overflow: hidden;
+  padding: 0;
+}
+
+.cr-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.2));
+  flex-shrink: 0;
+}
+
+.cr-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cr-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-amber, #f59e0b);
+  text-transform: uppercase;
+}
+
+.cr-subtitle {
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  color: var(--text-dim, #94a3b8);
+}
+
+.cr-status-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cr-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+  font-size: 0.72rem;
+}
+
+.cr-pill-label {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.65rem;
+}
+
+.cr-pill-value {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.cr-status-pill[data-feed="LIVE"] .cr-pill-value {
+  color: #10b981;
+}
+
+.cr-status-pill[data-feed="REPLAY"] .cr-pill-value {
+  color: #38bdf8;
+}
+
+.cr-status-pill[data-feed="DISCONNECTED"] .cr-pill-value {
+  color: #f43f5e;
+}
+
+.cr-topbar-error {
+  padding: 0.25rem 0.6rem;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  font-size: 0.75rem;
+  border-radius: 3px;
+  width: 100%;
+}
+
+.cr-workspace {
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr) 330px;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .cr-workspace {
+    grid-template-columns: 270px minmax(0, 1fr);
+  }
+  .cr-col-selected {
+    grid-column: span 2;
+    max-height: 280px;
+  }
+}
+
+@media (max-width: 800px) {
+  .cr-workspace {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  .cr-col-selected {
+    grid-column: span 1;
+  }
+}
+
+.cr-col-fleet {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cr-col-fleet .panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+.cr-col-fleet .panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.cr-fleet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cr-fleet-card-wrapper {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.cr-fleet-card-wrapper:hover {
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+.cr-fleet-card-wrapper.cr-selected {
+  border-color: var(--accent-cyan, #06b6d4);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.35);
+}
+
+.cr-col-map {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.cr-col-map .panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 480px;
+  flex: 1;
+  margin-bottom: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+.cr-col-map .geo-site-map {
+  height: 100%;
+  min-height: 480px;
+  flex: 1;
+}
+
+/* S1 Digital Twin Workspace (2D Map / 3D Twin) */
+.cr-workspace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.65rem;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.cr-workspace-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cr-workspace-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.cr-workspace-subtitle {
+  font-size: 0.7rem;
+  color: var(--accent-cyan, #06b6d4);
+  background: rgba(6, 182, 212, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid rgba(6, 182, 212, 0.25);
+}
+
+.cr-view-toggle {
+  display: flex;
+  gap: 2px;
+  background: rgba(15, 23, 42, 0.95);
+  padding: 2px;
+  border-radius: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.cr-view-btn {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cr-view-btn:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cr-view-btn.active {
+  background: var(--accent-cyan, #06b6d4);
+  color: #0f172a;
+  border-color: var(--accent-cyan, #06b6d4);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+}
+
+/* MINE-ROUTES-02: HAUL ROUTES toggle beside the 2D/3D switch; the plan is a drawing. */
+.cr-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cr-route-toggle {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.28rem 0.6rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+  background: rgba(15, 23, 42, 0.95);
+  color: #94a3b8;
+  cursor: pointer;
+}
+.cr-route-toggle:hover { color: #f8fafc; border-color: rgba(148, 163, 184, 0.6); }
+.cr-route-toggle.active {
+  color: #0f172a;
+  background: #f3c56b;
+  border-color: #f3c56b;
+}
+.cr-route-toggle:focus-visible,
+.cr-view-btn:focus-visible { outline: 2px solid #22d3ee; outline-offset: 1px; }
+
+/* The plan is a drawing: crisp edges, no smoothing artefacts on hairlines. */
+.cr-plan { shape-rendering: geometricPrecision; text-rendering: optimizeLegibility; }
+.cr-plan text { font-family: "Bahnschrift", "DIN Alternate", "Roboto Condensed", "Arial Narrow", sans-serif; }
+
+/* S1-Native 3D Digital Twin Viewport */
+.cr-3d-workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 480px;
+  flex: 1;
+  position: relative;
+  background: #090d16;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0 0 4px 4px;
+}
+
+.cr-corridor-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.65rem;
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  font-size: 0.68rem;
+  flex-shrink: 0;
+}
+
+.cr-corridor-tag {
+  color: var(--accent-cyan, #06b6d4);
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.cr-corridor-strip { flex-wrap: wrap; gap: 0.25rem 0.75rem; }
+.cr-corridor-tag.faint { color: #94a3b8; font-weight: 500; }
+.cr-3d-provenance {
+  padding: 0.05rem 0.4rem;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 3px;
+  background: rgba(6, 182, 212, 0.1);
+}
+
+.cr-3d-canvas-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+.cr-3d-canvas-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.cr-3d-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.cr-cam-btn {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+  padding: 0.3rem 0.5rem;
+  min-width: 36px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cr-cam-btn:hover {
+  color: #06b6d4;
+  border-color: #06b6d4;
+  background: rgba(6, 182, 212, 0.15);
+  box-shadow: 0 0 6px rgba(6, 182, 212, 0.3);
+}
+
+.cr-3d-disclosures {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.65rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  color: #64748b;
+  background: rgba(15, 23, 42, 0.95);
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.cr-col-selected {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cr-col-selected .panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+.cr-col-selected .panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.6rem;
+}
+
+.cr-selected-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+}
+
+.cr-selected-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  margin-bottom: 0.2rem;
+}
+
+.cr-selected-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.cr-compact-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  margin-bottom: 0.35rem;
+  /* A real table that wraps, not the base .data-table's nowrap scroller: the selected
+     panel is narrow and a reason sentence must fold, never hide behind a scrollbar. */
+  display: table;
+  table-layout: fixed;
+  white-space: normal;
+  overflow-x: visible;
+}
+
+.cr-compact-table td {
+  padding: 0.2rem 0.35rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.cr-compact-table td:first-child {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.cr-compact-table td:last-child {
+  text-align: right;
+}
+
+.cr-selected-body h4 {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  margin: 0.35rem 0 0.15rem 0;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.cr-safety-alert {
+  padding: 0.4rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 3px;
+  color: #fca5a5;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0.25rem 0;
+}
+
+.cr-selected-actions {
+  margin-top: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.cr-btn-detail {
+  width: 100%;
+  padding: 0.45rem;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  border-radius: 3px;
+  color: #38bdf8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.cr-btn-detail:hover {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: #38bdf8;
+}
+
+.cr-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.35rem 1rem;
+  background: rgba(10, 15, 30, 0.95);
+  border-top: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.2));
+  font-size: 0.68rem;
+  color: var(--text-dim, #94a3b8);
+  flex-shrink: 0;
+}
+
+.cr-footer-tag {
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono, monospace);
+}
+
+.geo-site-header-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.75rem;
+  background: rgba(15, 23, 42, 0.7);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  font-size: 0.72rem;
+}
+
+.geo-site-corridor-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.75rem;
+  background: rgba(15, 23, 42, 0.85);
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+  font-size: 0.66rem;
+}
+
+.geo-marker-interactive {
+  cursor: pointer;
+}
+
+.geo-marker-vehicle-selected circle.geo-marker-vehicle {
+  filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.8));
+}
+
+/* ===========================================================================
+   MINE-CAST — spatial view shell.
+
+   Map-first industrial dispatch layout: a dominant centre column with overlay
+   panels either side. Reuses the existing tokens above, so Mine-Cast reads as
+   the same platform as the control room and the vehicle consoles rather than a
+   second design language.
+
+   Pass 1 has no 3D scene, so the centre column holds an explicit placeholder.
+   =========================================================================== */
+
+.minecast {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+  /*
+    The root never contributes page-level horizontal scroll. This is a GUARD, not the
+    fix: the grid tracks and table overrides below stop content overflowing in the first
+    place. Kept so a future panel cannot reintroduce a page-wide scrollbar unnoticed.
+  */
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/*
+  MINE-CAST TABLES WRAP INSTEAD OF SCROLLING SIDEWAYS.
+
+  The shared `.data-table` is `display: block; overflow-x: auto; white-space: nowrap`,
+  which is right for the control room's wide, many-column tables. In a ~280px Mine-Cast
+  side panel it means every long provenance or link-reason string produces a horizontal
+  scrollbar inside the panel.
+
+  Scoped to `.minecast` so the control room and vehicle consoles are untouched. Fixed
+  layout plus `overflow-wrap` lets a long value wrap in place; no information is hidden
+  or truncated.
+*/
+.minecast .data-table {
+  display: table;
+  /*
+    AUTO layout, not fixed.
+
+    The overflow came from `white-space: nowrap`, not from auto column sizing. With
+    wrapping restored, auto layout sizes each column to its content and respects the
+    container - and, unlike `fixed`, it does not force a narrow column that then has to
+    break a word down the middle. `UNAVAILABLE` rendering as `UNAVAIL/ABLE` is exactly
+    the kind of damage this HMI cannot afford on a status label.
+  */
+  table-layout: auto;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible;
+  white-space: normal;
+}
+
+.minecast .data-table td,
+.minecast .data-table th {
+  /*
+    `break-word` and not `anywhere`: a word breaks only when it genuinely cannot fit on a
+    line of its own, so ordinary labels stay whole and only a pathological token splits.
+  */
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+  vertical-align: top;
+}
+
+/*
+  MACHINE TOKENS MAY BREAK. HUMAN LABELS MAY NOT.
+
+  `overflow-wrap: break-word` is ignored when a browser computes a table's MIN-CONTENT
+  width, so an auto-layout table cannot shrink below its longest unbreakable token. The
+  provenance-class table has `SYNTHETIC_FOR_DEMO` in both columns, giving it a 288px
+  min-content inside a 292px panel body - 7px of overflow that `break-word` could not
+  resolve.
+
+  `anywhere` IS counted, so it is applied to the `.mono` cells only. Those hold machine
+  identifiers - enum names, DMS strings, vehicle ids - where wrapping mid-token costs
+  nothing and the full text is still shown. Prose and status words such as UNAVAILABLE
+  keep `break-word` above and stay intact.
+*/
+.minecast .data-table td.mono,
+.minecast .data-table th.mono,
+.minecast .mono {
+  /*
+    The table-cell selectors are required, not redundant: `.minecast .data-table td`
+    above has higher specificity than `.minecast .mono`, so a bare class rule here would
+    lose and the cell would keep `break-word`.
+  */
+  overflow-wrap: anywhere;
+}
+
+/* ---- top bar ---- */
+
+.mc-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.mc-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  margin-right: 8px;
+}
+
+.mc-brand-product {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 15px;
+}
+
+.mc-brand-site {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+.mc-topbar-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  max-width: 280px;
+  /*
+    The top bar already wraps. These let a slot yield rather than stretch: a long ISO
+    timestamp or a provider error message wraps inside its slot instead of widening the
+    bar past the viewport.
+  */
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.mc-topbar-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+
+.mc-feed {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.mc-feed[data-feed="LIVE"] {
+  color: var(--ok);
+}
+.mc-feed[data-feed="DEGRADED"] {
+  color: var(--warn);
+}
+.mc-feed[data-feed="REPLAY"] {
+  color: var(--info);
+}
+.mc-feed[data-feed="OFFLINE"] {
+  color: var(--crit);
+}
+
+/* ---- body: overlay panels around a dominant centre ---- */
+
+.mc-body {
+  display: grid;
+  /*
+    EVERY TRACK MUST BE ABLE TO SHRINK.
+
+    `1fr` is shorthand for `minmax(auto, 1fr)`, and an `auto` minimum is the content's
+    min-content width - so a wide child in the centre column would push the grid wider
+    than the viewport and scroll the whole page. `minmax(0, 1fr)` lets the centre column
+    shrink to whatever is left.
+
+    The side tracks are sized in `rem` with a percentage cap, so they scale with the root
+    font size instead of being correct at exactly one resolution.
+  */
+  grid-template-columns: minmax(15rem, 17%) minmax(0, 1fr) minmax(16rem, 19%);
+  gap: 12px;
+  padding: 12px;
+  flex: 1;
+  align-items: start;
+  /* The grid itself is also not allowed to exceed the viewport. */
+  max-width: 100%;
+  min-width: 0;
+}
+
+.mc-left,
+.mc-right,
+.mc-centre {
+  /*
+    A grid item's default `min-width: auto` is the same trap as `1fr` above: it refuses to
+    shrink below its content. Every column opts out explicitly.
+  */
+  min-width: 0;
+  max-width: 100%;
+}
+
+.mc-left,
+.mc-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /*
+    Vertical scrolling for long Fleet/Layers content is intended and preserved. Horizontal
+    is not: with the table and row fixes below there is nothing to scroll to sideways.
+  */
+  max-height: calc(100vh - 9rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.mc-centre {
+  min-height: 60vh;
+  display: flex;
+}
+
+/* Panels fill their column and never widen it to fit their contents. */
+.minecast .panel {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.minecast .panel-body {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/*
+  The three-column layout is the TARGET at 1366x768 and above, so the collapse threshold
+  sits below 1366 rather than at it. Previously `max-width: 1366px` matched a 1366-wide
+  viewport exactly and dropped the right column under the map.
+
+  Below that the map column stays dominant and the inspector stacks beneath rather than
+  being squeezed to nothing.
+*/
+@media (max-width: 1200px) {
+  .mc-body {
+    grid-template-columns: minmax(14rem, 30%) minmax(0, 1fr);
+  }
+  .mc-right {
+    grid-column: 1 / -1;
+    max-height: none;
+  }
+}
+
+/* Single column on a narrow display. The map keeps a usable height. */
+@media (max-width: 820px) {
+  .mc-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mc-left,
+  .mc-right {
+    grid-column: 1 / -1;
+    max-height: none;
+  }
+}
+
+/*
+  THE SPATIAL VIEWPORT.
+
+  Holds the WebGL canvas and, over it, a caption that cannot be dismissed. The canvas
+  fills the box; the caption sits on top with `pointer-events: none` so it never
+  intercepts a pan or a zoom.
+*/
+.mc-viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 60vh;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.mc-viewport canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Grab cursor, because the view pans. */
+  cursor: grab;
+}
+
+/*
+  The synthetic-terrain caveat, painted over the scene.
+
+  Deliberately part of the view rather than a panel elsewhere: a rendered landform is
+  persuasive, and a screenshot of it must carry its own provenance.
+*/
+.mc-viewport-caption {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  pointer-events: none;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
+.mc-viewport-synthetic {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.mc-viewport-extent {
+  color: var(--text-dim);
+}
+
+/*
+   MINECAST-01 — the vehicle marker label.
+
+   DOM rather than in-scene text: an SDF text mesh lost the WebGL context on this
+   hardware. This costs the GPU nothing and stays crisp at any zoom. Fixed screen size on
+   purpose - a truck label must be readable whether the camera is over the pit or the
+   whole site.
+*/
+.mc-marker-label {
+  display: inline-block;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(9, 12, 16, 0.82);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+/* Loading / no-WebGL notices. Same box as the canvas, so nothing shifts. */
+.mc-canvas-notice {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px;
+  background: linear-gradient(180deg, var(--panel-alt), var(--bg));
+}
+
+.mc-canvas-notice p {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 13px;
+}
+
+.mc-canvas-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  background: linear-gradient(180deg, var(--panel-alt), var(--bg));
+}
+
+.mc-placeholder-title {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  color: var(--warn);
+}
+
+.mc-canvas-placeholder p {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 13px;
+}
+
+/* ---- bottom bar ---- */
+
+.mc-bottombar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+
+/* ---- KPI row ---- */
+
+.mc-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mc-kpi {
+  padding: 8px 10px;
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.mc-kpi-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+
+.mc-kpi-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- fleet list ---- */
+
+.mc-fleet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mc-fleet-row {
+  display: grid;
+  /*
+    TWO COLUMNS, TWO ROWS - not four columns.
+
+    Four single-line columns could not fit "UNAVAILABLE" beside an id, a mode and a speed
+    in a 16rem panel, so the availability word was clipped against the panel edge. Nothing
+    is hidden or truncated to fix that: the same four values are laid out as
+
+        T01            UNAVAILABLE
+        NORMAL              4.2 m/s
+
+    which keeps the id dominant and the availability aligned right, and cannot overflow
+    because both tracks are `minmax(0, ...)`.
+  */
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  gap: 2px 8px;
+  align-items: baseline;
+  min-width: 0;
+  padding: 8px 10px;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.mc-fleet-row:hover {
+  background: #232932;
+}
+
+.mc-fleet-row.mc-selected {
+  border-left-color: var(--info);
+  background: #1e2530;
+}
+
+.mc-fleet-row[data-availability="AVAILABLE"] .mc-fleet-avail {
+  color: var(--ok);
+}
+.mc-fleet-row[data-availability="DEGRADED"] .mc-fleet-avail {
+  color: var(--warn);
+}
+.mc-fleet-row[data-availability="UNAVAILABLE"] .mc-fleet-avail {
+  color: var(--text-faint);
+}
+
+/*
+  Explicit placement, so the DOM order (id · mode · speed · availability) reads in the
+  2x2 layout as id/availability on the first line and mode/speed on the second.
+*/
+.mc-fleet-id {
+  grid-area: 1 / 1;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.mc-fleet-avail {
+  grid-area: 1 / 2;
+  justify-self: end;
+  text-align: right;
+}
+
+.mc-fleet-mode {
+  grid-area: 2 / 1;
+  min-width: 0;
+  /* A long supplied mode name truncates rather than widening the panel. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mc-fleet-speed {
+  grid-area: 2 / 2;
+  justify-self: end;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-fleet-mode,
+.mc-fleet-avail {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+/* ---- selected vehicle ---- */
+
+.mc-vehicle-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.mc-vehicle-id {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.mc-vehicle-avail {
+  margin-left: auto;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.mc-vehicle-head[data-availability="AVAILABLE"] .mc-vehicle-avail {
+  color: var(--ok);
+}
+.mc-vehicle-head[data-availability="DEGRADED"] .mc-vehicle-avail {
+  color: var(--warn);
+}
+.mc-vehicle-head[data-availability="UNAVAILABLE"] .mc-vehicle-avail {
+  color: var(--text-faint);
+}
+
+/*
+  The long truthfulness strings - link reasons, position reasons, provenance notes. Their
+  WORDING is unchanged; they simply wrap within the panel instead of scrolling sideways.
+*/
+.mc-link-reason {
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.mc-note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* The extent caveat must never be clipped - it is the thing the panel exists to say. */
+.mc-extent-caveat {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* The vehicle header: id and canonical id yield, availability stays on the right. */
+.mc-vehicle-head {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.mc-vehicle-head .mono {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* KPI numerals are tabular; the label above them wraps rather than stretching the tile. */
+.mc-kpi {
+  min-width: 0;
+}
+
+.mc-kpi-label {
+  overflow-wrap: break-word;
+}
+
+.mc-kpi-value {
+  overflow-wrap: break-word;
+}
+
+.mc-fleet-list {
+  min-width: 0;
+}
+
+.mc-layer-list,
+.mc-legend {
+  min-width: 0;
+}
+
+/* ---- layer drawer ---- */
+
+.mc-layer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mc-layer {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border-left: 2px solid transparent;
+}
+
+.mc-layer-unbuilt {
+  border-left-color: var(--line);
+  opacity: 0.72;
+}
+
+.mc-layer-row {
+  /*
+    FLEX WITH WRAP, not four rigid grid columns.
+
+    `SYNTHETIC_FOR_DEMO` plus `NOT BUILT` beside a checkbox and a label is wider than a
+    17rem drawer. As grid columns those badges forced the drawer - and therefore the page
+    - wider. As wrapping flex items they drop to a second line and stay fully readable.
+  */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+  font-size: 12px;
+  min-width: 0;
+}
+
+.mc-layer-row input[type="checkbox"] {
+  flex: none;
+}
+
+.mc-layer-label {
+  letter-spacing: 0.04em;
+  /* Takes the room left on the first line, and yields it when the badges need to wrap. */
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.mc-layer-provenance,
+.mc-layer-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 1px 5px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--text-faint);
+  /* A badge keeps its own text intact and wraps as a unit. */
+  flex: none;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.mc-layer-tag {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.mc-layer-note {
+  margin-top: 3px;
+  font-size: 10px;
+  line-height: 1.45;
+  /* Indent under the checkbox, without letting it push the row wider. */
+  padding-left: 26px;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* ---- legend ---- */
+
+.mc-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mc-legend-row {
+  display: grid;
+  /*
+    Swatch plus label on the first line, meaning wrapped beneath it. The previous
+    `1.6rem 9rem 1fr` left roughly 5rem for a full sentence in a 16rem panel, which
+    overflowed instead of wrapping.
+  */
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  gap: 2px 8px;
+  align-items: baseline;
+  font-size: 11px;
+  min-width: 0;
+}
+
+.mc-legend-row .mc-legend-swatch {
+  grid-area: 1 / 1;
+}
+
+.mc-legend-row .mc-legend-label {
+  grid-area: 1 / 2;
+}
+
+.mc-legend-row .mc-legend-meaning {
+  grid-area: 2 / 2;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.mc-legend-swatch {
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+}
+
+.mc-legend-normal {
+  color: var(--ok);
+}
+.mc-legend-caution {
+  color: var(--warn);
+}
+.mc-legend-degraded {
+  color: var(--hot);
+}
+.mc-legend-high_risk {
+  color: var(--crit);
+}
+.mc-legend-selected {
+  color: var(--info);
+}
+
+.mc-legend-label {
+  letter-spacing: 0.04em;
+}
+
+/* ---- extent caveat ---- */
+
+.mc-extent-caveat {
+  margin: 6px 0 10px;
+  padding: 7px 10px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--warn);
+  border-radius: 4px;
+  background: rgba(242, 165, 74, 0.08);
+}
+
+.mc-extent-not {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+/* ---- mini-map ---- */
+
+.mc-minimap {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mc-minimap-bg {
+  fill: var(--panel-alt);
+}
+
+.mc-minimap-extent {
+  stroke: var(--warn);
+  stroke-width: 1.4;
+}
+
+.mc-minimap-caption {
+  fill: var(--text-dim);
+  font-size: 7.5px;
+  letter-spacing: 0.08em;
+}
+
+.mc-minimap-caveat {
+  fill: var(--warn);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.mc-minimap-north line {
+  stroke: var(--text-dim);
+  stroke-width: 1;
+}
+
+.mc-minimap-north text {
+  fill: var(--text-dim);
+  font-size: 8px;
+}
+
+.mc-minimap-arrowhead {
+  fill: var(--text-dim);
+}
+
+.mc-minimap-scale line {
+  stroke: var(--text-faint);
+  stroke-width: 1;
+}
+
+.mc-minimap-scale text {
+  fill: var(--text-faint);
+  font-size: 7.5px;
+}
+
+.mc-minimap-empty {
+  fill: var(--text-faint);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+/* ===========================================================================
+   MINE-CAST — "INSTRUMENT DECK" design system.
+
+   Aesthetic thesis: the pit is a dark instrument surface; data is pinned to machines
+   like gauge labels; one amber accent; DIN-style condensed type. Dense, hard-edged,
+   industrial. Every rule here is scoped under .minecast — the operational consoles share
+   this stylesheet and must not change.
+
+   Fonts are chosen for what actually ships on operator workstations, in order, with no
+   CDN and no download: Bahnschrift (a DIN derivative, Windows 10+), DIN Alternate
+   (macOS), then condensed grotesques a site may have installed. A Linux CI runner falls
+   to the generic, and that is the one stated limitation of this choice.
+   =========================================================================== */
+.minecast {
+  --mc-font-display: "Bahnschrift", "Bahnschrift SemiCondensed", "DIN Alternate",
+    "Archivo Narrow", "Oswald", "Roboto Condensed", "Arial Narrow", sans-serif;
+  --mc-font-mono: "Cascadia Mono", "JetBrains Mono", "IBM Plex Mono", "SF Mono", Consolas,
+    ui-monospace, monospace;
+  --mc-ink: #0b0f14;
+  --mc-glass: rgba(14, 19, 26, 0.88);
+  --mc-glass-strong: rgba(11, 15, 20, 0.96);
+  --mc-edge: rgba(242, 165, 74, 0.32);
+  --mc-accent: var(--warn);
+  --mc-grid: rgba(255, 255, 255, 0.045);
+
+  font-family: var(--mc-font-display);
+  letter-spacing: 0.01em;
+  /* A faint engineering grid under everything: the surface reads as an instrument. */
+  background-color: var(--mc-ink);
+  background-image:
+    linear-gradient(var(--mc-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mc-grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.minecast .mono,
+.minecast .data-table td.mono,
+.minecast .data-table th.mono {
+  font-family: var(--mc-font-mono);
+}
+
+/* -- top bar: a hard amber hairline, product name set like a nameplate ---------- */
+.mc-topbar {
+  background: var(--mc-glass-strong);
+  border-top: 2px solid var(--mc-accent);
+  border-bottom: 1px solid var(--line);
+}
+.mc-brand-product {
+  font-size: 16px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.mc-brand-site {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.mc-topbar-label {
+  letter-spacing: 0.14em;
+}
+
+/* -- panels: layered glass, an accent tick on the title ------------------------- */
+.minecast .panel {
+  background: var(--mc-glass);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+}
+.minecast .panel-head {
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+}
+.minecast .panel-head h2 {
+  font-family: var(--mc-font-display);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding-left: 10px;
+  position: relative;
+}
+.minecast .panel-head h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  background: var(--mc-accent);
+}
+
+/* -- layer rail: real switches, not checkboxes ---------------------------------- */
+.minecast .mc-layer-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 30px;
+  height: 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  position: relative;
+  flex: 0 0 auto;
+  cursor: pointer;
+  transition: background 120ms ease-out;
+}
+.minecast .mc-layer-row input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  transition: transform 120ms ease-out, background 120ms ease-out;
+}
+.minecast .mc-layer-row input[type="checkbox"]:checked {
+  background: rgba(242, 165, 74, 0.22);
+  border-color: var(--mc-accent);
+}
+.minecast .mc-layer-row input[type="checkbox"]:checked::after {
+  transform: translateX(14px);
+  background: var(--mc-accent);
+}
+.minecast .mc-layer-row input[type="checkbox"]:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.minecast .mc-layer-row input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+}
+
+/* -- the anchored callout: THE signature element -------------------------------- */
+.mc-callout {
+  --mc-callout-accent: var(--mc-accent);
+  min-width: 160px;
+  max-width: 210px;
+  background: var(--mc-glass-strong);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--mc-callout-accent);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+  font-family: var(--mc-font-display);
+  color: var(--text);
+  /* Bottom-centre sits on the mast tip: the label grows out of its leader line. */
+  transform: translate(-50%, -100%);
+  animation: mc-callout-rise 240ms ease-out both;
+}
+.mc-callout-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--line);
+}
+.mc-callout-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.mc-tone-ok { background: var(--ok); }
+.mc-tone-warn { background: var(--warn); }
+.mc-tone-crit { background: var(--crit); }
+.mc-callout-id {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.mc-callout-avail {
+  margin-left: auto;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+}
+.mc-callout-chips {
+  margin: 0;
+  padding: 4px 8px 5px;
+  display: grid;
+  gap: 2px;
+}
+.mc-chip {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 11px;
+  line-height: 1.25;
+}
+.mc-chip dt {
+  margin: 0;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+}
+.mc-chip dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+.mc-chip-ok dd { color: var(--ok); }
+.mc-chip-warn dd { color: var(--warn); }
+.mc-chip-crit dd { color: var(--crit); }
+.mc-callout-provenance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  background: var(--mc-callout-accent);
+  color: var(--mc-ink);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.mc-callout-frame {
+  font-family: var(--mc-font-mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+/* The one entrance. Runs once when a truck first appears; never on a data update. */
+@keyframes mc-callout-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% + 10px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-callout { animation: none; }
+  .minecast .mc-layer-row input[type="checkbox"],
+  .minecast .mc-layer-row input[type="checkbox"]::after { transition: none; }
+}
+
+/* ===========================================================================
+   MINECAST-03 — operational deck composition.
+   Rails over the map, an identity badge, collapsible secondary panels, denser
+   fleet/vehicle panels. All under .minecast; the consoles match none of this.
+   =========================================================================== */
+.mc-identity {
+  display: flex;
+  flex-direction: column;
+  padding: 0 14px;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+.mc-identity-name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--mc-accent);
+}
+.mc-identity-kind {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+}
+
+/* -- the map is the deck: give it the height, keep the caption over it ---------- */
+.minecast .mc-centre { min-height: calc(100vh - 8.5rem); }
+.minecast .mc-viewport { min-height: calc(100vh - 8.5rem); }
+
+/* -- layer rail, top-right of the scene ------------------------------------------ */
+.mc-layer-rail {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 300px;
+  /* Never reaches the map-control rail below it (10px top + 158px rail + 10px bottom). */
+  max-height: calc(100% - 200px);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  pointer-events: auto;
+  z-index: 30;
+}
+.mc-layer-rail-collapsed { width: auto; }
+.mc-rail-toggle {
+  align-self: flex-end;
+  appearance: none;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  background: var(--mc-glass-strong);
+  color: var(--text);
+  font-family: var(--mc-font-display);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.mc-layer-rail-collapsed .mc-rail-toggle { border-bottom: 1px solid var(--line); }
+.mc-rail-toggle:focus-visible { outline: 2px solid var(--info); outline-offset: 1px; }
+.mc-layer-rail .panel {
+  border-radius: 0;
+  overflow-y: auto;
+  max-height: calc(100vh - 12rem);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+}
+/* Compact rail rows: the switch, the label, the provenance tag. Notes stay in the DOM
+   for the disclosure test and screen readers, but the rail keeps them short. */
+.mc-layer-rail .mc-layer-note { font-size: 9px; line-height: 1.2; }
+.mc-layer-rail .mc-layer { padding: 3px 0; }
+
+/* -- map controls, bottom-right of the scene -------------------------------------- */
+.mc-map-rail {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 30;
+}
+.mc-map-btn {
+  appearance: none;
+  width: 40px;
+  height: 30px;
+  border: 1px solid var(--line);
+  background: var(--mc-glass-strong);
+  color: var(--text);
+  font-family: var(--mc-font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.mc-map-btn:hover { border-color: var(--mc-accent); color: var(--mc-accent); }
+.mc-map-btn:focus-visible { outline: 2px solid var(--info); outline-offset: 1px; }
+
+/* The caption must clear the map rail on the right. */
+.minecast .mc-viewport-caption { right: 64px; }
+
+/* -- collapsible secondary panels -------------------------------------------------- */
+.mc-collapsible > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: var(--mc-glass);
+  font-family: var(--mc-font-display);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+}
+.mc-collapsible > summary::-webkit-details-marker { display: none; }
+.mc-collapsible > summary::before { content: "▸ "; color: var(--mc-accent); }
+.mc-collapsible[open] > summary::before { content: "▾ "; }
+.mc-collapsible[open] > summary { border-bottom: 0; }
+
+/* -- denser fleet rows: the map gets the room ------------------------------------- */
+.minecast .mc-fleet-row { padding: 6px 8px; }
+.minecast .mc-kpi-value { font-size: 15px; }
+.minecast .mc-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.minecast .mc-kpi { padding: 6px 8px; }
+.minecast .mc-kpi-label { font-size: 9px; letter-spacing: 0.06em; overflow-wrap: normal; }
+/* The Safety table must fit the 15rem column: "UNAVAILABLE" twice on one row. */
+.minecast .mc-left .data-table { width: 100%; }
+.minecast .mc-left .data-table td { padding: 4px 4px; font-size: 11px; }
+/* The 16rem vehicle column: a long single token (a method name, a file number) may break
+   mid-word rather than push the table past the panel edge. */
+.minecast .mc-right .data-table { width: 100%; }
+.minecast .mc-right .data-table td { overflow-wrap: anywhere; }
+
+@media (max-width: 1200px) {
+  .mc-layer-rail { width: 260px; }
+}
+
+/* ===========================================================================
+   MINE-ROUTES-02 — route/zone labels laid over the 3D scene (drei Html).
+   =========================================================================== */
+/* Engineering labels laid over the 3D corridors and zones (drei Html). */
+.mc-route-label,
+.mc-zone-label {
+  font-family: "Bahnschrift", "DIN Alternate", "Roboto Condensed", "Arial Narrow", sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  padding: 2px 6px;
+  border: 1px solid rgba(243, 197, 107, 0.55);
+  background: rgba(11, 15, 20, 0.82);
+  color: #f3e7c9;
+  pointer-events: none;
+}
+.mc-route-label-hl { border-color: #fff1d6; color: #fff1d6; box-shadow: 0 0 6px rgba(255, 241, 214, 0.5); }
+.mc-zone-label { border-color: rgba(148, 163, 184, 0.5); color: #e2e8f0; }
+.mc-route-label-syn {
+  margin-left: 6px;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+}

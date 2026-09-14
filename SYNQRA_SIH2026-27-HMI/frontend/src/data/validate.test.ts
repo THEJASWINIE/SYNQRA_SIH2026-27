@@ -16,8 +16,10 @@ describe("valid payloads (category 1)", () => {
     expect(result.ok).toBe(true);
   });
 
-  it("covers all sixteen contract messages", () => {
-    expect(MESSAGE_TYPES).toHaveLength(16);
+  it("covers all sixteen contract messages plus the Twin safety projection", () => {
+    // HMI-SAFETY-01 added `TwinSafety`: the same Twin projection frame, read for the
+    // safety producer's fields. 16 contract messages + 1 projection view.
+    expect(MESSAGE_TYPES).toHaveLength(17);
   });
 });
 

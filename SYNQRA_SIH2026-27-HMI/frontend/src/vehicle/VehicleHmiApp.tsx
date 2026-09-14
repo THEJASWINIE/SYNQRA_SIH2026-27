@@ -33,8 +33,8 @@ import {
   PositionPanel,
   SafetyPanel,
   TelemetryPanel,
-  VehicleMapPanel,
 } from "./panels";
+import { DriverScreen } from "./DriverScreen";
 import { type ConfiguredVehicleId, vehicleConfig } from "./vehicleConfig";
 import { projectVehicle } from "./vehicleProjection";
 
@@ -78,9 +78,40 @@ function VehicleHmiContent({ vehicleId }: { vehicleId: ConfiguredVehicleId }) {
 
   return (
     <div className="hmi vehicle-hmi-standalone" data-vehicle-id={vehicleId}>
-      <header className="hmi-header">
-        <h1 className="hmi-title">FOG-ORCHESTRATOR 2.0 — {config.displayName} HMI</h1>
+      <header className="op-header">
+        <div className="op-header-left">
+          <span className="op-brand-mark" aria-hidden="true">
+            ⛰
+          </span>
+          <div>
+            <div className="op-brand-title">FOG-ORCHESTRATOR 2.0</div>
+            <div className="op-brand-sub">SYNQRA · AUTONOMOUS MINING</div>
+          </div>
+        </div>
 
+        <div className="op-header-center">
+          <div className="op-header-page-title">{config.displayName} OPERATOR HMI</div>
+          <div className="op-header-page-sub">VEHICLE OPERATIONS</div>
+        </div>
+
+        <div className="op-header-right">
+          {/* Honest per HMI Rule 3: this shows the actual provider, never LIVE for MOCK/REPLAY. */}
+          <span
+            className={`op-live-badge op-live-${state.connection.provider.toLowerCase()}`}
+            data-provider={state.connection.provider}
+          >
+            {state.connection.provider === "REPLAY"
+              ? "▶ REPLAY — NOT LIVE"
+              : state.connection.provider === "MOCK"
+                ? "● MOCK — NOT LIVE"
+                : "● LIVE"}
+          </span>
+          <span className="op-header-clock faint mono">{state.clock.now.slice(0, 19).replace("T", " ")}</span>
+          <span className="op-header-role faint">OPERATOR VIEW</span>
+        </div>
+      </header>
+
+      <div className="op-status-strip">
         <dl className="hmi-header-slot">
           <dt>Vehicle Identity</dt>
           <dd>
@@ -112,17 +143,6 @@ function VehicleHmiContent({ vehicleId }: { vehicleId: ConfiguredVehicleId }) {
         </dl>
 
         <dl className="hmi-header-slot">
-          <dt>Mode</dt>
-          <dd>
-            {state.connection.provider === "REPLAY" ? (
-              <span className="replay-live replay-on">▶ REPLAY — NOT LIVE</span>
-            ) : (
-              <span className="replay-live">● LIVE</span>
-            )}
-          </dd>
-        </dl>
-
-        <dl className="hmi-header-slot">
           <dt>Operator session</dt>
           <dd>
             <OperatorBadge operator={operator} config={config} problem={operatorProblem} />
@@ -139,7 +159,7 @@ function VehicleHmiContent({ vehicleId }: { vehicleId: ConfiguredVehicleId }) {
         <dl>
           <BackendHealth />
         </dl>
-      </header>
+      </div>
 
       <main className="hmi-main">
         {freshness === null ? (
@@ -152,6 +172,17 @@ function VehicleHmiContent({ vehicleId }: { vehicleId: ConfiguredVehicleId }) {
           </div>
         ) : null}
 
+        {/*
+          The driver display (spec §8-§11): one dominant state, the very-high-priority
+          values, no graphs. Everything else on this console is operator/technician
+          detail and sits below it, collapsed by default.
+        */}
+        {/* The mine-site map now lives inside DriverScreen's own card grid. */}
+        <DriverScreen projection={projection} config={config} />
+
+        <details className="veh-details">
+          <summary>Operator commands and technician detail</summary>
+
         <div className="grid-2">
           <SafetyPanel projection={projection} />
           <CommandPanel projection={projection} config={config} operator={operator} />
@@ -162,14 +193,14 @@ function VehicleHmiContent({ vehicleId }: { vehicleId: ConfiguredVehicleId }) {
           <CommunicationPanel projection={projection} mode={state.connection.provider} />
         </div>
 
-        <div className="grid-2">
+        <div className="grid-1">
           <PositionPanel projection={projection} config={config} mode={state.connection.provider} />
-          <VehicleMapPanel projection={projection} mode={state.connection.provider} />
         </div>
 
         <div className="grid-1">
           <AlertsEventsPanel projection={projection} />
         </div>
+        </details>
       </main>
     </div>
   );

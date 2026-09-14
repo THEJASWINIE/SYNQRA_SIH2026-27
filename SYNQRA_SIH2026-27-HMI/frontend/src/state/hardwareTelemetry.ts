@@ -25,6 +25,9 @@
  *                          Absent - not zero - when the vehicle has no calibrated radius.
  *   ax/ay/az, gx/gy/gz     MEASURED. MPU6050.
  *   rssi_dbm               MEASURED. WiFi.RSSI().
+ *   speed_mps_reported     What the producer's own SPEED field carried (TRUCK_01: the
+ *                          firmware's rpm*pi*D/60). Kept beside speed_mps, never merged
+ *                          into it - HMI-DATA-01, see state/speedContract.ts.
  *   speed_mps_pwm_derived  NOT a measurement. TRUCK_02's commanded prototype velocity,
  *                          stored under its own name so nothing can mistake it for an
  *                          encoder reading.
@@ -161,6 +164,22 @@ export function derivedSpeedReadout(vehicle: VehicleState | null | undefined): H
 }
 
 /**
+ * The producer-reported speed, when the Twin carries one.
+ *
+ * Shown under its own name. It is what the packet's SPEED field said, not the canonical
+ * `speed_mps`, and the two are never reconciled here.
+ */
+export function reportedSpeedReadout(vehicle: VehicleState | null | undefined): HardwareReadout | null {
+  const f = field(vehicle, "speed_mps_reported");
+  if (!f) return null;
+  const built = readout(vehicle, "speed_mps_reported", "Speed (telemetry-reported)", "m/s", 2);
+  return {
+    ...built,
+    reason: "Producer's SPEED field, NOT the canonical encoder-derived speed_mps.",
+  };
+}
+
+/**
  * TRUCK_02's PWM-derived speed, when the Twin carries one.
  *
  * Labelled for what it is. This is NOT an encoder measurement and the label says so on
@@ -226,6 +245,8 @@ export function snrReadout(vehicle: VehicleState | null | undefined): HardwareRe
  */
 export function hardwareReadouts(vehicle: VehicleState | null | undefined): HardwareReadout[] {
   const rows: HardwareReadout[] = [rpmReadout(vehicle), derivedSpeedReadout(vehicle)];
+  const reported = reportedSpeedReadout(vehicle);
+  if (reported) rows.push(reported);
   const pwm = pwmSpeedReadout(vehicle);
   if (pwm) rows.push(pwm);
   rows.push(

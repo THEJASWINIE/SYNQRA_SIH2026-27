@@ -35,7 +35,7 @@ class V2VPacketParser:
         self.previous_health_map: Dict[str, str] = {}
         self.recovery_counters: Dict[str, int] = {}
 
-    def parse_v2v_packet(self, raw_packet: str, rssi: int = -75, snr: float = 9.5) -> Optional[Dict[str, Any]]:
+    def parse_v2v_packet(self, raw_packet: str, rssi: Optional[int] = None, snr: Optional[float] = None) -> Optional[Dict[str, Any]]:
         """
         Parses V2V packet string:
         STATE,TRUCK_01,28,240.00,0.00,-496,132,16696,703,342,191
@@ -58,7 +58,8 @@ class V2VPacketParser:
             logger.warning(f"[V2VPacketParser] Malformed input: Insufficient field count ({len(tokens)} < 11)")
             return None
 
-        # Check for appended RSSI/SNR key-value pairs
+        # Check for appended RSSI/SNR key-value pairs. HMI-COMMS-01: a packet that carries
+        # none has NO measured radio metric - None, never a stand-in constant.
         parsed_rssi = rssi
         parsed_snr = snr
         clean_tokens = []

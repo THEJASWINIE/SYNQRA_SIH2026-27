@@ -31,7 +31,7 @@ import { VehicleDetail } from "./VehicleDetail";
 import { FailureInjectionLab } from "./FailureInjectionLab";
 
 /**
- * CANONICAL SIH SCREENS — S1..S7.
+ * CANONICAL SIH SCREENS — S1..S6.
  *
  * The numbering is the contract; the component behind each number is an implementation
  * detail. Screens are therefore RE-LABELLED here rather than renamed on disk, so no test,

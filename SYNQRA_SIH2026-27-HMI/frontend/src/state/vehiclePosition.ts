@@ -27,10 +27,20 @@
  */
 
 import type { VehicleState } from "../contracts/domain";
-import type { DecimalExtent, LonLat } from "./geoSite";
+import { type DecimalExtent, type LonLat, unprojectFromLocalMetres } from "./geoSite";
 
 /** How a position was obtained. Distinct from the geographic provenance of a feature. */
-export type PositionProvenance = "PHYSICAL" | "SIMULATED" | "REPLAY" | "UNAVAILABLE" | "SOFTWARE_ONLY_SYNTHETIC";
+export type PositionProvenance =
+  | "PHYSICAL"
+  | "SIMULATED"
+  | "REPLAY"
+  | "UNAVAILABLE"
+  | "SOFTWARE_ONLY_SYNTHETIC"
+  /**
+   * MAP-02: a Digital Twin DEMONSTRATION pose the canonical Twin supplied in
+   * SCENE_METRES. Invented for the demonstration, never measured, and never a fix.
+   */
+  | "SIMULATED_TWIN_SCENE";
 
 export interface VehiclePosition {
   vehicleId: string;
@@ -39,6 +49,11 @@ export interface VehiclePosition {
   provenance: PositionProvenance;
   /** Why a position is absent, stated rather than implied. */
   reason?: string | undefined;
+  /** Canonical heading in radians, when supplied. */
+  headingRad?: number | null | undefined;
+  /** MINE-ROUTES-02: Twin-supplied route metadata for a scene pose. Null when absent. */
+  routeId?: string | null | undefined;
+  routeDirection?: number | null | undefined;
 }
 
 /**
@@ -198,6 +213,158 @@ export function positionsFor(
   return Object.keys(vehicles)
     .sort()
     .map((id) => provider.positionFor(vehicles[id] as VehicleState));
+}
+
+// ---------------------------------------------------------------------------
+// MAP-02 — the Digital Twin demonstration scene pose
+// ---------------------------------------------------------------------------
+
+/** The label a Twin scene pose carries wherever it is shown. Never says GNSS. */
+export const TWIN_SCENE_LABEL = "SIMULATION · DIGITAL TWIN";
+
+/** The only frame a drawable scene pose may be expressed in. */
+export const SCENE_FRAME = "SCENE_METRES";
+
+/**
+ * A Digital Twin DEMONSTRATION position, when the canonical Twin supplied one.
+ *
+ * ==========================================================================
+ *  THIS IS THE ONE PLACE SCENE_METRES BECOMES A MAP COORDINATE.
+ *
+ *  The Twin supplies metres east/north of the published extent's south-west corner
+ *  (`scene_position_sim` on the backend). Turning that into a lon/lat needs the extent
+ *  and nothing else - no vehicle id, no hardcoded coordinate, no per-screen maths - so
+ *  it happens here and every screen consumes the result.
+ *
+ *  THE REFUSALS, all of which leave the vehicle undrawn rather than plausible:
+ *    * a pose in any frame other than SCENE_METRES
+ *    * a pose whose status is not VALID
+ *    * a pose without finite numbers
+ *    * a pose CLAIMING a physical/hardware origin - a scene coordinate is invented by
+ *      construction, so a hardware claim on one is a contradiction, not evidence
+ * ==========================================================================
+ *
+ * The result is stamped `SIMULATED_TWIN_SCENE` and captioned SIMULATION · DIGITAL TWIN.
+ * It is never labelled GNSS, GPS, physical, surveyed or hardware-derived.
+ */
+export function twinScenePosition(
+  vehicle: VehicleState,
+  extent: DecimalExtent,
+): VehiclePosition | null {
+  const scene = drawableScenePose(vehicle);
+  if (!scene) return null;
+
+  const southWest: LonLat = { lon: extent.west, lat: extent.south };
+  return {
+    vehicleId: vehicle.vehicleId,
+    position: unprojectFromLocalMetres({ x: scene.xM, y: scene.yM }, southWest),
+    provenance: "SIMULATED_TWIN_SCENE",
+    reason: scene.reason,
+    headingRad: scene.headingRad,
+    routeId: scene.routeId,
+    routeDirection: scene.routeDirection,
+  };
+}
+
+/** A scene pose the Twin supplied and this application is willing to draw. */
+export interface DrawableScenePose {
+  /** Metres east of the published extent's south-west corner. */
+  readonly xM: number;
+  /** Metres north of the same corner. */
+  readonly yM: number;
+  readonly headingRad: number | null;
+  /** Always SCENE_METRES — a pose in any other frame is refused, not converted. */
+  readonly frame: string;
+  readonly method: string;
+  readonly provenanceLabel: string;
+  readonly reason: string;
+  /** Twin-supplied route metadata, when present. */
+  readonly routeId: string | null;
+  readonly routeDirection: number | null;
+}
+
+/**
+ * THE one validator for a Twin scene pose. Both consumers go through it.
+ *
+ * The 2D site map (`twinScenePosition`) turns the result into a lon/lat; Mine-Cast's 3D
+ * scene consumes the scene metres directly, since its terrain is built in this very
+ * frame. Sharing this function is what stops the two views from ever disagreeing about
+ * whether a truck may be drawn, or about where it is.
+ *
+ * Returns null - drawing nothing - for every case in the refusal list on
+ * `twinScenePosition`.
+ */
+export function drawableScenePose(vehicle: VehicleState): DrawableScenePose | null {
+  const scene = vehicle.positionScene;
+  if (!scene) return null;
+  if (scene.frame !== SCENE_FRAME) return null;
+  if (scene.status !== "VALID") return null;
+  if (
+    typeof scene.xM !== "number" ||
+    typeof scene.yM !== "number" ||
+    !Number.isFinite(scene.xM) ||
+    !Number.isFinite(scene.yM)
+  ) {
+    return null;
+  }
+  // A scene pose is invented by definition. One that claims hardware is malformed.
+  const origin = (scene.origin || "").toUpperCase();
+  const source = (scene.source || "").toUpperCase();
+  if (origin !== "SIMULATION" || source !== "SIMULATION") return null;
+
+  const headingRad =
+    typeof scene.headingRad === "number" && Number.isFinite(scene.headingRad)
+      ? scene.headingRad
+      : null;
+
+  return {
+    xM: scene.xM,
+    yM: scene.yM,
+    headingRad,
+    frame: scene.frame,
+    method: scene.method,
+    routeId: typeof scene.routeId === "string" ? scene.routeId : null,
+    routeDirection: scene.routeDirection === 1 || scene.routeDirection === -1 ? scene.routeDirection : null,
+    provenanceLabel: scene.provenanceLabel,
+    reason: scene.reason ?? `${TWIN_SCENE_LABEL}. Demonstration position, not a measurement.`,
+  };
+}
+
+/**
+ * One vehicle's position for the map: a real fix first, the Twin's demo pose second.
+ *
+ * The mode provider is asked FIRST and always wins when it produced a coordinate, so a
+ * genuine physical fix can never be displaced by a demonstration pose. Only when the
+ * provider has nothing - which is every LIVE case today, since no GNSS exists - does the
+ * Twin's explicitly simulated scene pose get drawn, under its own label.
+ *
+ * When neither supplies anything the provider's own UNAVAILABLE answer is returned
+ * unchanged, so its reason survives.
+ */
+export function resolveVehiclePosition(
+  vehicle: VehicleState,
+  provider: VehiclePositionProvider,
+  extent: DecimalExtent,
+): VehiclePosition {
+  const fromProvider = provider.positionFor(vehicle);
+  if (fromProvider.position !== null) return fromProvider;
+  return twinScenePosition(vehicle, extent) ?? fromProvider;
+}
+
+/**
+ * Positions for a fleet, in a stable order, including Twin demo poses.
+ *
+ * The map-facing counterpart of `positionsFor`, which stays provider-only for callers
+ * that must see exactly what the mode provider said.
+ */
+export function fleetPositions(
+  vehicles: Record<string, VehicleState>,
+  provider: VehiclePositionProvider,
+  extent: DecimalExtent,
+): VehiclePosition[] {
+  return Object.keys(vehicles)
+    .sort()
+    .map((id) => resolveVehiclePosition(vehicles[id] as VehicleState, provider, extent));
 }
 
 /** Only the vehicles that genuinely have a position to draw. */

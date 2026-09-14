@@ -26,12 +26,11 @@ import type {
   SafetyState,
   SlotState,
   SystemHealth,
+  TwinFieldProvenance,
   VehicleState,
   VisibilityForecast,
 } from "../contracts/domain";
 import {
-  ACTIVE_CONSTRAINTS,
-  type ActiveConstraint,
   CRITICALITIES,
   type Criticality,
   HEALTH_STATES,
@@ -46,8 +45,6 @@ import {
   type VehicleMode,
 } from "../contracts/enums";
 import type { Estimate } from "../contracts/primitives";
-import type { RawTwinField, RawTwinVehicle } from "../contracts/raw";
-import type { TwinFieldProvenance } from "../contracts/domain";
 import type {
   RawAlert,
   RawArrivalPlan,
@@ -62,6 +59,8 @@ import type {
   RawSafetyState,
   RawSlotState,
   RawSystemHealth,
+  RawTwinField,
+  RawTwinVehicle,
   RawVehicleState,
   RawVisibilityForecast,
 } from "../contracts/raw";
@@ -84,8 +83,6 @@ function toEnum<T extends string>(value: unknown, allowed: readonly T[], fallbac
 }
 
 const toVehicleMode = (v: unknown): VehicleMode => toEnum(v, VEHICLE_MODES, "UNKNOWN");
-const toActiveConstraint = (v: unknown): ActiveConstraint =>
-  toEnum(v, ACTIVE_CONSTRAINTS, "UNKNOWN");
 const toRiskLevel = (v: unknown): RiskLevel => toEnum(v, RISK_LEVELS, "UNKNOWN");
 const toCriticality = (v: unknown): Criticality => toEnum(v, CRITICALITIES, "UNKNOWN");
 const toSlotStatus = (v: unknown): SlotStatus => toEnum(v, SLOT_STATUSES, "UNKNOWN");
@@ -103,7 +100,6 @@ const toEstimate = (e: { value: number | null; sigma: number | null }): Estimate
 // ---------------------------------------------------------------------------
 // Message normalizers — contract §2–§11
 // ---------------------------------------------------------------------------
-
 
 /**
  * P6.1 — normalize one canonical Twin vehicle projection.
@@ -151,33 +147,37 @@ export function normalizeTwinVehicle(raw: RawTwinVehicle): VehicleState {
   const stamped = (Object.values(dynamic) as RawTwinField[]).find(
     (f) => f.available && f.timestamp !== null,
   );
-  const timestamp = stamped?.timestamp != null
-    ? new Date(stamped.timestamp * 1000).toISOString()
-    : new Date(0).toISOString();
+  const timestamp =
+    stamped?.timestamp != null
+      ? new Date(stamped.timestamp * 1000).toISOString()
+      : new Date(0).toISOString();
 
   const roadId = stringOf("road_id");
 
   const gnssField = field("position_gnss");
-  const rawGnss = gnssField?.available && typeof gnssField.value === "object" && gnssField.value !== null
-    ? (gnssField.value as Record<string, unknown>)
-    : null;
-  const positionGnss = rawGnss && typeof rawGnss.latitude === "number" && typeof rawGnss.longitude === "number"
-    ? {
-        latitude: rawGnss.latitude,
-        longitude: rawGnss.longitude,
-        source: String(rawGnss.source ?? "GNSS"),
-        status: String(rawGnss.status ?? "VALID"),
-        timestamp: typeof rawGnss.timestamp === "number" ? rawGnss.timestamp : null,
-        receivedAt: typeof rawGnss.received_at === "number" ? rawGnss.received_at : null,
-        origin: typeof rawGnss.origin === "string" ? rawGnss.origin : null,
-        transport: typeof rawGnss.transport === "string" ? rawGnss.transport : null,
-      }
-    : null;
+  const rawGnss =
+    gnssField?.available && typeof gnssField.value === "object" && gnssField.value !== null
+      ? (gnssField.value as Record<string, unknown>)
+      : null;
+  const positionGnss =
+    rawGnss && typeof rawGnss.latitude === "number" && typeof rawGnss.longitude === "number"
+      ? {
+          latitude: rawGnss.latitude,
+          longitude: rawGnss.longitude,
+          source: String(rawGnss.source ?? "GNSS"),
+          status: String(rawGnss.status ?? "VALID"),
+          timestamp: typeof rawGnss.timestamp === "number" ? rawGnss.timestamp : null,
+          receivedAt: typeof rawGnss.received_at === "number" ? rawGnss.received_at : null,
+          origin: typeof rawGnss.origin === "string" ? rawGnss.origin : null,
+          transport: typeof rawGnss.transport === "string" ? rawGnss.transport : null,
+        }
+      : null;
 
   const odomField = field("position_odom");
-  const rawOdom = odomField && typeof odomField.value === "object" && odomField.value !== null
-    ? (odomField.value as Record<string, unknown>)
-    : null;
+  const rawOdom =
+    odomField && typeof odomField.value === "object" && odomField.value !== null
+      ? (odomField.value as Record<string, unknown>)
+      : null;
   const positionOdom = rawOdom
     ? {
         xM: typeof rawOdom.x_m === "number" ? rawOdom.x_m : null,
@@ -191,10 +191,45 @@ export function normalizeTwinVehicle(raw: RawTwinVehicle): VehicleState {
         method: String(rawOdom.method ?? "NONE"),
         status: String(rawOdom.status ?? "UNAVAILABLE"),
         originType: String(rawOdom.origin_type ?? "NONE"),
-        verificationLabel: typeof rawOdom.verification_label === "string" ? rawOdom.verification_label : undefined,
+        verificationLabel:
+          typeof rawOdom.verification_label === "string" ? rawOdom.verification_label : undefined,
         reason: typeof rawOdom.reason === "string" ? rawOdom.reason : undefined,
       }
     : null;
+
+  // MAP-02: the Digital Twin demonstration scene pose. Read under its own name and kept
+  // apart from `position_gnss` - a scene pose is not a fix and must never be normalized
+  // into one. Only a pose carrying real numbers survives; anything else stays null so the
+  // map draws nothing rather than something plausible.
+  const sceneField = field("position_scene");
+  const rawScene =
+    sceneField?.available && typeof sceneField.value === "object" && sceneField.value !== null
+      ? (sceneField.value as Record<string, unknown>)
+      : null;
+  const positionScene =
+    rawScene && typeof rawScene.x_m === "number" && typeof rawScene.y_m === "number"
+      ? {
+          xM: rawScene.x_m,
+          yM: rawScene.y_m,
+          headingRad: typeof rawScene.heading_rad === "number" ? rawScene.heading_rad : null,
+          frame: String(rawScene.frame ?? "UNKNOWN"),
+          status: String(rawScene.status ?? "UNAVAILABLE"),
+          source: String(rawScene.source ?? "UNKNOWN"),
+          origin: String(rawScene.origin ?? "UNKNOWN"),
+          provenanceLabel: String(rawScene.provenance_label ?? "UNAVAILABLE"),
+          method: String(rawScene.method ?? "NONE"),
+          reason: typeof rawScene.reason === "string" ? rawScene.reason : undefined,
+          routeId: typeof rawScene.route_id === "string" ? rawScene.route_id : null,
+          routeDirection:
+            rawScene.route_direction === 1 || rawScene.route_direction === -1
+              ? rawScene.route_direction
+              : null,
+          routeClassification:
+            typeof rawScene.route_classification === "string"
+              ? rawScene.route_classification
+              : null,
+        }
+      : null;
 
   return {
     vehicleId: raw.vehicle_id,
@@ -209,6 +244,7 @@ export function normalizeTwinVehicle(raw: RawTwinVehicle): VehicleState {
     },
     positionGnss,
     positionOdom,
+    positionScene,
     speedMps: numberOf("speed_mps"),
     accelMps2: numberOf("acceleration_mps2"),
     gradeRad: null,
@@ -219,6 +255,92 @@ export function normalizeTwinVehicle(raw: RawTwinVehicle): VehicleState {
     routeId: roadId,
     provenance,
     hasHardwareData: raw.has_hardware_data ?? false,
+  };
+}
+
+/**
+ * HMI-SAFETY-01 — the canonical Twin's safety fields, projected as a `SafetyState`.
+ *
+ * The solver writes its outputs into the Twin as per-vehicle fields (`v_safe_mps`,
+ * `safe_headway_m`, `headway_m`, `lead_vehicle_id`, `active_constraint`, `risk_level`,
+ * `headway_violation`, `envelope_violation` - twin_projection.py VEHICLE_PROJECTION_FIELDS).
+ * This copies them. It computes none of them, and it returns `null` - no safety slice at
+ * all - when the Twin holds no available `v_safe_mps`, so a vehicle without a safety
+ * producer reads SAFETY DATA UNAVAILABLE rather than a slice full of defaults.
+ *
+ * Fields the Twin does not carry stay null (UNAVAILABLE). `actualSpeed` is the Twin's
+ * canonical `speed_mps` when available and NaN otherwise - never a substitute.
+ */
+export function normalizeTwinSafety(raw: RawTwinVehicle): SafetyState | null {
+  const dynamic = raw.dynamic ?? {};
+  const field = (name: string): RawTwinField | undefined => dynamic[name];
+  const available = (name: string): RawTwinField | null => {
+    const f = field(name);
+    return f && f.available ? f : null;
+  };
+  const numberOf = (name: string): number | null => {
+    const f = available(name);
+    return f && typeof f.value === "number" && Number.isFinite(f.value) ? f.value : null;
+  };
+  const stringOf = (name: string): string | null => {
+    const f = available(name);
+    return f && typeof f.value === "string" ? f.value : null;
+  };
+  const booleanOf = (name: string): boolean | null => {
+    const f = available(name);
+    return f && typeof f.value === "boolean" ? f.value : null;
+  };
+
+  const vSafeField = available("v_safe_mps");
+  if (!vSafeField) return null;
+
+  const provenance: Record<string, TwinFieldProvenance> = {};
+  for (const name of [
+    "v_safe_mps",
+    "safe_headway_m",
+    "headway_m",
+    "lead_vehicle_id",
+    "active_constraint",
+    "risk_level",
+    "headway_violation",
+    "envelope_violation",
+    "speed_mps",
+  ]) {
+    const f = field(name);
+    if (!f) continue;
+    provenance[name] = {
+      value: f.value,
+      timestamp: f.timestamp,
+      source: f.source,
+      origin: f.origin,
+      quality: f.quality,
+      ageS: f.age_s,
+      available: f.available,
+      clockDomain: f.clock_domain,
+      freshness: f.freshness,
+    };
+  }
+
+  const constraint = stringOf("active_constraint");
+  const risk = stringOf("risk_level");
+  const speed = numberOf("speed_mps");
+
+  return {
+    vehicleId: raw.vehicle_id,
+    timestamp:
+      vSafeField.timestamp != null
+        ? new Date(vSafeField.timestamp * 1000).toISOString()
+        : new Date(0).toISOString(),
+    vSafe: numberOf("v_safe_mps"),
+    hSafe: numberOf("safe_headway_m"),
+    actualSpeed: speed ?? Number.NaN,
+    headwayCurrent: numberOf("headway_m"),
+    leadVehicleId: stringOf("lead_vehicle_id"),
+    activeConstraint: constraint,
+    riskLevel: risk === null ? null : toRiskLevel(risk),
+    headwayViolation: booleanOf("headway_violation"),
+    envelopeViolation: booleanOf("envelope_violation"),
+    provenance,
   };
 }
 
@@ -253,7 +375,8 @@ export function normalizeSafetyState(raw: RawSafetyState): SafetyState {
     actualSpeed: raw.actual_speed,
     headwayCurrent: raw.headway_current,
     leadVehicleId: raw.lead_vehicle_id,
-    activeConstraint: toActiveConstraint(raw.active_constraint),
+    // Verbatim: the producer's constraint name is displayed as supplied (HMI-SAFETY-01).
+    activeConstraint: typeof raw.active_constraint === "string" ? raw.active_constraint : null,
     riskLevel: toRiskLevel(raw.risk_level),
     // Violation flags are copied as supplied. Absent stays null — no local comparison
     // is substituted here; that is a display-time concern (contract §12 item 8).

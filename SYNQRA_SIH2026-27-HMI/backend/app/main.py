@@ -348,7 +348,13 @@ TELEMETRY_ALLOWLIST = frozenset({
     "vehicle_id", "sequence_number", "sequence", "rpm", "speed", "speed_mps",
     "speed_value", "acceleration", "gyroscope", "communication",
     "communication_state", "communication_status", "data_quality",
-    "rssi", "snr", "timestamp", "source_timestamp",
+    "rssi", "snr", "timestamp", "source_timestamp", "source",
+    # MAP-02: Digital Twin demonstration scene pose. This is the SIMULATED ingress, and
+    # the ingestor stamps a scene pose SIMULATION unconditionally, so these keys can
+    # never become a hardware position claim.
+    "scene_x_m", "scene_y_m", "scene_heading_rad",
+    # MINE-ROUTES-02: route metadata for the scene pose (simulation-only, informational).
+    "scene_route_id", "scene_route_direction",
 })
 
 
@@ -674,6 +680,18 @@ async def ingest_telemetry(request: Request) -> Response | Dict[str, Any]:
             raise HTTPException(status_code=400, detail="Invalid speed: must be finite")
         if speed_raw < 0.0:
             raise HTTPException(status_code=400, detail="Invalid speed: negative speed is invalid")
+
+    # Timestamps are unix epoch seconds (TelemetryPayload.timestamp: float). A string or
+    # non-finite value used to be cached as-is and crashed /api/vehicles later with a
+    # TypeError on `now - ts`. Reject it here, before any cache/Twin/broadcast mutation.
+    for k in ("timestamp", "source_timestamp"):
+        if k in payload and payload[k] is not None:
+            ts_raw = payload[k]
+            if isinstance(ts_raw, bool) or not isinstance(ts_raw, (int, float)) or not math.isfinite(ts_raw):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Invalid {k}: must be unix epoch seconds as a finite number",
+                )
 
     # Protection: Active LIVE hardware telemetry takes precedence over mock updates
     existing = vehicle_telemetry_store.get(vid)

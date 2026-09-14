@@ -13,6 +13,8 @@ export default defineConfig({
         main: resolve(__dirname, "index.html"),
         truck01: resolve(__dirname, "truck01.html"),
         truck02: resolve(__dirname, "truck02.html"),
+        // Fourth client view of the same canonical Twin. Separate entry, shared backend.
+        minecast: resolve(__dirname, "mine-cast.html"),
       },
     },
   },

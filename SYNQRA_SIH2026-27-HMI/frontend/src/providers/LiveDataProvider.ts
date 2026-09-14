@@ -43,6 +43,7 @@ import {
   normalizeSafetyState,
   normalizeSlotState,
   normalizeSystemHealth,
+  normalizeTwinSafety,
   normalizeTwinVehicle,
   normalizeVehicleState,
   normalizeVisibilityForecast,
@@ -72,6 +73,9 @@ const KEYED_TARGET: Partial<Record<MessageType, keyof NormalizedBatch>> = {
   // P6.1: the canonical Twin projection lands in the SAME vehicles slice as the legacy
   // VehicleState envelope. One representation, one store - never two.
   TwinVehicle: "vehicles",
+  // HMI-SAFETY-01: the Twin's solver fields land in the SAME safety slice as a contract
+  // §3 SafetyState message. One representation of safety, one store.
+  TwinSafety: "safety",
   VehicleState: "vehicles",
   SafetyState: "safety",
   RoadState: "road",
@@ -87,6 +91,7 @@ const KEYED_TARGET: Partial<Record<MessageType, keyof NormalizedBatch>> = {
 // biome-ignore lint/suspicious/noExplicitAny: dispatch table across 15 distinct schemas
 const NORMALIZERS: Record<MessageType, (raw: any) => unknown> = {
   TwinVehicle: normalizeTwinVehicle,
+  TwinSafety: normalizeTwinSafety,
   VehicleState: normalizeVehicleState,
   SafetyState: normalizeSafetyState,
   RoadState: normalizeRoadState,
@@ -747,6 +752,17 @@ export class LiveDataProvider implements DataProvider {
         const normalizer = NORMALIZERS[type];
         if (normalizer) {
           const normalized = normalizer(result.value);
+          if (normalized === null) {
+            // A Twin projection without a safety producer's output: the vehicle's
+            // safety slice is REMOVED, never left holding the previous value.
+            if (type === "TwinSafety") {
+              const vid = (result.value as { vehicle_id: string }).vehicle_id;
+              const list = [...(deletions?.safety ?? [])];
+              if (!list.includes(vid)) list.push(vid);
+              deletions = { ...(deletions ?? {}), safety: list };
+            }
+            continue;
+          }
           this.collect(batch, type, normalized);
         }
       }
@@ -785,6 +801,7 @@ export class LiveDataProvider implements DataProvider {
       } else if ("type" in obj && obj.type === "twin_vehicle_update" && "data" in obj) {
         // P6.1 — the canonical Twin projection. This is the authoritative live path.
         processItems("TwinVehicle", obj.data);
+        processItems("TwinSafety", obj.data);
       } else if ("type" in obj && obj.type === "connection_established" && "twin" in obj) {
         // Initial snapshot. Normalized through exactly the same path as subsequent
         // twin_vehicle_update frames, so there is only ever one representation.
@@ -794,6 +811,7 @@ export class LiveDataProvider implements DataProvider {
           for (const projection of Object.values(vehicles)) {
             if (projection && typeof projection === "object") {
               processItems("TwinVehicle", projection);
+              processItems("TwinSafety", projection);
             }
           }
         }
@@ -832,30 +850,12 @@ export class LiveDataProvider implements DataProvider {
         // Fabricating state in the client is exactly as wrong as fabricating it in the
         // backend. The canonical `twin_vehicle_update` frame carries the real values,
         // including their unavailability.
-      } else if ("type" in obj && obj.type === "connection_established" && "vehicles" in obj && obj.vehicles && typeof obj.vehicles === "object") {
-        for (const [vid, rawVeh] of Object.entries(obj.vehicles as Record<string, unknown>)) {
-          const d = rawVeh as Record<string, unknown>;
-          const ts = typeof d.timestamp === "number" ? new Date(d.timestamp * 1000).toISOString() : this.nowIso();
-          const vState = {
-            vehicle_id: vid,
-            timestamp: ts,
-            position: {
-              x: vid === "TRUCK_01" ? 120.0 : 80.0,
-              y: 50.0,
-              segment_id: "SEG_01",
-              offset_m: 10.0,
-            },
-            speed_mps: typeof d.speed_value === "number" ? d.speed_value : (typeof d.speed === "number" ? d.speed : 0.0),
-            accel_mps2: d.acceleration && typeof d.acceleration === "object" && "z" in d.acceleration ? Number(d.acceleration.z) : 0.0,
-            grade_rad: 0.0,
-            friction_est: { value: 0.8, sigma: 0.05 },
-            mode: d.communication_status === "ONLINE" ? "TRAVELING" : "STOPPED",
-            comm_confidence: d.communication_status === "ONLINE" ? 0.95 : 0.0,
-            vehicle_kind: "TRUCK",
-            route_id: "ROUTE_MAIN",
-          };
-          processItems("VehicleState", vState);
-        }
+      } else if ("type" in obj && obj.type === "connection_established") {
+        // HMI-DATA-01: a `connection_established` frame WITHOUT a Twin snapshot carries
+        // no canonical state. This branch used to build a VehicleState from the legacy
+        // `vehicles` cache with speed 0.0, x=120/80, SEG_01, friction 0.8 and
+        // comm_confidence 0.95 when the fields were absent - fabricated telemetry. The
+        // backend now always sends `vehicles: {}`; either way, nothing is invented.
       } else {
         // Direct map: { VehicleState: [...], SafetyState: [...] }
         for (const [tStr, items] of Object.entries(obj)) {

@@ -79,8 +79,16 @@ export interface LinkStatus {
   readonly dataState: DataState;
   /** Why the state is what it is. A state without a reason is a guess. */
   readonly reason: string;
-  /** The peer at the other end, when the link has a named one. */
+  /**
+   * The peer at the other end, when the EVIDENCE names one: for V2V the vehicle whose
+   * LoRa modem received this vehicle's frame (`lora_receiver_id`). Never the configured
+   * "other truck", never inferred from the vehicle list.
+   */
   readonly peerId?: string | undefined;
+  /** What received the LoRa frame - a vehicle id, or LORA_GATEWAY for the bench gateway. */
+  readonly receiverId?: string | undefined;
+  /** The LoRa frame's own sequence (`v2v_sequence`), when a LoRa frame was received. */
+  readonly sequence?: number | null | undefined;
   /** Age of the newest evidence, in seconds, as the Twin reported it. */
   readonly ageS?: number | null | undefined;
   /** Radio metrics belonging to THIS link. Never borrowed from another. */
@@ -224,24 +232,54 @@ export function backendLink(
 export const NO_V2V_EVIDENCE_REASON =
   "No LoRa frame evidence has reached the Digital Twin for this vehicle. " +
   "Telemetry arriving over DIRECT_WIFI crossed no LoRa radio, so it carries no V2V metrics. " +
-  "V2V status requires measured LoRa RSSI/SNR, which reach the backend only through the LoRa gateway.";
+  "V2V status requires a LoRa frame received by the OTHER vehicle (TRUCK_02 relays TRUCK_01's frame as V2V_VIA_TRUCK_02).";
+
+export const GATEWAY_NOT_V2V_REASON =
+  "This vehicle's LoRa frame was received by the bench serial gateway, not by a vehicle. " +
+  "That proves its LoRa transmitter, not a truck-to-truck link, so V2V stays UNAVAILABLE.";
+
+export const RECEIVER_UNKNOWN_REASON =
+  "LoRa metrics were supplied without a receiver identity, so no vehicle-to-vehicle link can be claimed.";
+
+/** The Twin's name for the bench receiver. Not a vehicle, never a peer. */
+export const LORA_GATEWAY_RECEIVER = "LORA_GATEWAY";
 
 /**
  * Truck-to-truck link.
  *
- * Evidence is the per-radio LoRa fields. Their PRESENCE is the proof a LoRa frame was
- * received and measured; their freshness is how recently. With neither field supplied the
- * answer is UNAVAILABLE - not DISCONNECTED, because "we have no way to tell" and "we
- * checked and it is down" are different statements and only one of them is true here.
+ * Evidence is a LoRa frame from THIS vehicle received by ANOTHER VEHICLE: the per-radio
+ * LoRa metrics measured by that receiver plus its identity (`lora_receiver_id`, written
+ * by the ingestor from the relay source). The peer is that receiver - never the
+ * configured other truck, never inferred from the vehicle list or from telemetry
+ * arriving over Wi-Fi.
+ *
+ * With no such evidence the answer is UNAVAILABLE - not DISCONNECTED, because "we have
+ * no way to tell" and "we checked and it is down" are different statements and only one
+ * of them is true here. A frame heard by the bench gateway is reported for what it is.
  */
-export function v2vLink(
-  vehicle: VehicleState | null | undefined,
-  peerId: string | null,
-): LinkStatus {
+export function v2vLink(vehicle: VehicleState | null | undefined): LinkStatus {
+  const rssiField = field(vehicle, "lora_rssi_dbm");
+  const snrField = field(vehicle, "lora_snr_db");
+  const receiverField = field(vehicle, "lora_receiver_id");
+  const seqField = field(vehicle, "v2v_sequence");
+
+  const receiverId =
+    receiverField?.available &&
+    typeof receiverField.value === "string" &&
+    receiverField.value !== ""
+      ? receiverField.value
+      : null;
+  const sequence =
+    seqField?.available && typeof seqField.value === "number" && Number.isFinite(seqField.value)
+      ? seqField.value
+      : null;
+  const atGateway = receiverId === LORA_GATEWAY_RECEIVER;
+  const where = atGateway ? " (at gateway)" : receiverId ? ` (at ${receiverId})` : "";
+
   const rssi = metric(
     vehicle,
     "lora_rssi_dbm",
-    "LoRa RSSI",
+    `LoRa RSSI${where}`,
     "dBm",
     0,
     "No LoRa RSSI measured. Not substituted from Wi-Fi.",
@@ -249,29 +287,47 @@ export function v2vLink(
   const snr = metric(
     vehicle,
     "lora_snr_db",
-    "LoRa SNR",
+    `LoRa SNR${where}`,
     "dB",
     1,
     "No LoRa SNR measured. Not substituted from Wi-Fi.",
   );
-
-  const rssiField = field(vehicle, "lora_rssi_dbm");
-  const snrField = field(vehicle, "lora_snr_db");
 
   const states: DataState[] = [];
   if (rssiField) states.push(fieldDataState(rssiField));
   if (snrField) states.push(fieldDataState(snrField));
   const evidence = states.filter((s) => s !== "UNAVAILABLE");
 
+  const base = {
+    label: "V2V",
+    bearer: "LoRa 433 MHz",
+    metrics: [rssi, snr],
+    receiverId: receiverId ?? undefined,
+    sequence,
+  };
+
   if (evidence.length === 0) {
     return {
-      label: "V2V",
-      bearer: "LoRa 433 MHz",
+      ...base,
       state: "UNAVAILABLE",
       dataState: "UNAVAILABLE",
       reason: NO_V2V_EVIDENCE_REASON,
-      peerId: peerId ?? undefined,
-      metrics: [rssi, snr],
+    };
+  }
+  if (atGateway) {
+    return {
+      ...base,
+      state: "UNAVAILABLE",
+      dataState: "UNAVAILABLE",
+      reason: GATEWAY_NOT_V2V_REASON,
+    };
+  }
+  if (receiverId === null) {
+    return {
+      ...base,
+      state: "UNAVAILABLE",
+      dataState: "UNAVAILABLE",
+      reason: RECEIVER_UNKNOWN_REASON,
     };
   }
 
@@ -286,19 +342,18 @@ export function v2vLink(
   const ageS = [rssiField?.ageS, snrField?.ageS]
     .filter((age): age is number => typeof age === "number")
     .sort((a, b) => a - b)[0];
+  const source = provenanceLabel(rssiField ?? snrField);
 
   return {
-    label: "V2V",
-    bearer: "LoRa 433 MHz",
+    ...base,
     state,
     dataState,
     reason:
       state === "STALE"
-        ? `No recent LoRa frame${peerId ? ` from ${peerId}` : ""}.`
-        : `Measured LoRa frame metrics supplied${peerId ? ` for the ${peerId} link` : ""}.`,
-    peerId: peerId ?? undefined,
+        ? `No recent LoRa frame received by ${receiverId}. Source: ${source}.`
+        : `LoRa frame from this vehicle received by ${receiverId}${sequence !== null ? ` (seq ${sequence})` : ""}. Source: ${source}.`,
+    peerId: receiverId,
     ageS: ageS ?? null,
-    metrics: [rssi, snr],
   };
 }
 
@@ -325,14 +380,26 @@ export const SIMULATED_V2I_REASON =
  * When a real roadside unit is built, this function gains an evidence branch exactly like
  * `v2vLink` - and not before.
  */
+export const REPLAYED_V2I_REASON =
+  "REPLAY. Recorded frames are being replayed; no infrastructure link exists now or existed in the recording.";
+
 export function v2iLink(mode: string): LinkStatus {
   const simulated = mode === "MOCK" || mode === "SIMULATION";
+  const replay = mode === "REPLAY";
   return {
     label: "V2I",
-    bearer: simulated ? "LoRa 433 MHz (SIMULATED)" : "LoRa 433 MHz",
+    bearer: simulated
+      ? "LoRa 433 MHz (SIMULATED)"
+      : replay
+        ? "LoRa 433 MHz (REPLAY)"
+        : "LoRa 433 MHz",
     state: "UNAVAILABLE",
     dataState: "UNAVAILABLE",
-    reason: simulated ? SIMULATED_V2I_REASON : NO_PHYSICAL_V2I_REASON,
+    reason: simulated
+      ? SIMULATED_V2I_REASON
+      : replay
+        ? REPLAYED_V2I_REASON
+        : NO_PHYSICAL_V2I_REASON,
     metrics: [],
   };
 }
@@ -340,9 +407,8 @@ export function v2iLink(mode: string): LinkStatus {
 /** The three links, in the order the panel renders them. */
 export function communicationLinks(
   vehicle: VehicleState | null | undefined,
-  peerId: string | null,
   connectionStatus: BrowserConnectionStatus,
   mode: string,
 ): LinkStatus[] {
-  return [v2vLink(vehicle, peerId), v2iLink(mode), backendLink(vehicle, connectionStatus)];
+  return [v2vLink(vehicle), v2iLink(mode), backendLink(vehicle, connectionStatus)];
 }

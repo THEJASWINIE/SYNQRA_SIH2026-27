@@ -30,6 +30,7 @@ import type {
   VehicleState,
 } from "../contracts/domain";
 import type { AlertSeverity } from "../contracts/enums";
+import { type ActualSpeed, resolveActualSpeed } from "./speedContract";
 
 // ---------------------------------------------------------------------------
 // Units
@@ -121,7 +122,13 @@ export function activeBottleneck(
 // ---------------------------------------------------------------------------
 
 export interface SpeedView {
+  /**
+   * km/h of the DISPLAYED actual speed (speedContract): the Twin's canonical `speed_mps`
+   * when a vehicle slice is given and carries one, else the solver's evaluated speed.
+   */
   actualKmh: number;
+  /** Source and solver operand of `actualKmh`, kept apart so neither is mislabelled. */
+  actual: ActualSpeed;
   /** Null when Task 2 supplied no safe speed. NEVER substituted. */
   safeKmh: number | null;
   /**
@@ -144,14 +151,20 @@ export const OVER_SAFE_SPEED_TEXT = "OVER SAFE SPEED";
  * rounded in a direction that changes meaning. When it is absent the pair is
  * incomparable, and no violation marker may be shown — there is nothing to violate.
  */
-export function speedView(safety: SafetyState | undefined): SpeedView | null {
+export function speedView(
+  safety: SafetyState | undefined,
+  vehicle?: VehicleState | null,
+): SpeedView | null {
   if (!safety) return null;
 
   const safeSpeedUnavailable = safety.vSafe === null;
+  // The violation is judged on the pair the solver evaluated, never on a different speed.
   const violation = safety.vSafe !== null && safety.actualSpeed > safety.vSafe;
+  const actual = resolveActualSpeed(vehicle, safety);
 
   return {
-    actualKmh: safety.actualSpeed * MPS_TO_KMH,
+    actualKmh: (actual.mps ?? safety.actualSpeed) * MPS_TO_KMH,
+    actual,
     safeKmh: kmh(safety.vSafe),
     violation,
     violationText: violation ? OVER_SAFE_SPEED_TEXT : null,

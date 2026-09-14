@@ -78,8 +78,10 @@ class GatewayTelemetryParser:
             gx = float(kv_map.get("GX", 0.0))
             gy = float(kv_map.get("GY", 0.0))
             gz = float(kv_map.get("GZ", 0.0))
-            rssi = int(kv_map.get("RSSI", -65))
-            snr = float(kv_map.get("SNR", 9.0))
+            # HMI-COMMS-01: the gateway appends RSSI/SNR it measured; a line without them
+            # carries no radio metric. None, never -65 / 9.0.
+            rssi = int(kv_map["RSSI"]) if "RSSI" in kv_map else None
+            snr = float(kv_map["SNR"]) if "SNR" in kv_map else None
         except (ValueError, TypeError):
             return None
 
