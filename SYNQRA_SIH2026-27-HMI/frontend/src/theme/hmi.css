@@ -1931,6 +1931,308 @@ button.vehicle-id {
 }
 
 /* ===========================================================================
+   DIGITAL-TWIN-OPERATIONAL-FLOW-01 — APP FRAME: the HMIs are viewport-bound
+   interfaces, not scrolling pages. The document never scrolls; each column or
+   card owns its own overflow. Applies to the Control Room shell (S1..S6) and the
+   operator HMIs. Mine-Cast has its own frame (.minecast) and is untouched.
+   =========================================================================== */
+html, body, #root { height: 100%; }
+body { overflow: hidden; }
+
+.hmi:not(.minecast) {
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+.hmi:not(.minecast) .hmi-header { padding: 0.35rem 1rem; gap: 1rem; row-gap: 0.2rem; }
+.hmi:not(.minecast) .hmi-title { font-size: 1rem; margin: 0; }
+.hmi:not(.minecast) .hmi-nav { padding-top: 0.15rem; padding-bottom: 0.15rem; }
+.hmi:not(.minecast) .hmi-main {
+  flex: 1;
+  min-height: 0;
+  /* Secondary screens may be taller than the frame: they scroll INSIDE the frame,
+     never the document. S1 and the operator dashboard fit exactly (below). */
+  overflow: auto;
+  padding: 0.5rem 0.65rem;
+  gap: 0.5rem;
+}
+/* The freshness notice is one compact line, not a banner block. */
+.hmi:not(.minecast) .hmi-banner {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.25rem 0.65rem;
+  flex: 0 0 auto;
+}
+.hmi:not(.minecast) .hmi-banner-title { font-size: 0.72rem; white-space: nowrap; }
+.hmi:not(.minecast) .hmi-banner p {
+  margin: 0;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* -- Control Room S1: the deck fills the frame; the map column fits by height -------- */
+.hmi-main > .cr-deck { flex: 1; min-height: 0; height: auto; }
+/* THE MAP IS THE PRIORITY. Side panels are medium: narrow fixed tracks, the centre takes
+   everything else. (Mine-Cast keeps its own .minecast frame; nothing here reaches it.) */
+.cr-workspace {
+  grid-template-columns: var(--track-fleet, 232px) minmax(0, 1fr) var(--track-selected, 272px);
+}
+@media (min-width: 1700px) {
+  .cr-workspace {
+    grid-template-columns: var(--track-fleet, 270px) minmax(0, 1fr) var(--track-selected, 320px);
+  }
+}
+/* 2D: the map column is the sheet, no wider. The <svg> sets its own width from its height
+   (GeoSiteMap), the column is sized to it, and the side columns share what is left. The
+   header and meta line are kept out of the column's intrinsic width. */
+.cr-workspace[data-workspace-mode="2D"] {
+  grid-template-columns: var(--track-fleet, minmax(0, 1fr)) auto var(--track-selected, minmax(0, 1fr));
+}
+.cr-workspace[data-workspace-mode="2D"] .cr-col-map .cr-workspace-header,
+.cr-workspace[data-workspace-mode="2D"] .cr-col-map .cr-site-meta-bar,
+.cr-workspace[data-workspace-mode="2D"] .cr-col-map .cr-corridor-strip { width: 0; min-width: 100%; }
+.cr-workspace[data-workspace-mode="2D"] .cr-col-map .cr-map-frame { width: auto; max-width: none; align-self: center; }
+/* The active 2D MAP toggle already names the view; the chip only made the header wrap. */
+.cr-workspace[data-workspace-mode="2D"] .cr-col-map .cr-workspace-subtitle { display: none; }
+.cr-col-fleet .panel-body { padding: 0.35rem; }
+.cr-fleet-list { gap: 0.35rem; }
+.cr-col-fleet .vehicle { font-size: 0.78rem; }
+.cr-col-selected .panel-body { padding: 0.45rem; }
+.cr-selected-body { font-size: 0.74rem; gap: 0.3rem; }
+.cr-compact-table { font-size: 0.7rem; }
+.cr-workspace-header { padding: 0.25rem 0.55rem; }
+.cr-workspace-title { font-size: 0.66rem; }
+.cr-topbar { flex: 0 0 auto; padding-top: 0.35rem; padding-bottom: 0.35rem; }
+.cr-workspace { padding: 0.5rem; gap: 0.5rem; }
+.cr-footer { flex: 0 0 auto; }
+.cr-col-map .panel { min-height: 0; }
+.cr-col-map .panel-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+.cr-col-map .cr-map-workspace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+/* The plan scales to the height left over; aspect is preserved by the viewBox. */
+.cr-col-map .cr-map-frame {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+}
+.cr-col-map .cr-site-meta-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0;
+  flex: 0 0 auto;
+}
+.cr-col-map .cr-site-meta-bar dt { font-size: 0.6rem; }
+.cr-col-map .cr-site-meta-bar dd { font-size: 0.7rem; margin: 0; }
+.cr-col-map .cr-site-meta-bar .faint { display: none; }
+.cr-col-map .cr-legend-drawer { flex: 0 0 auto; font-size: 0.7rem; }
+.cr-col-map .cr-legend-drawer[open] dl { max-height: 8rem; overflow: auto; }
+/* The long-form notes and the "unavailable layers" list under the plan repeat what the
+   strip, the legend drawer and the deck footer already state; in S1 the plan gets that
+   height. They stay in the DOM (and in the operator/technician maps). */
+.cr-col-map .panel-body > p.faint,
+.cr-col-map .panel-body > dl.fields:not(.cr-site-meta-bar) { display: none; }
+.cr-3d-workspace { min-height: 0; }
+/* Everything above and below the plan is one line each; the plan gets the rest. */
+.cr-col-map .panel-head { padding: 0.3rem 0.6rem; }
+.cr-col-map .panel-head h2 { font-size: 0.8rem; margin: 0; }
+.cr-col-map .cr-site-meta-bar dd,
+.cr-col-map .cr-site-meta-bar dt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* The plan sheet carries its own SYNTHETIC / NOT SURVEYED labels, legend and scale bar; the
+   chip strip above it repeated them and cost map height. Hidden on both 2D map hosts. */
+.cr-col-map .cr-corridor-strip { display: none; }
+.cr-col-map .cr-corridor-strip .cr-corridor-tag { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-height: 820px) {
+  /* The workspace header already names the view; the panel title is redundant here. */
+  .cr-col-map .panel-head { display: none; }
+  /* The deck's own top bar repeats the app header (status, backend, fleet, mode); at this
+     height that row goes to the map instead. */
+  .cr-topbar { display: none; }
+  /* Verified geography (site, published extent DMS, datum) stays on screen, one line. */
+  .cr-col-map .cr-site-meta-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.25rem; }
+  .cr-col-map .cr-site-meta-bar dt { display: none; }
+  .cr-col-map .cr-site-meta-bar dd { font-size: 0.64rem; }
+  .cr-col-map .cr-site-meta-bar .field:nth-child(n + 4) { display: none; }
+  .cr-col-map .cr-legend-drawer { display: none; }
+  .cr-col-map .panel-body { padding: 0.3rem; }
+  .hmi:not(.minecast) .hmi-main { padding: 0.35rem 0.5rem; gap: 0.35rem; }
+  .cr-workspace { padding: 0.35rem; gap: 0.35rem; }
+  .cr-col-map .cr-corridor-strip { padding: 0.15rem 0.5rem; font-size: 0.62rem; }
+  /* The "unavailable layers" list and the long-form notes repeat what the strip, the
+     legend drawer and the footer already say; at this height they yield to the plan. */
+  .cr-col-map .panel-body > p.faint,
+  .cr-col-map .panel-body > dl.fields:not(.cr-site-meta-bar) { display: none; }
+}
+
+/* -- Operator HMI: an operations deck, Mine-Cast style ------------------------------
+   The map is the dominant centre; the truck's own figures and safety sit left, peer /
+   communication / provenance sit right, the command bar is the fixed bottom rail.
+   The DriverScreen DOM (banner, two 3-card rows, command bar) is re-gridded here with
+   `display: contents` on the row wrappers - no component change, no scrolling page.
+   Each card owns its own overflow. */
+.vehicle-hmi-standalone .op-header { flex: 0 0 auto; padding-top: 0.3rem; padding-bottom: 0.3rem; }
+.vehicle-hmi-standalone .op-status-strip { flex: 0 0 auto; gap: 0.5rem 1.25rem; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.vehicle-hmi-standalone .op-status-strip .hmi-header-slot dt { font-size: 0.6rem; }
+.vehicle-hmi-standalone .op-status-strip .hmi-header-slot dd { font-size: 0.78rem; }
+.vehicle-hmi-standalone .op-status-strip .faint { display: none; }
+.vehicle-hmi-standalone .hmi-main { overflow: hidden; padding: 0.4rem 0.5rem; gap: 0.35rem; }
+.vehicle-hmi-standalone .veh-details { flex: 0 0 auto; }
+.vehicle-hmi-standalone .veh-details:not([open]) summary { padding: 0.2rem 0.6rem; font-size: 0.72rem; }
+.vehicle-hmi-standalone .veh-details[open] { max-height: 40vh; overflow: auto; }
+
+.vehicle-hmi-standalone .drv.op-dash {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  /* The map column is the sheet, no wider: the <svg> sets its width from its height and
+     the column is sized to it; the side columns share what is left. */
+  grid-template-columns: var(--track-left, minmax(0, 1fr)) auto var(--track-right, minmax(0, 1fr));
+  grid-template-rows:
+    auto minmax(0, var(--track-row2, 1fr)) minmax(0, var(--track-row3, 1fr)) minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-bottom: 0;
+}
+.vehicle-hmi-standalone .drv.op-dash > .op-grid-3 { display: contents; }
+.vehicle-hmi-standalone .drv-banner { grid-column: 1 / -1; grid-row: 1; }
+/* source DOM: div#1 banner, div#2 = row [own vehicle | map | own/peer], div#3 = row [safety | comms | provenance] */
+.vehicle-hmi-standalone .drv.op-dash > .op-grid-3:nth-of-type(2) > .op-card:nth-child(1) { grid-column: 1; grid-row: 2; }
+.vehicle-hmi-standalone .drv.op-dash > .op-grid-3:nth-of-type(2) > .op-card-map { grid-column: 2; grid-row: 2 / 5; }
+.vehicle-hmi-standalone .drv.op-dash > .op-grid-3:nth-of-type(2) > .op-card:nth-child(3) { grid-column: 3; grid-row: 2; }
+
+.vehicle-hmi-standalone .drv.op-dash > .op-grid-3:nth-of-type(3) > .op-card:nth-child(1) { grid-column: 1; grid-row: 3 / 5; }
+.vehicle-hmi-standalone .drv.op-dash > .op-grid-3:nth-of-type(3) > .op-card:nth-child(2) { grid-column: 3; grid-row: 3; }
+.vehicle-hmi-standalone .drv.op-dash > .op-grid-3:nth-of-type(3) > .op-card:nth-child(3) { grid-column: 3; grid-row: 4; }
+.vehicle-hmi-standalone .op-command-bar { grid-column: 1 / -1; grid-row: 5; overflow: visible; }
+
+.vehicle-hmi-standalone .drv-banner {
+  padding: 5px 14px;
+  gap: 0 14px;
+  grid-template-columns: auto 1fr auto auto;
+  grid-template-areas: "id state why action" "meta meta meta meta";
+}
+.vehicle-hmi-standalone .drv-banner-id { font-size: 1rem; }
+.vehicle-hmi-standalone .drv-banner-state { font-size: 1.35rem; }
+.vehicle-hmi-standalone .drv-banner-action { font-size: 0.9rem; }
+.vehicle-hmi-standalone .drv-banner-why { font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vehicle-hmi-standalone .drv-banner-meta { font-size: 0.66rem; }
+
+.vehicle-hmi-standalone .op-card { min-height: 0; min-width: 0; overflow: auto; padding: 8px 12px; gap: 6px; }
+.vehicle-hmi-standalone .op-card .op-grid { flex: 0 0 auto; min-height: auto; gap: 6px; }
+/* Narrow side columns: safety tiles stack, so UNAVAILABLE never breaks mid-word. */
+.vehicle-hmi-standalone .op-card .op-grid-2 { grid-template-columns: 1fr; }
+.vehicle-hmi-standalone .drv-cell-value { overflow-wrap: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vehicle-hmi-standalone .op-card .op-row { flex: 0 0 auto; min-width: 0; font-size: 0.78rem; padding: 1px 0; }
+.vehicle-hmi-standalone .op-row-value { overflow-wrap: anywhere; }
+.vehicle-hmi-standalone .drv-cell { padding: 6px 8px; min-width: 0; }
+.vehicle-hmi-standalone .drv-cell-label { font-size: 0.66rem; }
+.vehicle-hmi-standalone .drv-cell-value { font-size: 1rem; margin-top: 2px; letter-spacing: 0; }
+.vehicle-hmi-standalone .drv-cell-em .drv-cell-value { font-size: 1.05rem; letter-spacing: 0; }
+.vehicle-hmi-standalone .drv-cell-sub { font-size: 0.72rem; margin-top: 2px; }
+.vehicle-hmi-standalone .op-card-head { gap: 8px; }
+.vehicle-hmi-standalone .op-card-sub { display: none; }
+
+/* The map card: the plan fills it, letterboxed by its own viewBox, nothing bleeds. */
+.vehicle-hmi-standalone .op-card-map { overflow: hidden; display: flex; flex-direction: column; padding: 0; }
+.vehicle-hmi-standalone .op-card-map .panel { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.vehicle-hmi-standalone .op-card-map .panel-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 0.3rem; }
+.vehicle-hmi-standalone .op-card-map .cr-map-workspace { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.vehicle-hmi-standalone .op-card-map .cr-map-frame {
+  flex: 1 1 0px;
+  min-height: 0;
+  height: auto;
+  width: auto;
+  max-height: 100%;
+  align-self: center;
+  display: block;
+}
+.vehicle-hmi-standalone .op-card-map .panel-head,
+.vehicle-hmi-standalone .op-card-map .cr-site-meta-bar,
+.vehicle-hmi-standalone .op-card-map .cr-legend-drawer,
+.vehicle-hmi-standalone .op-card-map .panel-body > p.faint,
+.vehicle-hmi-standalone .op-card-map .panel-body > dl.fields:not(.cr-site-meta-bar) { display: none; }
+/* Keep the disclosure strip on the operator's map: one line. */
+.vehicle-hmi-standalone .op-card-map .cr-corridor-strip { display: none; }
+.vehicle-hmi-standalone .op-card-map .cr-corridor-strip .cr-corridor-tag { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* One-line command rail. */
+.vehicle-hmi-standalone .op-command-bar .op-card-head { display: none; }
+.vehicle-hmi-standalone .op-command-controls { gap: 10px; margin-top: 0; align-items: center; }
+.vehicle-hmi-standalone .op-btn { padding: 6px 14px; font-size: 0.78rem; }
+.vehicle-hmi-standalone .op-command-status { font-size: 0.72rem; gap: 2px; }
+.vehicle-hmi-standalone .op-command-result,
+.vehicle-hmi-standalone .op-note { margin-top: 2px; font-size: 0.72rem; }
+
+/* -- RESIZABLE DECKS: drag a gutter to resize a panel, like a window edge ----------------
+   The gutters are explicitly placed grid items that sit in the gap between two tracks; the
+   grid itself is sized by --track-* custom properties (components/TrackLayout.tsx). The
+   page never scrolls: tracks trade space between themselves. Presentation state only. */
+.track-gutter {
+  position: relative;
+  z-index: 6;
+  touch-action: none;
+  user-select: none;
+  outline: none;
+}
+.track-gutter::before {
+  content: "";
+  position: absolute;
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 2px;
+  transition: background 120ms ease, opacity 120ms ease;
+  opacity: 0.55;
+}
+.track-gutter:hover::before,
+.track-gutter:focus-visible::before,
+.track-gutter:active::before { background: #22d3ee; opacity: 1; }
+.track-gutter-x { width: 10px; cursor: col-resize; align-self: stretch; }
+.track-gutter-x::before { top: 50%; left: 4px; width: 2px; height: 48px; transform: translateY(-50%); }
+.track-gutter-y { height: 10px; cursor: row-resize; justify-self: stretch; }
+.track-gutter-y::before { left: 50%; top: 4px; height: 2px; width: 48px; transform: translateX(-50%); }
+/* Half the gap plus half the gutter, so the handle is centred on the gap. */
+.track-gutter-x[data-edge="end"] { justify-self: end; margin-right: calc((var(--track-gap, 8px) + 10px) / -2); }
+.track-gutter-x[data-edge="start"] { justify-self: start; margin-left: calc((var(--track-gap, 8px) + 10px) / -2); }
+.track-gutter-y[data-edge="end"] { align-self: end; margin-bottom: calc((var(--track-gap, 8px) + 10px) / -2); }
+/* Where a deck stacks its columns the gutters make no sense. */
+@media (max-width: 1200px) { .track-gutter { display: none; } }
+
+/* Control Room S1: the three columns are placed explicitly so the gutters can share cells. */
+@media (min-width: 1201px) {
+  .cr-workspace { --track-gap: 0.5rem; }
+  .cr-col-fleet { grid-column: 1; grid-row: 1; }
+  .cr-col-map { grid-column: 2; grid-row: 1; }
+  .cr-col-selected { grid-column: 3; grid-row: 1; }
+  .cr-gutter-fleet { grid-column: 1; grid-row: 1; }
+  .cr-gutter-selected { grid-column: 3; grid-row: 1; }
+}
+
+/* Operator deck: cards are already placed explicitly (above). */
+.vehicle-hmi-standalone .drv.op-dash { --track-gap: 8px; }
+.vehicle-hmi-standalone .op-gutter-left { grid-column: 1; grid-row: 2 / 5; }
+.vehicle-hmi-standalone .op-gutter-right { grid-column: 3; grid-row: 2 / 5; }
+.vehicle-hmi-standalone .op-gutter-row2 { grid-column: 1; grid-row: 2; }
+.vehicle-hmi-standalone .op-gutter-row3 { grid-column: 3; grid-row: 3; }
+.drv.op-dash:not(.vehicle-hmi-standalone .drv.op-dash) .track-gutter { display: none; }
+
+
+/* ===========================================================================
    MINE-CAST — spatial view shell.
 
    Map-first industrial dispatch layout: a dominant centre column with overlay
@@ -2107,7 +2409,9 @@ button.vehicle-id {
     The side tracks are sized in `rem` with a percentage cap, so they scale with the root
     font size instead of being correct at exactly one resolution.
   */
-  grid-template-columns: minmax(15rem, 17%) minmax(0, 1fr) minmax(16rem, 19%);
+  grid-template-columns:
+    var(--track-left, minmax(15rem, 17%)) minmax(0, 1fr) var(--track-right, minmax(16rem, 19%));
+  --track-gap: 12px;
   gap: 12px;
   padding: 12px;
   flex: 1;
@@ -2145,6 +2449,15 @@ button.vehicle-id {
 .mc-centre {
   min-height: 60vh;
   display: flex;
+}
+
+/* Resize gutters share the side cells, so the three columns are placed explicitly. */
+@media (min-width: 1201px) {
+  .mc-left { grid-column: 1; grid-row: 1; }
+  .mc-centre { grid-column: 2; grid-row: 1; }
+  .mc-right { grid-column: 3; grid-row: 1; }
+  .mc-gutter-left { grid-column: 1; grid-row: 1; }
+  .mc-gutter-right { grid-column: 3; grid-row: 1; }
 }
 
 /* Panels fill their column and never widen it to fit their contents. */
@@ -2907,6 +3220,8 @@ button.vehicle-id {
   transform: translate(-50%, -100%);
   animation: mc-callout-rise 240ms ease-out both;
 }
+.mc-callout-compact { min-width: 120px; max-width: 150px; }
+.mc-callout-compact .mc-callout-chips { grid-template-columns: 1fr; }
 .mc-callout-head {
   display: flex;
   align-items: center;

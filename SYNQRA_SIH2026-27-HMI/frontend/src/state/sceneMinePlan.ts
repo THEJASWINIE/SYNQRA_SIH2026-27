@@ -59,6 +59,7 @@ import {
   toDecimalExtent,
 } from "./geoSite";
 
+export type { DemoRoute, DrainageLine, HaulCorridor, MineFeature, MineZone };
 export {
   CORRIDOR_DISCLOSURE,
   ROUTE_CLASSIFICATION,
@@ -66,7 +67,6 @@ export {
   ROUTE_METADATA,
   ZONE_DISCLOSURE,
 };
-export type { DemoRoute, DrainageLine, HaulCorridor, MineFeature, MineZone };
 
 // ---------------------------------------------------------------------------
 // vocabulary
@@ -160,7 +160,8 @@ export function sceneMinePlan(extent: SiteExtent | DecimalExtent): MinePlan {
   // A crest is the top edge of the face below it, so a bench crest is labelled with the
   // level of the shelf BELOW it - the bench a truck on that crest looks down onto.
   const benches = features.map((feature) => {
-    const shelfM = feature.kind === "BENCH" ? feature.elevationM - feature.riserM : feature.elevationM;
+    const shelfM =
+      feature.kind === "BENCH" ? feature.elevationM - feature.riserM : feature.elevationM;
     const displayM = Math.round(BENCH_DISPLAY_DATUM_M + shelfM);
     const ring = crestContourAt(feature.inwardness, config.pit, 160);
     return {
@@ -294,9 +295,7 @@ export function groundContours(config: TerrainConfig, cells = 72): readonly Cont
 }
 
 /** Chain segments into polylines by matching endpoints (rounded to 0.1 m). */
-function chain(
-  segments: readonly [ScenePoint, ScenePoint][],
-): readonly (readonly ScenePoint[])[] {
+function chain(segments: readonly [ScenePoint, ScenePoint][]): readonly (readonly ScenePoint[])[] {
   const key = (p: ScenePoint) => `${Math.round(p.x * 10)}:${Math.round(p.y * 10)}`;
   const byEnd = new Map<string, number[]>();
   segments.forEach((seg, index) => {

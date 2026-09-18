@@ -28,8 +28,9 @@
  *  uses the route id the Twin stamped on the pose, matched against the shared plan.
  */
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EmptyState, Panel } from "../components/primitives";
+import { calloutSlots, SLOT_OFFSET } from "../state/calloutLayout";
 import {
   drawableLayers,
   extentSizeMetres,
@@ -37,6 +38,7 @@ import {
   GEO_PROVENANCE_TEXT,
   type GeoSite,
   OSM_ATTRIBUTION,
+  projectToLocalMetres,
   requiresOsmAttribution,
   toDecimalExtent,
   unavailableLayers,
@@ -51,8 +53,8 @@ import {
   planScaleBar,
   polylineMidpoint,
   routeCorridorIds,
-  sceneMinePlan,
   type ScenePoint,
+  sceneMinePlan,
 } from "../state/sceneMinePlan";
 import {
   placeablePositions,
@@ -61,6 +63,14 @@ import {
   type VehiclePosition,
 } from "../state/vehiclePosition";
 
+/**
+ * THE SHEET IS THE PUBLISHED EXTENT. The viewBox matches the extent's aspect (a thin
+ * margin around it), everything drawn is clipped to it, and the sheet is fitted (never
+ * cropped, never stretched: equal metres in every direction) into its frame. The <svg>
+ * takes the height it is given and sets its own width from that, so the map column can
+ * size itself to the sheet and the sheet is the only thing in the map zone. Nothing beyond the published coordinate extent is
+ * shown: no context ground, no site-access lines, no grid running off the site.
+ */
 const VIEW_W = 900;
 const VIEW_H = 940;
 
@@ -131,7 +141,25 @@ export function GeoSiteMap({
 
   // The shared mine domain: same generators the 3D scene renders. Built once per extent.
   const plan: MinePlan = useMemo(() => sceneMinePlan(site.extent), [site.extent]);
+
   const proj = useMemo(() => planProjection(plan.size, plan.extent, VIEW_W, VIEW_H), [plan]);
+
+  // Sheet width follows the height the frame gives it (presentation only).
+  const frameRef = useRef<SVGSVGElement | null>(null);
+  const [sheetWidthPx, setSheetWidthPx] = useState<number | null>(null);
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const measure = () => {
+      const h = el.getBoundingClientRect().height;
+      if (h > 0) setSheetWidthPx(Math.floor((h * VIEW_W) / VIEW_H));
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   const toSvg = proj.toSvg;
   const bar = planScaleBar(proj);
 
@@ -169,6 +197,24 @@ export function GeoSiteMap({
   // 1.8x true width, never under 5 units; +2 under HAUL ROUTES emphasis.
   const bandWidth = (road: HaulCorridor) =>
     Math.max(5, proj.lengthPx(road.widthM) * 1.8) + (routeEmphasis ? 2 : 0);
+
+  // DIGITAL-TWIN-OPERATIONAL-FLOW-01: deterministic callout slots for trucks that are
+  // close together. Decided in scene metres from the canonical pose; the marker never
+  // moves, only the label box and its leader do. Same rule as the 3D scene.
+  const slots = useMemo(
+    () =>
+      calloutSlots(
+        placed.map((p) => {
+          // Back to scene metres: the exact inverse of the pose -> lon/lat step upstream.
+          const m = projectToLocalMetres(p.position as NonNullable<VehiclePosition["position"]>, {
+            lon: extent.west,
+            lat: extent.south,
+          });
+          return { id: p.vehicleId, x: m.x, y: m.y };
+        }),
+      ),
+    [placed, extent.west, extent.south],
+  );
 
   const arrowLines = selectedRoute
     ? [
@@ -240,8 +286,12 @@ export function GeoSiteMap({
         </div>
 
         <svg
+          ref={frameRef}
           className="map-frame cr-map-frame cr-plan"
+          style={sheetWidthPx === null ? undefined : { width: sheetWidthPx }}
+          data-sheet-width={sheetWidthPx ?? undefined}
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+          preserveAspectRatio="xMidYMid meet"
           role="img"
           aria-label={`Mine site: ${drawable.length + plan.corridors.length + plan.zones.length} layers drawn, ${placed.length} vehicles placed, ${unplaced.length} position unavailable`}
           data-projection="TOP_DOWN_ORTHOGRAPHIC"
@@ -249,6 +299,9 @@ export function GeoSiteMap({
         >
           <title>Bailadila Deposit-5 Digital Twin mine plan (synthetic)</title>
           <defs>
+            <clipPath id="cr-sheet-clip">
+              <rect x={0} y={0} width={VIEW_W} height={VIEW_H} />
+            </clipPath>
             <pattern
               id="cr-hatch-dump"
               width="8"
@@ -272,8 +325,9 @@ export function GeoSiteMap({
             </pattern>
           </defs>
 
-          {/* BASE: neutral plan sheet */}
+          {/* BASE: neutral plan sheet. Everything below is clipped to the sheet. */}
           <rect x={0} y={0} width={VIEW_W} height={VIEW_H} fill="#0b0f15" />
+          <g clipPath="url(#cr-sheet-clip)">
           <rect
             x={extentBox.x}
             y={extentBox.y}
@@ -385,7 +439,13 @@ export function GeoSiteMap({
                 letterSpacing="0.1em"
               >
                 {dump.planLabel}
-                <tspan x={toSvg(dump.centre).x} dy={13} fontSize={9} fontWeight={400} fill="#8b8f96">
+                <tspan
+                  x={toSvg(dump.centre).x}
+                  dy={13}
+                  fontSize={9}
+                  fontWeight={400}
+                  fill="#8b8f96"
+                >
                   TERRACED · SYNTHETIC
                 </tspan>
               </text>
@@ -724,6 +784,22 @@ export function GeoSiteMap({
                 : "ROUTE UNAVAILABLE";
               const calloutW =
                 Math.max(fullText.length, isSelected ? routeLine.length : 0) * 6.6 + 12;
+              const calloutH = isSelected ? 30 : 16;
+              // Callout box origin: DEFAULT hangs right of the marker; a cluster slot
+              // swings it left/right and up by a fixed amount, with a leader polyline.
+              const slot = slots.get(entry.vehicleId) ?? "DEFAULT";
+              const so = SLOT_OFFSET[slot];
+              const boxX =
+                slot === "DEFAULT"
+                  ? point.x + 12
+                  : so.dx > 0
+                    ? point.x + 34
+                    : point.x - 34 - calloutW;
+              const boxY = slot === "DEFAULT" ? point.y + 4 : point.y - 6 - so.dy * 34 - calloutH;
+              const leaderEnd =
+                so.dx > 0
+                  ? { x: boxX, y: boxY + calloutH }
+                  : { x: boxX + calloutW, y: boxY + calloutH };
 
               return (
                 <g
@@ -808,19 +884,29 @@ export function GeoSiteMap({
                     {shortId(entry.vehicleId)}
                   </text>
 
+                  {slot !== "DEFAULT" ? (
+                    <polyline
+                      points={`${point.x.toFixed(1)},${point.y.toFixed(1)} ${leaderEnd.x.toFixed(1)},${leaderEnd.y.toFixed(1)}`}
+                      fill="none"
+                      stroke={isSelected ? SELECT : "rgba(248,250,252,0.55)"}
+                      strokeWidth={1}
+                      data-callout-leader={entry.vehicleId}
+                    />
+                  ) : null}
                   <rect
-                    x={point.x + 12}
-                    y={point.y + 4}
+                    x={boxX}
+                    y={boxY}
                     width={calloutW}
-                    height={isSelected ? 30 : 16}
+                    height={calloutH}
                     rx={2}
                     fill="rgba(11, 15, 20, 0.88)"
                     stroke={isSelected ? SELECT : "rgba(255, 255, 255, 0.18)"}
                     strokeWidth={1}
+                    data-callout-slot={slot}
                   />
                   <text
-                    x={point.x + 16}
-                    y={point.y + 16}
+                    x={boxX + 4}
+                    y={boxY + 12}
                     fill="#f0f6fc"
                     fontSize={10.5}
                     fontWeight={own || isSelected ? 700 : 400}
@@ -829,8 +915,8 @@ export function GeoSiteMap({
                   </text>
                   {isSelected ? (
                     <text
-                      x={point.x + 16}
-                      y={point.y + 28}
+                      x={boxX + 4}
+                      y={boxY + 24}
                       fill={SELECT}
                       fontSize={10}
                       fontFamily="ui-monospace, monospace"
@@ -885,9 +971,13 @@ export function GeoSiteMap({
               stroke="rgba(148,163,184,0.25)"
             />
             <rect x={0} y={-4} width={14} height={6} fill={ROAD_FILL.MAIN_HAUL} />
-            <text x={20} y={2}>HAUL ROAD · SYN</text>
+            <text x={20} y={2}>
+              HAUL ROAD · SYN
+            </text>
             <polyline points="0,10 14,10" stroke="#94a3b8" strokeWidth={1.2} />
-            <text x={20} y={13}>BENCH CREST · SYN MODEL</text>
+            <text x={20} y={13}>
+              BENCH CREST · SYN MODEL
+            </text>
             <rect
               x={0}
               y={18}
@@ -897,7 +987,9 @@ export function GeoSiteMap({
               stroke="#f59e0b"
               strokeWidth={0.6}
             />
-            <text x={20} y={24}>ACTIVE WORKING AREA</text>
+            <text x={20} y={24}>
+              ACTIVE WORKING AREA
+            </text>
             <rect
               x={0}
               y={29}
@@ -907,7 +999,9 @@ export function GeoSiteMap({
               stroke="#d9846a"
               strokeWidth={0.6}
             />
-            <text x={20} y={35}>ORE STOCKPILE · DISPATCH</text>
+            <text x={20} y={35}>
+              ORE STOCKPILE · DISPATCH
+            </text>
             <rect
               x={0}
               y={40}
@@ -917,15 +1011,26 @@ export function GeoSiteMap({
               stroke="#9aa0a8"
               strokeWidth={0.6}
             />
-            <text x={20} y={46}>WASTE DUMP (TERRACED)</text>
+            <text x={20} y={46}>
+              WASTE DUMP (TERRACED)
+            </text>
             <polyline points="0,54 14,54" stroke="#22d3ee" strokeWidth={1} strokeDasharray="4 2" />
-            <text x={20} y={57}>DRAINAGE · SYN</text>
+            <text x={20} y={57}>
+              DRAINAGE · SYN
+            </text>
             <polyline points="0,65 14,65" stroke="#6b7280" strokeWidth={1} strokeDasharray="4 2" />
-            <text x={20} y={68}>SITE ACCESS CONTEXT (OSM)</text>
+            <text x={20} y={68}>
+              SITE ACCESS CONTEXT (OSM)
+            </text>
             <rect x={0} y={73} width={14} height={6} fill="none" stroke="#38bdf8" strokeWidth={1} />
-            <text x={20} y={79}>PUBLISHED EXTENT · NOT A BOUNDARY</text>
+            <text x={20} y={79}>
+              PUBLISHED EXTENT · NOT A BOUNDARY
+            </text>
             <rect x={2} y={85} width={9} height={6} fill="#f59e0b" />
-            <text x={20} y={90}>TRUCK · TWIN SCENE POSE</text>
+            <text x={20} y={90}>
+              TRUCK · TWIN SCENE POSE
+            </text>
+          </g>
           </g>
         </svg>
 
@@ -961,7 +1066,9 @@ export function GeoSiteMap({
             </div>
             <div className="field">
               <dt>Operational zones ({plan.zones.length})</dt>
-              <dd>ACTIVE WORKING AREA · ORE STOCKPILE · WASTE DUMP — SYNTHETIC — DEMONSTRATION ONLY</dd>
+              <dd>
+                ACTIVE WORKING AREA · ORE STOCKPILE · WASTE DUMP — SYNTHETIC — DEMONSTRATION ONLY
+              </dd>
             </div>
             <div className="field">
               <dt>Contours &amp; drainage</dt>
@@ -1008,9 +1115,9 @@ export function GeoSiteMap({
       ) : null}
 
       <p className="faint">
-        Synthetic demonstration geometry is invented and is NOT NMDC infrastructure. No
-        official NMDC haul-road, crusher, stockpile or dump geometry is claimed. Physical NMDC
-        mine integration is NOT VERIFIED and real vehicle positioning is NOT VERIFIED.
+        Synthetic demonstration geometry is invented and is NOT NMDC infrastructure. No official
+        NMDC haul-road, crusher, stockpile or dump geometry is claimed. Physical NMDC mine
+        integration is NOT VERIFIED and real vehicle positioning is NOT VERIFIED.
       </p>
     </Panel>
   );

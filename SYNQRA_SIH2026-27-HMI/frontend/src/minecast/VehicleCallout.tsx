@@ -47,20 +47,28 @@ export function VehicleCallout({
   vehicle,
   position,
   accent,
+  compact = false,
 }: {
   vehicle: MineCastVehicle;
   position: SpatialPosition;
   /** The marker's own colour, so label and machine read as one object. */
   accent: string;
+  /**
+   * DIGITAL-TWIN-OPERATIONAL-FLOW-01: a neighbour in a label cluster that is NOT the
+   * selection folds to identity + speed + provenance, so two trucks at a junction stay
+   * readable. The figures are still in the fleet and selected-vehicle panels.
+   */
+  compact?: boolean;
 }) {
   const tone = availabilityTone(vehicle.availability);
   const highRisk = !vehicle.safety.unavailable && vehicle.safety.riskLevel === "HIGH";
 
   return (
     <div
-      className="mc-callout"
+      className={`mc-callout${compact ? " mc-callout-compact" : ""}`}
       style={{ "--mc-callout-accent": accent } as CSSProperties}
       data-vehicle-id={vehicle.canonicalVehicleId}
+      data-compact={compact ? "true" : undefined}
     >
       <div className="mc-callout-head">
         <span className={`mc-callout-dot mc-tone-${tone}`} aria-hidden="true" />
@@ -73,25 +81,29 @@ export function VehicleCallout({
           <dt>SPD</dt>
           <dd className="mono">{speedText(vehicle.speedMps)}</dd>
         </div>
-        <div className="mc-chip">
-          <dt>MODE</dt>
-          <dd>{vehicle.mode ?? UNAVAILABLE_LABEL}</dd>
-        </div>
-        <div className={`mc-chip mc-chip-${vehicle.dataState === "CURRENT" ? "ok" : "warn"}`}>
-          <dt>DATA</dt>
-          <dd>{vehicle.dataState}</dd>
-        </div>
-        <div className={`mc-chip${highRisk ? " mc-chip-crit" : ""}`}>
-          <dt>SAF</dt>
-          <dd>{riskText(vehicle)}</dd>
-        </div>
-        <div className="mc-chip">
-          <dt>V2V</dt>
-          <dd>
-            <span aria-hidden="true">{LINK_STATE_GLYPH[vehicle.v2v.state]}</span>{" "}
-            {vehicle.v2v.state}
-          </dd>
-        </div>
+        {compact ? null : (
+          <>
+            <div className="mc-chip">
+              <dt>MODE</dt>
+              <dd>{vehicle.mode ?? UNAVAILABLE_LABEL}</dd>
+            </div>
+            <div className={`mc-chip mc-chip-${vehicle.dataState === "CURRENT" ? "ok" : "warn"}`}>
+              <dt>DATA</dt>
+              <dd>{vehicle.dataState}</dd>
+            </div>
+            <div className={`mc-chip${highRisk ? " mc-chip-crit" : ""}`}>
+              <dt>SAF</dt>
+              <dd>{riskText(vehicle)}</dd>
+            </div>
+            <div className="mc-chip">
+              <dt>V2V</dt>
+              <dd>
+                <span aria-hidden="true">{LINK_STATE_GLYPH[vehicle.v2v.state]}</span>{" "}
+                {vehicle.v2v.state}
+              </dd>
+            </div>
+          </>
+        )}
       </dl>
 
       {/*

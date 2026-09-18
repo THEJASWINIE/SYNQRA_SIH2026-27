@@ -194,7 +194,8 @@ class TestProjection:
 # MINECAST-02 — route-following motion
 # ===========================================================================
 
-from scene_position_sim import ROUTES_PATH, ROUTE_DISCLOSURE, _ROUTES  # noqa: E402
+from scene_position_sim import ROUTES_PATH, ROUTE_DISCLOSURE, _ROUTES, route_speed_mps  # noqa: E402
+from integration_adapters.unit_converter import UnitConverter  # noqa: E402
 
 
 class TestRouteFollowing:
@@ -311,3 +312,76 @@ class TestRouteFollowing:
             for key in ("frame", "status", "source", "origin", "provenance_label", "method", "route_id"):
                 for word in FORBIDDEN_WORDS:
                     assert word not in str(pose[key]).upper(), (key, pose[key])
+
+
+class TestSpeedSynchronization:
+    """
+    DIGITAL-TWIN-OPERATIONAL-FLOW-01 - the displayed SIMULATION speed and the scene-route
+    progression are the same simulation state. Nothing physical is touched.
+    """
+
+    def test_route_progression_corresponds_to_the_declared_simulation_speed(self):
+        for vehicle_id in DEMO_SCENE_VEHICLES:
+            v = route_speed_mps(vehicle_id)
+            assert v is not None and v > 0
+            assert v == _ROUTES[vehicle_id].speed_mps
+            # Distance actually travelled along the route over a clean interval == v * dt,
+            # measured on the pose progress the follower reports (not on chord length).
+            a = scene_position(vehicle_id, 10.0)
+            b = scene_position(vehicle_id, 14.0)
+            assert a is not None and b is not None
+            if a["direction"] == b["direction"] and b["progress_m"] >= a["progress_m"]:
+                assert abs((b["progress_m"] - a["progress_m"]) - v * 4.0) < 0.01
+        assert route_speed_mps("TRUCK_99") is None
+
+    def test_route_speed_is_deterministic_and_not_wall_clock_dependent(self):
+        first = [route_speed_mps(v) for v in DEMO_SCENE_VEHICLES]
+        second = [route_speed_mps(v) for v in DEMO_SCENE_VEHICLES]
+        assert first == second
+        import inspect
+        import scene_position_sim
+        src = inspect.getsource(scene_position_sim)
+        assert "random" not in src.replace("randomised", "").replace("no RNG", "")
+        assert "time.time()" not in src
+
+    def test_inverse_rpm_round_trips_through_the_one_calibration(self):
+        uc = UnitConverter()
+        for vehicle_id in DEMO_SCENE_VEHICLES:
+            v = route_speed_mps(vehicle_id)
+            rpm = uc.speed_mps_to_rpm(vehicle_id, v)
+            assert rpm is not None and rpm > 0
+            assert abs(uc.rpm_to_speed_mps(vehicle_id, rpm) - v) < 1e-3
+        assert uc.speed_mps_to_rpm("TRUCK_99", 1.0) is None
+        assert uc.speed_mps_to_rpm("TRUCK_01", -1.0) is None
+
+    def test_displayed_simulation_speed_is_simulation_never_hardware(self, ingestor, store):
+        """The producer's frame (route speed + matching RPM) lands in the Twin as SIMULATION."""
+        uc = UnitConverter()
+        for vehicle_id in DEMO_SCENE_VEHICLES:
+            v = route_speed_mps(vehicle_id)
+            f = frame(vehicle_id, t_s=12.0, speed_mps=v, rpm=uc.speed_mps_to_rpm(vehicle_id, v))
+            f.pop("speed", None)
+            assert ingestor.ingest_http_payload(f, is_simulated=True).accepted
+            field = store.get_vehicle_field(vehicle_id, "speed_mps")
+            assert field is not UNAVAILABLE
+            assert field.source is Source.SIMULATION
+            assert field.source is not Source.HARDWARE
+            # The canonical (RPM-derived) speed equals the route speed the pose advances at.
+            assert abs(field.value - v) < 1e-3
+            # The reported value lands under the vehicle's own reported-speed field
+            # (TRUCK_02's is PWM-derived by contract); either way it is SIMULATION.
+            reported = store.get_vehicle_field(vehicle_id, "speed_mps_reported")
+            if reported is UNAVAILABLE:
+                reported = store.get_vehicle_field(vehicle_id, "speed_mps_pwm_derived")
+            assert reported is not UNAVAILABLE and reported.source is Source.SIMULATION
+
+    def test_physical_telemetry_path_is_unchanged(self, ingestor, store):
+        """A hardware-transport frame still derives HARDWARE-provenance speed from its own RPM."""
+        payload = {"vehicle_id": "TRUCK_01", "sequence": 5, "rpm": 240.0, "speed": 1.25,
+                   "source": "DIRECT_WIFI"}
+        assert ingestor.ingest_http_payload(payload, is_simulated=False).accepted
+        field = store.get_vehicle_field("TRUCK_01", "speed_mps")
+        assert field.source is not Source.SIMULATION
+        # Derived from the hardware RPM via the calibrated radius, never from a route.
+        assert abs(field.value - UnitConverter().rpm_to_speed_mps("TRUCK_01", 240.0)) < 1e-6
+        assert field.value != route_speed_mps("TRUCK_01")

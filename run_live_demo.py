@@ -41,6 +41,7 @@ import time
 import urllib.error
 import urllib.request
 
+from integration_adapters.unit_converter import UnitConverter
 from mock_vehicle_generator import MockVehicleGenerator
 from scene_position_sim import route_speed_mps, scene_telemetry_fields
 
@@ -91,6 +92,8 @@ def seed_sequences(url):
 
 def run(url=DEFAULT_URL, hz=2.0, duration=None, quiet=False):
     generator = MockVehicleGenerator(backend_url=url)
+    # The ONE calibration the ingestor derives speed with; see the speed override below.
+    unit_converter = UnitConverter()
     sequences = seed_sequences(url)
     interval = 1.0 / max(hz, 0.1)
 
@@ -136,9 +139,22 @@ def run(url=DEFAULT_URL, hz=2.0, duration=None, quiet=False):
                 # forces is_simulated=True), so provenance is unchanged, and the physical
                 # hardware ingress (/api/hardware/telemetry) is a separate code path this
                 # producer never touches.
+                #
+                # The canonical Twin `speed_mps` is DERIVED FROM RPM through the calibrated
+                # wheel radius (telemetry_ingest -> UnitConverter.rpm_to_speed_mps); the
+                # reported speed only lands in `speed_mps_reported`. So the RPM is published
+                # through the SAME calibration's exact inverse - one wheel radius, no copy
+                # of it here - and both fields agree with the route. NOTE (stated, not
+                # hidden): the calibrated radii are the bench prototypes' (5 cm / 4.25 cm),
+                # so a full-scale demo speed of 8 m/s is ~1500 simulated RPM, above the
+                # prototypes' `max_physical_speed_mps`. It is a SIMULATION frame about the
+                # full-scale twin, never a claim about the bench hardware.
                 sim_speed = route_speed_mps(vehicle_id)
                 if sim_speed is not None:
                     payload["speed_mps"] = sim_speed
+                    sim_rpm = unit_converter.speed_mps_to_rpm(vehicle_id, sim_speed)
+                    if sim_rpm is not None:
+                        payload["rpm"] = sim_rpm
 
                 status, body = _post(url, "/api/telemetry", payload)
                 posted += 1

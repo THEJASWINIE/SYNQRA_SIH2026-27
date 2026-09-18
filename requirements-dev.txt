@@ -1,0 +1,35 @@
+# FOG-ORCHESTRATOR — one environment for the whole repo (backend, Twin, sim, tests, game_ui).
+# Pinned to the versions the project was last validated with. Install into the project venv:
+#
+#   python -m venv .venv
+#   .\.venv\Scripts\Activate.ps1        (PowerShell)   |   source .venv/Scripts/activate (bash)
+#   pip install -r requirements-dev.txt
+#
+# Run the HMI backend from its package directory (the app package is NOT at the repo root):
+#   cd SYNQRA_SIH2026-27-HMI\backend
+#   python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+#
+# Superset of requirements.txt (analysis) and SYNQRA_SIH2026-27-main/requirements.txt (sim).
+
+# -- HMI backend ------------------------------------------------------------
+fastapi==0.111.0
+uvicorn[standard]==0.52.4
+pydantic==2.13.4
+pydantic-settings==2.14.2
+websockets==16.1
+httpx==0.28.1
+requests==2.34.2
+jsonschema==4.26.0
+python-dotenv==1.2.2
+pyserial>=3.5              # LoRa gateway USB serial reader (lazy import; only needed with hardware)
+
+# -- Digital Twin / simulation / analysis -----------------------------------
+numpy==2.4.6
+scipy==1.17.1
+pandas==2.2.2
+matplotlib==3.11.0
+pyyaml==6.0.3
+pygame==2.6.1              # game_ui.py visualisation client (lazy import)
+
+# -- tests ---------------------------------------------------------------------
+pytest==9.1.1

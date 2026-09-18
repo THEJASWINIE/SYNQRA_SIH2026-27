@@ -242,7 +242,8 @@ describe("ROUTE DOMAIN", () => {
     expect(touches(dump.polygon, endOf(service))).toBe(true);
     // Zones never intrude into the pit; the active area is on the floor.
     for (const z of [stock, dump]) {
-      for (const p of z.polygon) expect(inwardnessAt(p.x, p.y, CONFIG.pit), z.id).toBeLessThan(-0.1);
+      for (const p of z.polygon)
+        expect(inwardnessAt(p.x, p.y, CONFIG.pit), z.id).toBeLessThan(-0.1);
     }
     for (const p of zoneOfKind(zones, "ACTIVE_AREA").polygon) {
       expect(inwardnessAt(p.x, p.y, CONFIG.pit)).toBeGreaterThan(1);
@@ -368,13 +369,16 @@ describe("2D", () => {
     expect(code).not.toMatch(
       /perspective|matrix3d|rotateX|rotateY|skew|feDropShadow|linearGradient|radialGradient/,
     );
-    expect(code).not.toMatch(/from ["']three["']|@react-three|MineCanvas|MineScene|terrainShade|slopeAt/);
+    expect(code).not.toMatch(
+      /from ["']three["']|@react-three|MineCanvas|MineScene|terrainShade|slopeAt/,
+    );
     expect(html).not.toMatch(/<feDropShadow|<linearGradient|<radialGradient/);
   });
 
   it("routes render distinctly: band + casing + dashed centreline; labels and arrows on emphasis", () => {
     for (const road of PLAN.corridors) {
-      const block = new RegExp(`<g data-corridor-id="${road.id}"[\\s\\S]*?</g>`).exec(html)?.[0] ?? "";
+      const block =
+        new RegExp(`<g data-corridor-id="${road.id}"[\\s\\S]*?</g>`).exec(html)?.[0] ?? "";
       expect((block.match(/<polyline/g) ?? []).length, road.id).toBeGreaterThanOrEqual(3);
       expect(block, road.id).toContain('stroke-dasharray="6 4"');
       expect(html).toContain(`data-route-label="${road.id}"`);
@@ -412,7 +416,8 @@ describe("2D", () => {
     for (const v of [T01, T02]) {
       const pose = drawableScenePose(v)!;
       const s = proj.toSvg({ x: pose.xM, y: pose.yM });
-      const group = new RegExp(`<g data-vehicle-id="${v.vehicleId}"[\\s\\S]*?<text`).exec(html)?.[0] ?? "";
+      const group =
+        new RegExp(`<g data-vehicle-id="${v.vehicleId}"[\\s\\S]*?<text`).exec(html)?.[0] ?? "";
       expect(group).toContain(`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(`);
       expect(html).toContain(`${v.vehicleId} · ${TWIN_SCENE_LABEL}`);
     }
@@ -476,7 +481,11 @@ describe("CROSS-VIEW", () => {
 
   it("the same vehicle scene position feeds 2D and 3D", () => {
     const pose = drawableScenePose(T01)!;
-    const twoD = fleetPositions({ TRUCK_01: T01 }, providerForMode("LIVE", PLAN.extent), PLAN.extent)[0]!;
+    const twoD = fleetPositions(
+      { TRUCK_01: T01 },
+      providerForMode("LIVE", PLAN.extent),
+      PLAN.extent,
+    )[0]!;
     const proj = planProjection(PLAN.size, PLAN.extent, 900, 940);
     const via2d = proj.lonLatToSvg(twoD.position!);
     const direct = proj.toSvg({ x: pose.xM, y: pose.yM });
@@ -561,7 +570,9 @@ describe("PROVENANCE", () => {
       const words = `${r.routeId} ${r.label}`.toUpperCase();
       for (const f of FORBIDDEN) expect(words, `${r.routeId} / ${f}`).not.toContain(f);
     }
-    const html = renderToString(<GeoSiteMap site={SITE} positions={[]} mode="LIVE" routeEmphasis />);
+    const html = renderToString(
+      <GeoSiteMap site={SITE} positions={[]} mode="LIVE" routeEmphasis />,
+    );
     expect(html).toContain("SYNTHETIC ROUTES · NOT SURVEYED");
     expect(html).toContain("NOT NMDC INFRASTRUCTURE");
     expect(html).toContain("DIGITAL TWIN · SIMULATION");
@@ -573,11 +584,95 @@ describe("PROVENANCE", () => {
 
   it("direction arrows follow the route and are placed along it", () => {
     const route = PLAN.routes[0]!;
-    const marks = arrowMarks(route.waypoints.map(([x, y]) => ({ x, y })), 240);
+    const marks = arrowMarks(
+      route.waypoints.map(([x, y]) => ({ x, y })),
+      240,
+    );
     expect(marks.length).toBeGreaterThan(20);
     for (const m of marks) {
       expect(distanceToPolyline([m.x, m.y], route.waypoints)).toBeLessThan(1e-6);
       expect(Number.isFinite(m.angleRad)).toBe(true);
     }
+  });
+});
+
+describe("SPEED SYNCHRONIZATION (DIGITAL-TWIN-OPERATIONAL-FLOW-01)", () => {
+  it("no renderer independently calculates vehicle speed - it is displayed from the Twin only", () => {
+    for (const rel of [
+      "../screens/GeoSiteMap.tsx",
+      "../screens/OperationsOverview.tsx",
+      "../controlRoom/ControlRoom3DTwin.tsx",
+      "../minecast/VehicleMarkers.tsx",
+      "../minecast/VehicleCallout.tsx",
+      "../vehicle/DriverScreen.tsx",
+    ]) {
+      const code = source(rel);
+      // No delta-position-over-time speed, no unit conversion invented from RPM, no clock.
+      expect(code, rel).not.toMatch(/\/\s*(deltaT|deltaS|elapsedS|dtS)\b/);
+      expect(code, rel).not.toMatch(/speedMps\s*=\s*[^=]/);
+      expect(code, rel).not.toMatch(/rpm\s*\*|\*\s*rpm|wheelRadius|WHEEL_RADIUS/);
+      expect(code, rel).not.toMatch(/Date\.now\(\)|performance\.now\(\)/);
+    }
+  });
+
+  it("the route contract declares the constant speed the backend advances the pose at", () => {
+    for (const exported of CONTRACT.routes) {
+      const route = PLAN.routes.find((r) => r.routeId === exported.route_id)!;
+      expect((exported as unknown as { speed_mps: number }).speed_mps).toBe(route.speedMps);
+      expect(route.speedMps).toBeGreaterThan(0);
+    }
+  });
+});
+
+// ===========================================================================
+
+describe("PLAN SHEET IS THE PUBLISHED EXTENT (nothing beyond it is drawn)", () => {
+  const positions = fleetPositions(
+    { TRUCK_01: T01, TRUCK_02: T02 },
+    providerForMode("LIVE", PLAN.extent),
+    PLAN.extent,
+  );
+  const html = renderToString(<GeoSiteMap site={SITE} positions={positions} mode="LIVE" />);
+  const viewBox = /viewBox="0 0 (\d+) (\d+)"/.exec(html);
+
+  it("the viewBox has the extent's own aspect, so the extent fills the sheet", () => {
+    expect(viewBox).not.toBeNull();
+    const [, w, h] = viewBox as RegExpExecArray;
+    const sheetAspect = Number(w) / Number(h);
+    const extentAspect = PLAN.size.widthM / PLAN.size.heightM;
+    expect(Math.abs(sheetAspect - extentAspect)).toBeLessThan(0.01);
+    const proj = planProjection(PLAN.size, PLAN.extent, Number(w), Number(h));
+    // The extent box sits within a few units of the margin on every side: no blank band.
+    expect(proj.box.x).toBeLessThan(32);
+    expect(proj.box.y).toBeLessThan(32);
+    expect(proj.box.x + proj.box.width).toBeGreaterThan(Number(w) - 32);
+    expect(proj.box.y + proj.box.height).toBeGreaterThan(Number(h) - 32);
+  });
+
+  it("the sheet is fitted, never cropped, and everything is clipped to it", () => {
+    expect(html).toContain('preserveAspectRatio="xMidYMid meet"');
+    expect(html).toContain('<clipPath id="cr-sheet-clip">');
+    expect(html).toContain('clip-path="url(#cr-sheet-clip)"');
+    // Nothing is sampled beyond the scene: the grid and contours stay inside the extent.
+    for (const c of PLAN.contours) {
+      for (const line of c.polylines) {
+        for (const p of line) {
+          expect(p.x).toBeGreaterThanOrEqual(0);
+          expect(p.x).toBeLessThanOrEqual(PLAN.size.widthM);
+          expect(p.y).toBeGreaterThanOrEqual(0);
+          expect(p.y).toBeLessThanOrEqual(PLAN.size.heightM);
+        }
+      }
+    }
+  });
+
+  it("the sheet sets its own width from its height, so the map column can fit it", () => {
+    // Server render: no frame yet, no width forced (the CSS aspect fit still applies).
+    expect(html).not.toContain("data-sheet-width=");
+    const src = source("../screens/GeoSiteMap.tsx");
+    expect(src).toMatch(/ResizeObserver/);
+    expect(src).toMatch(/Math\.floor\(\(h \* VIEW_W\) \/ VIEW_H\)/);
+    // Never stretched: the aspect fit stays, the width only ever matches it.
+    expect(html).not.toContain('preserveAspectRatio="none"');
   });
 });

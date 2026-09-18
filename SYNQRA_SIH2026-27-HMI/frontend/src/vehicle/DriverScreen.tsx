@@ -27,6 +27,7 @@
 import { useState } from "react";
 
 import { submitCommand } from "../api/commandClient";
+import { TrackGutter, useTrackLayout } from "../components/TrackLayout";
 import {
   DATA_STATE_TEXT,
   type DataState,
@@ -170,6 +171,18 @@ function linkTone(state: LinkStatus["state"]): "ok" | "warn" | "crit" | "neutral
   return "neutral";
 }
 
+/**
+ * Resizable operator deck: side columns and the first two card rows. The viewer drags the
+ * gutters to give any card the room it needs; the page itself never scrolls and the map
+ * column keeps at least 40% of the deck. Presentation state only.
+ */
+const OPERATOR_TRACKS = {
+  left: { axis: "x", index: 0, minPx: 200, maxPx: 560 },
+  right: { axis: "x", index: 2, minPx: 220, maxPx: 600 },
+  row2: { axis: "y", index: 1, minPx: 90, maxPx: 520 },
+  row3: { axis: "y", index: 2, minPx: 80, maxPx: 520 },
+} as const;
+
 export function DriverScreen({
   projection,
   config,
@@ -179,6 +192,7 @@ export function DriverScreen({
 }) {
   const state = useAppState();
   const { freshness } = useHmi();
+  const tracks = useTrackLayout(`operator-${config.vehicleId}`, OPERATOR_TRACKS);
   const { vehicle, safety, road, dispatch, connection } = projection;
 
   const nowMs = Date.parse(state.clock.now);
@@ -277,6 +291,8 @@ export function DriverScreen({
       className={`drv op-dash drv-${driver.state.toLowerCase().replace(/_/g, "-")}`}
       data-driver-state={driver.state}
       aria-label={`${config.displayName} driver display`}
+      style={tracks.style}
+      data-track-grid="operator"
     >
       <div className="drv-banner" role="status" aria-live="assertive">
         <div className="drv-banner-id mono">{config.displayName}</div>
@@ -299,9 +315,6 @@ export function DriverScreen({
       <div className="op-grid op-grid-3">
         <div className="op-card">
           <div className="op-card-head">
-            <span className="op-card-icon" aria-hidden="true">
-              🚚
-            </span>
             <div className="op-card-headings">
               <div className="op-card-title">{config.displayName}</div>
               <div className="op-card-sub">AUTONOMOUS HAUL TRUCK</div>
@@ -601,6 +614,36 @@ export function DriverScreen({
           not supplied (fail closed) — HOLD and STOP remain available.
         </p>
       </div>
+
+      {/* Resize gutters: explicitly placed grid items; hidden where the deck stacks. */}
+      <TrackGutter
+        layout={tracks}
+        track="left"
+        edge="end"
+        label="Left column width"
+        className="op-gutter-left"
+      />
+      <TrackGutter
+        layout={tracks}
+        track="right"
+        edge="start"
+        label="Right column width"
+        className="op-gutter-right"
+      />
+      <TrackGutter
+        layout={tracks}
+        track="row2"
+        edge="end"
+        label="Top row height"
+        className="op-gutter-row2"
+      />
+      <TrackGutter
+        layout={tracks}
+        track="row3"
+        edge="end"
+        label="Middle row height"
+        className="op-gutter-row3"
+      />
     </section>
   );
 }

@@ -64,7 +64,8 @@ export interface DrainageLine {
   readonly points: readonly ZonePoint[];
 }
 
-export const ZONE_DISCLOSURE = "SYNTHETIC OPERATIONAL ZONES · NOT SURVEYED · NOT NMDC INFRASTRUCTURE";
+export const ZONE_DISCLOSURE =
+  "SYNTHETIC OPERATIONAL ZONES · NOT SURVEYED · NOT NMDC INFRASTRUCTURE";
 
 export const ZONE_PROVENANCE = {
   source: "SYNTHETIC_FOR_DEMO" as MineCastProvenance,
@@ -107,10 +108,17 @@ function outlineShape(phi: number, kind: MineZoneKind): number {
   if (kind === "STOCKPILE") {
     return 1 + 0.12 * Math.cos(2 * phi + 0.4) + 0.06 * Math.cos(3 * phi - 1.1);
   }
-  return 1 + 0.16 * Math.cos(2 * phi - 0.6) + 0.08 * Math.cos(3 * phi + 0.9) + 0.04 * Math.cos(5 * phi);
+  return (
+    1 + 0.16 * Math.cos(2 * phi - 0.6) + 0.08 * Math.cos(3 * phi + 0.9) + 0.04 * Math.cos(5 * phi)
+  );
 }
 
-function outline(centre: ZonePoint, radiusM: number, kind: MineZoneKind, segments = 40): ZonePoint[] {
+function outline(
+  centre: ZonePoint,
+  radiusM: number,
+  kind: MineZoneKind,
+  segments = 40,
+): ZonePoint[] {
   const points: ZonePoint[] = [];
   for (let i = 0; i < segments; i += 1) {
     const phi = (i / segments) * Math.PI * 2;

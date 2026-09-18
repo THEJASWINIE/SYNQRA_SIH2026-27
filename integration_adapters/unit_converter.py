@@ -50,6 +50,33 @@ class UnitConverter:
         v_mps = (rpm * 2.0 * math.pi * r_m) / 60.0
         return round(v_mps, 4)
 
+    def speed_mps_to_rpm(self, vehicle_id: str, speed_mps: float) -> Optional[float]:
+        """
+        The exact inverse of `rpm_to_speed_mps`, with the SAME calibrated wheel radius.
+
+        DIGITAL-TWIN-OPERATIONAL-FLOW-01: the canonical Twin `speed_mps` is DERIVED from
+        RPM by `rpm_to_speed_mps`, never taken from a reported speed. A simulated producer
+        that wants the Twin to show a given simulation speed therefore has to publish the
+        RPM that derives to it - through this one calibration, so there is no second wheel
+        radius anywhere. Used by the demo producer only; the hardware path never calls it.
+        """
+        if speed_mps is None or not isinstance(speed_mps, (int, float)) or speed_mps < 0:
+            logger.error(f"[UnitConverter] Invalid speed input '{speed_mps}' for vehicle '{vehicle_id}'")
+            return None
+
+        params = self.vehicle_params.get(vehicle_id)
+        if not params or "wheel_radius_m" not in params:
+            logger.error(f"[UnitConverter] Missing calibrated wheel_radius_m for vehicle '{vehicle_id}'")
+            return None
+
+        r_m = params["wheel_radius_m"]
+        if r_m <= 0:
+            logger.error(f"[UnitConverter] Invalid wheel radius {r_m} for vehicle '{vehicle_id}'")
+            return None
+
+        # RPM = v * 60 / (2 * pi * r)
+        return round((speed_mps * 60.0) / (2.0 * math.pi * r_m), 4)
+
     def mps_to_kmh(self, speed_mps: float) -> float:
         if speed_mps is None or speed_mps < 0:
             return 0.0

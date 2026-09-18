@@ -40,6 +40,7 @@
 import { lazy, type ReactNode, Suspense, useEffect, useRef, useState } from "react";
 
 import { BackendHealth } from "../components/BackendHealth";
+import { TrackGutter, useTrackLayout } from "../components/TrackLayout";
 import { StatusBadge } from "../components/primitives";
 import { ProviderHost, useHmi } from "../state/ProviderHost";
 import { useAppState } from "../state/useAppState";
@@ -285,10 +286,21 @@ const FEED_DETAIL: Record<MineCastFeedState, string> = {
  * as the control-room screens are tested - the real code path, not a reconstruction of
  * it. Production mounts `MineCastApp`, which supplies the real `ProviderHost`.
  */
+/**
+ * Resizable Mine-Cast deck: the viewer drags the gutters to trade width between the
+ * operations rail, the spatial view and the inspector. Presentation state only; the
+ * spatial view always keeps at least 40% of the deck.
+ */
+const MINECAST_TRACKS = {
+  left: { axis: "x", index: 0, minPx: 200, maxPx: 560 },
+  right: { axis: "x", index: 2, minPx: 220, maxPx: 640 },
+} as const;
+
 export function MineCastContent() {
   const state = useAppState();
   const { freshness, freshnessReason } = useHmi();
   const { view, selectVehicle, toggleLayer, togglePanel, requestCamera } = useMineCastStore();
+  const tracks = useTrackLayout("mine-cast", MINECAST_TRACKS);
 
   const minecast = projectMineCast(state);
 
@@ -366,7 +378,7 @@ export function MineCastContent() {
       ) : null}
 
       {/* ---- BODY: left operations · centre spatial · right inspector ---- */}
-      <div className="mc-body">
+      <div className="mc-body" style={tracks.style} data-track-grid="mine-cast">
         <aside className="mc-left">
           <FleetPanel
             minecast={minecast}
@@ -432,6 +444,8 @@ export function MineCastContent() {
             <ProvenancePanel minecast={minecast} />
           </details>
         </aside>
+        <TrackGutter layout={tracks} track="left" edge="end" label="Operations rail width" className="mc-gutter-left" />
+        <TrackGutter layout={tracks} track="right" edge="start" label="Inspector width" className="mc-gutter-right" />
       </div>
 
       {/* ---- BOTTOM ---- */}

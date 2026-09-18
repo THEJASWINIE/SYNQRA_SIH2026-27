@@ -33,7 +33,9 @@
 
 import { Html } from "@react-three/drei";
 import { useMemo } from "react";
+import { BufferAttribute, BufferGeometry, Line, LineBasicMaterial } from "three";
 
+import { type CalloutSlot, calloutSlots, SLOT_OFFSET } from "../state/calloutLayout";
 import type { MineCastVehicle } from "./minecastProjection";
 import type { SpatialPosition } from "./spatialPosition";
 import type { HeightGrid } from "./terrainField";
@@ -70,6 +72,21 @@ const LABEL_OFFSET_M = 30;
 /** The selection ring on the ground: inner/outer radius in metres. */
 const RING_INNER_M = 60;
 const RING_OUTER_M = 78;
+/**
+ * DIGITAL-TWIN-OPERATIONAL-FLOW-01: how far a de-collided callout hangs from its mast,
+ * scene metres, sideways (x) and extra height (y). The MARKER never moves; only the
+ * label anchor does, and a leader line joins them. Sideways is +x (east), which the
+ * default oblique camera shows as roughly screen-right.
+ */
+const CALLOUT_SIDE_M = 1000;
+const CALLOUT_RAISE_M = 400;
+/**
+ * Proximity for the 3D rule, scene metres. Wider than the plan's default: a 3D callout
+ * is ~180 px wide, which at the overview zoom is ~850 m of ground, and the oblique
+ * camera foreshortens north-south distance, so trucks well apart on the ground still
+ * collide on screen. Still a fixed, camera-independent number.
+ */
+const CALLOUT_NEAR_3D_M = 2200;
 
 function VehicleMarker({
   position,
@@ -77,6 +94,7 @@ function VehicleMarker({
   grid,
   selected,
   onSelect,
+  slot,
 }: {
   position: SpatialPosition;
   /** The projected vehicle the callout reads its figures from. Null = no telemetry row. */
@@ -85,8 +103,26 @@ function VehicleMarker({
   /** View state from the shell's store; this file never decides what is selected. */
   selected: boolean;
   onSelect?: ((canonicalVehicleId: string) => void) | undefined;
+  /** Callout slot from `calloutSlots` - label placement only, never the truck. */
+  slot: CalloutSlot;
 }) {
   const { x, y } = position;
+  const offset = SLOT_OFFSET[slot];
+  const anchor: readonly [number, number, number] = [
+    offset.dx * CALLOUT_SIDE_M,
+    MAST_HEIGHT_M + LABEL_OFFSET_M + offset.dy * CALLOUT_RAISE_M,
+    0,
+  ];
+  // Leader from the mast tip to the de-collided anchor. Built only when the label moved.
+  const leader = useMemo(() => {
+    if (slot === "DEFAULT") return null;
+    const geometry = new BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new BufferAttribute(new Float32Array([0, MAST_HEIGHT_M, 0, anchor[0], anchor[1], anchor[2]]), 3),
+    );
+    return new Line(geometry, new LineBasicMaterial({ color: markerColour(position.canonicalVehicleId), transparent: true, opacity: 0.9 }));
+  }, [slot, anchor[0], anchor[1], anchor[2], position.canonicalVehicleId]);
 
   // Guarded by the caller too; this keeps the component independently safe.
   if (x === null || y === null) return null;
@@ -168,14 +204,20 @@ function VehicleMarker({
         marker. `Html` costs the GPU nothing, stays crisp at any zoom, and is readable in
         a screenshot. Verified in the browser at both target resolutions.
       */}
+      {leader ? <primitive object={leader} /> : null}
       <Html
-        position={[0, MAST_HEIGHT_M + LABEL_OFFSET_M, 0]}
+        position={[anchor[0], anchor[1], anchor[2]]}
         zIndexRange={[20, 0]}
         // The label must never swallow a drag intended for the camera.
         style={{ pointerEvents: "none" }}
       >
         {vehicle ? (
-          <VehicleCallout vehicle={vehicle} position={position} accent={labelColour} />
+          <VehicleCallout
+            vehicle={vehicle}
+            position={position}
+            accent={labelColour}
+            compact={slot !== "DEFAULT" && !selected}
+          />
         ) : (
           // A position without a telemetry row: still identified, still marked simulated.
           <span className="mc-marker-label" style={{ borderColor: labelColour }}>
@@ -216,6 +258,15 @@ export function VehicleMarkers({
     () => positions.filter((position) => position.drawableInScene),
     [positions],
   );
+  // Deterministic label slots for trucks that are close together (same rule as the plan).
+  const slots = useMemo(
+    () =>
+      calloutSlots(
+        drawable.map((p) => ({ id: p.canonicalVehicleId, x: p.x ?? 0, y: p.y ?? 0 })),
+        CALLOUT_NEAR_3D_M,
+      ),
+    [drawable],
+  );
 
   if (!visible || drawable.length === 0) return null;
 
@@ -231,6 +282,7 @@ export function VehicleMarkers({
           grid={grid}
           selected={position.canonicalVehicleId === selectedVehicleId}
           onSelect={onSelect}
+          slot={slots.get(position.canonicalVehicleId) ?? "DEFAULT"}
         />
       ))}
     </group>
