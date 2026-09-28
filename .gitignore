@@ -50,3 +50,6 @@ build_test/
 *.o
 *.a
 
+
+# Temporary scratch
+scratch/
