@@ -1,0 +1,151 @@
+seed,orchestration_level,level_name,throughput_tph,crusher_utilization_pct,completed_trips,cycle_time_s,hazardous_ramp_queue_wait_s,safe_origin_staging_wait_s,total_delay_s,peak_queue_trucks,safety_violations,overspeed_violations
+1001,LEVEL_0,Conventional (No Orchestration),1182.8,71.82,12,2127.5,856.6,42.8,899.4,7.7,12.4,12.4
+1001,LEVEL_1,Vehicle-Only Safe Speed Governor,1242.7,75.45,13,1832.2,655.0,90.2,745.2,6.0,0.0,0.0
+1001,LEVEL_2,Vehicle + Road Capacity Awareness,1373.6,83.4,15,1700.2,407.0,222.0,629.0,3.1,0.0,0.0
+1001,LEVEL_3,Vehicle + Capacity + Prediction,1475.3,89.57,16,1662.6,257.4,368.5,625.9,2.0,0.0,0.0
+1001,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1638.0,99.45,17,1595.9,140.6,490.2,630.8,1.2,0.0,0.0
+1002,LEVEL_0,Conventional (No Orchestration),1173.8,71.27,12,2061.3,830.5,42.5,873.0,7.7,12.4,12.4
+1002,LEVEL_1,Vehicle-Only Safe Speed Governor,1233.5,74.89,13,1815.9,660.2,88.2,748.4,6.0,0.0,0.0
+1002,LEVEL_2,Vehicle + Road Capacity Awareness,1352.5,82.12,14,1715.5,415.4,207.4,622.8,3.4,0.0,0.0
+1002,LEVEL_3,Vehicle + Capacity + Prediction,1514.1,91.93,16,1678.0,266.9,363.8,630.7,1.9,0.0,0.0
+1002,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1568.5,95.23,17,1639.2,139.6,504.7,644.3,1.1,0.0,0.0
+1003,LEVEL_0,Conventional (No Orchestration),1178.8,71.57,12,2099.1,850.3,41.1,891.4,8.2,12.4,12.4
+1003,LEVEL_1,Vehicle-Only Safe Speed Governor,1271.8,77.22,13,1854.4,609.7,87.4,697.1,6.1,0.0,0.0
+1003,LEVEL_2,Vehicle + Road Capacity Awareness,1373.1,83.37,15,1719.0,410.5,213.1,623.6,3.5,0.0,0.0
+1003,LEVEL_3,Vehicle + Capacity + Prediction,1532.6,93.05,16,1694.7,264.9,376.1,641.0,2.0,0.0,0.0
+1003,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1602.9,97.32,17,1669.1,148.1,488.7,636.8,1.0,0.0,0.0
+1004,LEVEL_0,Conventional (No Orchestration),1190.5,72.28,13,2082.9,862.4,41.6,904.0,7.0,12.4,12.4
+1004,LEVEL_1,Vehicle-Only Safe Speed Governor,1243.0,75.47,13,1830.9,632.1,92.1,724.2,5.6,0.0,0.0
+1004,LEVEL_2,Vehicle + Road Capacity Awareness,1372.5,83.33,15,1736.5,424.1,222.6,646.7,3.5,0.0,0.0
+1004,LEVEL_3,Vehicle + Capacity + Prediction,1495.0,90.77,16,1677.3,273.2,357.4,630.6,2.1,0.0,0.0
+1004,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1544.8,93.79,16,1630.9,142.9,493.0,635.9,1.2,0.0,0.0
+1005,LEVEL_0,Conventional (No Orchestration),1138.0,69.1,12,2055.0,849.3,41.6,890.9,7.7,12.4,12.4
+1005,LEVEL_1,Vehicle-Only Safe Speed Governor,1258.6,76.42,13,1852.3,660.8,88.7,749.5,5.8,0.0,0.0
+1005,LEVEL_2,Vehicle + Road Capacity Awareness,1333.2,80.95,14,1815.1,412.5,220.8,633.3,3.4,0.0,0.0
+1005,LEVEL_3,Vehicle + Capacity + Prediction,1501.1,91.14,16,1714.5,265.2,352.3,617.5,2.2,0.0,0.0
+1005,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1616.6,98.15,17,1596.5,137.7,509.8,647.5,1.2,0.0,0.0
+1006,LEVEL_0,Conventional (No Orchestration),1222.5,74.23,13,2083.1,834.6,41.3,875.9,7.6,12.4,12.4
+1006,LEVEL_1,Vehicle-Only Safe Speed Governor,1209.8,73.45,13,1858.3,626.7,85.4,712.1,5.5,0.0,0.0
+1006,LEVEL_2,Vehicle + Road Capacity Awareness,1429.4,86.79,15,1771.8,403.1,218.3,621.4,3.2,0.0,0.0
+1006,LEVEL_3,Vehicle + Capacity + Prediction,1498.9,91.01,16,1690.3,275.9,347.5,623.4,2.1,0.0,0.0
+1006,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1616.3,98.14,17,1643.6,136.3,469.8,606.1,1.2,0.0,0.0
+1007,LEVEL_0,Conventional (No Orchestration),1177.1,71.47,12,2087.2,869.1,41.1,910.2,7.9,12.4,12.4
+1007,LEVEL_1,Vehicle-Only Safe Speed Governor,1230.7,74.72,13,1812.2,660.4,89.5,749.9,6.0,0.0,0.0
+1007,LEVEL_2,Vehicle + Road Capacity Awareness,1359.4,82.54,14,1728.9,422.5,228.1,650.6,3.6,0.0,0.0
+1007,LEVEL_3,Vehicle + Capacity + Prediction,1504.4,91.34,16,1679.4,272.0,385.9,657.9,2.0,0.0,0.0
+1007,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1563.1,94.91,17,1639.1,138.1,488.1,626.2,1.2,0.0,0.0
+1008,LEVEL_0,Conventional (No Orchestration),1190.6,72.29,13,2071.7,860.5,43.8,904.3,8.9,12.4,12.4
+1008,LEVEL_1,Vehicle-Only Safe Speed Governor,1264.1,76.75,13,1858.6,609.3,85.4,694.7,5.7,0.0,0.0
+1008,LEVEL_2,Vehicle + Road Capacity Awareness,1406.2,85.38,15,1728.2,418.7,219.9,638.6,3.1,0.0,0.0
+1008,LEVEL_3,Vehicle + Capacity + Prediction,1478.8,89.79,16,1654.1,272.3,367.4,639.7,2.1,0.0,0.0
+1008,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1603.7,97.37,17,1632.2,137.8,491.5,629.3,1.1,0.0,0.0
+1009,LEVEL_0,Conventional (No Orchestration),1179.6,71.62,12,2112.9,874.7,43.4,918.1,7.3,12.4,12.4
+1009,LEVEL_1,Vehicle-Only Safe Speed Governor,1225.1,74.38,13,1859.5,635.1,89.6,724.7,6.9,0.0,0.0
+1009,LEVEL_2,Vehicle + Road Capacity Awareness,1402.2,85.14,15,1767.5,426.9,226.7,653.6,3.3,0.0,0.0
+1009,LEVEL_3,Vehicle + Capacity + Prediction,1514.7,91.97,16,1673.3,259.3,362.5,621.8,2.1,0.0,0.0
+1009,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1665.1,101.1,18,1591.3,133.7,499.3,633.0,1.2,0.0,0.0
+1010,LEVEL_0,Conventional (No Orchestration),1196.7,72.66,13,2057.7,861.9,40.6,902.5,8.1,12.4,12.4
+1010,LEVEL_1,Vehicle-Only Safe Speed Governor,1230.3,74.7,13,1827.2,629.5,88.3,717.8,6.4,0.0,0.0
+1010,LEVEL_2,Vehicle + Road Capacity Awareness,1404.0,85.25,15,1733.0,387.7,221.6,609.3,3.5,0.0,0.0
+1010,LEVEL_3,Vehicle + Capacity + Prediction,1468.4,89.16,16,1707.5,264.6,370.6,635.2,2.0,0.0,0.0
+1010,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1580.8,95.98,17,1674.0,139.6,479.6,619.2,1.2,0.0,0.0
+1011,LEVEL_0,Conventional (No Orchestration),1141.7,69.32,12,2112.2,883.9,44.7,928.6,7.2,12.4,12.4
+1011,LEVEL_1,Vehicle-Only Safe Speed Governor,1236.4,75.07,13,1857.5,649.2,86.3,735.5,6.0,0.0,0.0
+1011,LEVEL_2,Vehicle + Road Capacity Awareness,1360.7,82.62,14,1723.5,412.1,199.0,611.1,3.4,0.0,0.0
+1011,LEVEL_3,Vehicle + Capacity + Prediction,1454.9,88.34,15,1674.5,278.5,349.4,627.9,2.1,0.0,0.0
+1011,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1637.3,99.41,17,1631.1,135.5,506.3,641.8,1.1,0.0,0.0
+1012,LEVEL_0,Conventional (No Orchestration),1182.0,71.77,12,2082.2,865.3,41.2,906.5,7.6,12.4,12.4
+1012,LEVEL_1,Vehicle-Only Safe Speed Governor,1251.3,75.97,13,1810.9,637.8,92.4,730.2,6.4,0.0,0.0
+1012,LEVEL_2,Vehicle + Road Capacity Awareness,1332.3,80.89,14,1757.8,410.9,224.3,635.2,3.3,0.0,0.0
+1012,LEVEL_3,Vehicle + Capacity + Prediction,1485.9,90.22,16,1707.1,261.6,358.6,620.2,2.1,0.0,0.0
+1012,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1569.3,95.28,17,1650.7,145.4,493.7,639.1,1.2,0.0,0.0
+1013,LEVEL_0,Conventional (No Orchestration),1151.8,69.93,12,2099.0,845.7,42.9,888.6,7.8,12.4,12.4
+1013,LEVEL_1,Vehicle-Only Safe Speed Governor,1251.4,75.98,13,1860.3,649.4,86.6,736.0,5.7,0.0,0.0
+1013,LEVEL_2,Vehicle + Road Capacity Awareness,1380.4,83.81,15,1771.8,426.4,225.9,652.3,3.6,0.0,0.0
+1013,LEVEL_3,Vehicle + Capacity + Prediction,1492.7,90.63,16,1693.8,270.9,361.7,632.6,2.1,0.0,0.0
+1013,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1594.5,96.81,17,1682.0,144.1,477.2,621.3,1.1,0.0,0.0
+1014,LEVEL_0,Conventional (No Orchestration),1142.8,69.39,12,2099.5,890.1,43.0,933.1,8.0,12.4,12.4
+1014,LEVEL_1,Vehicle-Only Safe Speed Governor,1248.2,75.79,13,1826.5,608.6,88.4,697.0,6.1,0.0,0.0
+1014,LEVEL_2,Vehicle + Road Capacity Awareness,1382.3,83.93,15,1761.2,402.6,218.3,620.9,3.3,0.0,0.0
+1014,LEVEL_3,Vehicle + Capacity + Prediction,1467.6,89.11,16,1672.8,267.4,367.8,635.2,2.1,0.0,0.0
+1014,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1598.8,97.07,17,1613.2,135.4,468.5,603.9,1.2,0.0,0.0
+1015,LEVEL_0,Conventional (No Orchestration),1178.5,71.55,12,2075.0,898.3,43.1,941.4,7.8,12.4,12.4
+1015,LEVEL_1,Vehicle-Only Safe Speed Governor,1223.5,74.29,13,1854.1,625.1,87.4,712.5,5.6,0.0,0.0
+1015,LEVEL_2,Vehicle + Road Capacity Awareness,1400.8,85.05,15,1760.9,431.8,219.7,651.5,3.5,0.0,0.0
+1015,LEVEL_3,Vehicle + Capacity + Prediction,1480.1,89.87,16,1688.1,267.3,365.2,632.5,2.0,0.0,0.0
+1015,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1592.2,96.67,17,1654.3,143.7,510.5,654.2,1.3,0.0,0.0
+1016,LEVEL_0,Conventional (No Orchestration),1153.2,70.02,12,2148.3,882.7,42.2,924.9,7.5,12.4,12.4
+1016,LEVEL_1,Vehicle-Only Safe Speed Governor,1227.5,74.53,13,1830.6,614.2,82.6,696.8,5.6,0.0,0.0
+1016,LEVEL_2,Vehicle + Road Capacity Awareness,1390.6,84.43,15,1775.4,417.0,232.8,649.8,3.3,0.0,0.0
+1016,LEVEL_3,Vehicle + Capacity + Prediction,1465.3,88.97,16,1731.9,269.4,350.6,620.0,2.2,0.0,0.0
+1016,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1576.5,95.72,17,1628.0,134.3,509.1,643.4,1.3,0.0,0.0
+1017,LEVEL_0,Conventional (No Orchestration),1133.9,68.85,12,2081.5,844.7,42.0,886.7,7.6,12.4,12.4
+1017,LEVEL_1,Vehicle-Only Safe Speed Governor,1264.1,76.75,13,1848.5,605.4,87.8,693.2,5.9,0.0,0.0
+1017,LEVEL_2,Vehicle + Road Capacity Awareness,1406.1,85.37,15,1783.9,398.9,210.3,609.2,3.5,0.0,0.0
+1017,LEVEL_3,Vehicle + Capacity + Prediction,1469.8,89.24,16,1715.4,277.9,366.4,644.3,2.1,0.0,0.0
+1017,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1657.0,100.61,18,1654.6,149.1,485.5,634.6,1.2,0.0,0.0
+1018,LEVEL_0,Conventional (No Orchestration),1203.3,73.06,13,2113.0,835.3,42.9,878.2,7.1,12.4,12.4
+1018,LEVEL_1,Vehicle-Only Safe Speed Governor,1219.0,74.01,13,1865.1,587.1,87.5,674.6,6.2,0.0,0.0
+1018,LEVEL_2,Vehicle + Road Capacity Awareness,1388.5,84.3,15,1705.7,433.0,211.3,644.3,3.4,0.0,0.0
+1018,LEVEL_3,Vehicle + Capacity + Prediction,1503.6,91.29,16,1683.3,265.2,342.5,607.7,2.0,0.0,0.0
+1018,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1612.7,97.92,17,1618.2,143.2,475.4,618.6,1.1,0.0,0.0
+1019,LEVEL_0,Conventional (No Orchestration),1169.7,71.02,12,2095.7,884.8,40.8,925.6,7.6,12.4,12.4
+1019,LEVEL_1,Vehicle-Only Safe Speed Governor,1228.7,74.6,13,1829.9,623.4,85.5,708.9,5.5,0.0,0.0
+1019,LEVEL_2,Vehicle + Road Capacity Awareness,1440.9,87.49,15,1756.0,413.2,215.8,629.0,3.4,0.0,0.0
+1019,LEVEL_3,Vehicle + Capacity + Prediction,1485.5,90.19,16,1672.2,270.4,373.4,643.8,2.0,0.0,0.0
+1019,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1582.6,96.09,17,1664.2,131.8,467.0,598.8,1.3,0.0,0.0
+1020,LEVEL_0,Conventional (No Orchestration),1165.4,70.76,12,2176.1,875.1,42.4,917.5,8.2,12.4,12.4
+1020,LEVEL_1,Vehicle-Only Safe Speed Governor,1245.3,75.61,13,1850.8,607.5,83.9,691.4,5.6,0.0,0.0
+1020,LEVEL_2,Vehicle + Road Capacity Awareness,1347.0,81.79,14,1794.7,404.8,213.2,618.0,3.5,0.0,0.0
+1020,LEVEL_3,Vehicle + Capacity + Prediction,1491.9,90.58,16,1663.8,277.3,365.9,643.2,2.3,0.0,0.0
+1020,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1608.6,97.67,17,1609.4,137.2,486.4,623.6,1.1,0.0,0.0
+1021,LEVEL_0,Conventional (No Orchestration),1192.9,72.43,13,2097.6,909.5,40.2,949.7,7.5,12.4,12.4
+1021,LEVEL_1,Vehicle-Only Safe Speed Governor,1236.3,75.06,13,1846.5,614.3,85.9,700.2,5.6,0.0,0.0
+1021,LEVEL_2,Vehicle + Road Capacity Awareness,1393.9,84.63,15,1726.6,412.2,218.8,631.0,3.3,0.0,0.0
+1021,LEVEL_3,Vehicle + Capacity + Prediction,1514.6,91.96,16,1688.1,269.5,354.4,623.9,2.2,0.0,0.0
+1021,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1538.3,93.4,16,1644.8,143.9,479.5,623.4,1.2,0.0,0.0
+1022,LEVEL_0,Conventional (No Orchestration),1128.9,68.54,12,2088.1,818.2,42.1,860.3,7.4,12.4,12.4
+1022,LEVEL_1,Vehicle-Only Safe Speed Governor,1264.4,76.77,13,1811.7,594.2,88.0,682.2,5.6,0.0,0.0
+1022,LEVEL_2,Vehicle + Road Capacity Awareness,1387.7,84.26,15,1776.8,402.1,217.9,620.0,3.3,0.0,0.0
+1022,LEVEL_3,Vehicle + Capacity + Prediction,1517.0,92.11,16,1722.0,256.5,370.9,627.4,1.8,0.0,0.0
+1022,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1566.0,95.08,17,1639.9,144.1,486.2,630.3,1.2,0.0,0.0
+1023,LEVEL_0,Conventional (No Orchestration),1173.2,71.23,12,2087.9,856.2,43.5,899.7,7.9,12.4,12.4
+1023,LEVEL_1,Vehicle-Only Safe Speed Governor,1238.2,75.18,13,1856.1,616.3,87.1,703.4,5.7,0.0,0.0
+1023,LEVEL_2,Vehicle + Road Capacity Awareness,1394.4,84.66,15,1741.8,438.5,226.2,664.7,3.6,0.0,0.0
+1023,LEVEL_3,Vehicle + Capacity + Prediction,1479.9,89.85,16,1638.3,249.3,354.1,603.4,2.1,0.0,0.0
+1023,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1592.0,96.66,17,1625.4,148.7,494.0,642.7,1.2,0.0,0.0
+1024,LEVEL_0,Conventional (No Orchestration),1119.4,67.97,12,2033.9,866.3,43.0,909.3,8.2,12.4,12.4
+1024,LEVEL_1,Vehicle-Only Safe Speed Governor,1257.0,76.32,13,1908.0,617.6,89.9,707.5,5.9,0.0,0.0
+1024,LEVEL_2,Vehicle + Road Capacity Awareness,1393.3,84.6,15,1772.2,407.1,214.8,621.9,3.3,0.0,0.0
+1024,LEVEL_3,Vehicle + Capacity + Prediction,1494.2,90.72,16,1694.0,261.7,370.3,632.0,2.2,0.0,0.0
+1024,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1575.2,95.64,17,1619.9,140.5,474.8,615.3,1.2,0.0,0.0
+1025,LEVEL_0,Conventional (No Orchestration),1188.9,72.19,12,2122.3,836.4,43.1,879.5,8.0,12.4,12.4
+1025,LEVEL_1,Vehicle-Only Safe Speed Governor,1295.4,78.65,14,1796.0,610.9,84.9,695.8,6.2,0.0,0.0
+1025,LEVEL_2,Vehicle + Road Capacity Awareness,1404.5,85.28,15,1720.8,412.1,222.3,634.4,3.8,0.0,0.0
+1025,LEVEL_3,Vehicle + Capacity + Prediction,1496.0,90.83,16,1697.8,266.4,373.0,639.4,2.1,0.0,0.0
+1025,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1566.2,95.09,17,1663.7,143.6,516.8,660.4,1.3,0.0,0.0
+1026,LEVEL_0,Conventional (No Orchestration),1159.2,70.38,12,2081.7,834.7,41.8,876.5,8.2,12.4,12.4
+1026,LEVEL_1,Vehicle-Only Safe Speed Governor,1206.2,73.24,13,1833.4,654.1,87.8,741.9,5.5,0.0,0.0
+1026,LEVEL_2,Vehicle + Road Capacity Awareness,1340.5,81.39,14,1716.5,423.0,220.9,643.9,3.2,0.0,0.0
+1026,LEVEL_3,Vehicle + Capacity + Prediction,1482.1,89.99,16,1647.6,278.8,362.3,641.1,2.1,0.0,0.0
+1026,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1582.7,96.1,17,1625.2,130.1,488.4,618.5,1.2,0.0,0.0
+1027,LEVEL_0,Conventional (No Orchestration),1214.5,73.74,13,2045.5,889.3,41.7,931.0,8.8,12.4,12.4
+1027,LEVEL_1,Vehicle-Only Safe Speed Governor,1250.0,75.9,13,1850.7,625.7,88.1,713.8,5.8,0.0,0.0
+1027,LEVEL_2,Vehicle + Road Capacity Awareness,1370.5,83.21,14,1736.1,406.0,220.2,626.2,3.3,0.0,0.0
+1027,LEVEL_3,Vehicle + Capacity + Prediction,1495.3,90.79,16,1618.6,263.5,381.6,645.1,2.2,0.0,0.0
+1027,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1631.1,99.03,17,1621.7,132.8,484.2,617.0,1.1,0.0,0.0
+1028,LEVEL_0,Conventional (No Orchestration),1153.0,70.01,12,2109.2,831.5,44.2,875.7,8.3,12.4,12.4
+1028,LEVEL_1,Vehicle-Only Safe Speed Governor,1266.5,76.9,13,1858.7,604.2,86.8,691.0,5.4,0.0,0.0
+1028,LEVEL_2,Vehicle + Road Capacity Awareness,1406.2,85.38,15,1769.1,409.8,217.9,627.7,3.5,0.0,0.0
+1028,LEVEL_3,Vehicle + Capacity + Prediction,1481.3,89.94,16,1701.2,274.7,353.3,628.0,2.2,0.0,0.0
+1028,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1581.5,96.02,17,1653.4,143.0,470.8,613.8,1.2,0.0,0.0
+1029,LEVEL_0,Conventional (No Orchestration),1159.0,70.37,12,2036.1,887.3,41.1,928.4,7.2,12.4,12.4
+1029,LEVEL_1,Vehicle-Only Safe Speed Governor,1263.6,76.72,13,1787.6,601.4,92.8,694.2,6.3,0.0,0.0
+1029,LEVEL_2,Vehicle + Road Capacity Awareness,1392.3,84.54,15,1760.9,411.6,216.8,628.4,3.4,0.0,0.0
+1029,LEVEL_3,Vehicle + Capacity + Prediction,1525.0,92.59,16,1676.4,266.4,366.7,633.1,2.1,0.0,0.0
+1029,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1601.2,97.22,17,1649.0,134.3,469.4,603.7,1.2,0.0,0.0
+1030,LEVEL_0,Conventional (No Orchestration),1166.9,70.85,12,2063.2,860.7,42.4,903.1,7.5,12.4,12.4
+1030,LEVEL_1,Vehicle-Only Safe Speed Governor,1253.4,76.1,13,1798.1,607.0,89.3,696.3,6.1,0.0,0.0
+1030,LEVEL_2,Vehicle + Road Capacity Awareness,1399.5,84.97,15,1794.1,416.0,226.9,642.9,3.6,0.0,0.0
+1030,LEVEL_3,Vehicle + Capacity + Prediction,1437.2,87.26,15,1686.3,255.3,358.3,613.6,2.2,0.0,0.0
+1030,LEVEL_4,Full FOG-Orchestrator (Dynamic Staging),1568.3,95.22,17,1615.8,142.4,478.1,620.5,1.1,0.0,0.0

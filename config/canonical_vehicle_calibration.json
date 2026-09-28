@@ -1,0 +1,68 @@
+{
+  "schema_version": "2.0.0",
+  "description": "Canonical Physical Vehicle Calibration for FOG-ORCHESTRATOR 2.0",
+  "audit_date": "2026-09-24",
+  "status": "FROZEN_CANONICAL",
+  "calibration_derivation": {
+    "method": "Physical 10-second ground travel distance calibration vs optical interrupter pulse accumulation",
+    "evidence_level": "L3_BENCH / L4_CONTROLLED_VEHICLE",
+    "distance_per_pulse_formula": "pi * wheel_diameter_m / encoder_effective_ppr",
+    "speed_mps_formula": "wheel_rpm * pi * wheel_diameter_m / 60.0"
+  },
+  "vehicles": {
+    "TRUCK_01": {
+      "vehicle_id": "TRUCK_01",
+      "description": "Vehicle A - 4-wheel differential drive prototype",
+      "motor_driver": "TB6612FNG",
+      "wheel": {
+        "diameter_m": 0.060,
+        "radius_m": 0.030,
+        "circumference_m": 0.188495559
+      },
+      "encoder": {
+        "raw_ppr": 42.0,
+        "effective_ppr": 34.58,
+        "distance_per_pulse_m": 0.005451,
+        "speed_sensor_pin": 35
+      },
+      "limits": {
+        "max_physical_speed_mps": 1.40,
+        "default_crawl_speed_mps": 0.50,
+        "max_pwm": 220
+      },
+      "chassis_mass_kg": 2.20
+    },
+    "TRUCK_02": {
+      "vehicle_id": "TRUCK_02",
+      "description": "Vehicle B - 2-wheel TB6612FNG drive prototype",
+      "motor_driver": "TB6612FNG",
+      "pinout": {
+        "LEFT_IN1": 25,
+        "LEFT_IN2": 26,
+        "LEFT_PWM": 27,
+        "RIGHT_IN1": 32,
+        "RIGHT_IN2": 33,
+        "RIGHT_PWM": 14,
+        "MOTOR_STBY": 13,
+        "SPEED_SENSOR_PIN": 35
+      },
+      "wheel": {
+        "diameter_m": 0.060,
+        "radius_m": 0.030,
+        "circumference_m": 0.188495559
+      },
+      "encoder": {
+        "raw_ppr": 43.0,
+        "effective_ppr": 34.58,
+        "distance_per_pulse_m": 0.005451,
+        "speed_sensor_pin": 35
+      },
+      "limits": {
+        "max_physical_speed_mps": 1.40,
+        "default_crawl_speed_mps": 0.50,
+        "max_pwm": 220
+      },
+      "chassis_mass_kg": 1.85
+    }
+  }
+}

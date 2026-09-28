@@ -1,0 +1,310 @@
+timestamp,vehicle,action,reason,bottleneck,current_queue,predicted_queue,road_capacity_vph,node_capacity_vph,requested_action,expected_effect,actual_effect
+0.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_001,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_002,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_005,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_007,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_008,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_010,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+1.0,TRUCK_001,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_002,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_005,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_007,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_008,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_010,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+30.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+180.0,TRUCK_005,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0001,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+195.0,TRUCK_005,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0001,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+210.0,TRUCK_008,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0002,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+225.0,TRUCK_008,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,3.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0002,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+255.0,TRUCK_002,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0003,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+270.0,TRUCK_002,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0003,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+285.0,TRUCK_010,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0004,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+290.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+291.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+292.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+293.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+294.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+295.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+296.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+297.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+298.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+299.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+300.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+300.0,TRUCK_010,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0004,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+301.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+302.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+303.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+304.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+305.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+315.0,TRUCK_004,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0005,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+330.0,TRUCK_004,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0005,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+345.0,TRUCK_007,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0006,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+360.0,TRUCK_007,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0006,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+375.0,TRUCK_001,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0007,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+390.0,TRUCK_001,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0007,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+405.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+420.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,748.1,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+435.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,748.0,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+450.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,739.4,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+465.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,715.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+480.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,660.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+495.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,647.9,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+525.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,616.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+540.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,598.1,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+555.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,538.3,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+570.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,451.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+585.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,313.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+588.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,274.4,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+589.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,260.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+590.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,245.1,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+591.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,229.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+592.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,212.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+593.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,194.1,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+594.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,174.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_001,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_002,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_005,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_007,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_008,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_010,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+1.0,TRUCK_001,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_002,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_005,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_007,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_008,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_010,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+30.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+180.0,TRUCK_005,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0001,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+195.0,TRUCK_005,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0001,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+210.0,TRUCK_008,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0002,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+225.0,TRUCK_008,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,3.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0002,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+255.0,TRUCK_002,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0003,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+270.0,TRUCK_002,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0003,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+285.0,TRUCK_010,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0004,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+290.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+291.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+292.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+293.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+294.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+295.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+296.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+297.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+298.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+299.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+300.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+300.0,TRUCK_010,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0004,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+301.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+302.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+303.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+304.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+305.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+315.0,TRUCK_004,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0005,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+330.0,TRUCK_004,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0005,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+345.0,TRUCK_007,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0006,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+360.0,TRUCK_007,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0006,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+375.0,TRUCK_001,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0007,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+390.0,TRUCK_001,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0007,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+405.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+420.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,748.1,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+435.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,748.0,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+450.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,739.4,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+465.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,715.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+480.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,660.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+495.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,647.9,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+525.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,616.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+540.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,598.1,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+555.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,538.3,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+570.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,451.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+585.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,313.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+588.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,274.4,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+589.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,260.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+590.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,245.1,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+591.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,229.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+592.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,212.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+593.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,194.1,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+594.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,174.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,3.0,3.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+0.0,TRUCK_001,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_002,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_005,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_007,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_008,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,955.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+0.0,TRUCK_010,HOLD,Bottleneck queue shaping / severe fog capacity collapse,CRUSHER_01,3.0,5.0,980.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+1.0,TRUCK_001,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_002,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_005,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_007,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_008,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,955.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+1.0,TRUCK_010,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,980.7,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+30.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+30.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+60.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_001,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_002,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_003,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_004,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_005,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_006,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_007,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_008,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_SWITCHBACK_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_009,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_CRUSHER_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+90.0,TRUCK_010,DISPATCH,Periodic MILP route & speed schedule,NETWORK,0.0,0.0,600.0,18.0,ROUTE_INTERSECTION_01_TO_DUMP_01_R1,Optimize network departure timing,Target speeds assigned
+180.0,TRUCK_005,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0001,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+195.0,TRUCK_005,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0001,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+210.0,TRUCK_008,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0002,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+225.0,TRUCK_008,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,3.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0002,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+255.0,TRUCK_002,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0003,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+270.0,TRUCK_002,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0003,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+285.0,TRUCK_010,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0004,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+290.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+291.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+292.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+293.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+294.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+295.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+296.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+297.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+298.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+299.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+300.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+300.0,TRUCK_010,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,2.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0004,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+301.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+302.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+303.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+304.0,TRUCK_009,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,862.8,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+305.0,TRUCK_009,RELEASE,Bottleneck capacity restored,NONE,1.0,1.0,862.8,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+315.0,TRUCK_004,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0005,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+330.0,TRUCK_004,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0005,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+345.0,TRUCK_007,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,1.0,1.0,862.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0006,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+360.0,TRUCK_007,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0006,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+375.0,TRUCK_001,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0007,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+390.0,TRUCK_001,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0007,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+405.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,740.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+420.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,748.1,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+435.0,TRUCK_009,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,748.0,31.6,RESERVE_SLOT_SWITCHBACK_01_0008,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+450.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,739.4,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+465.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,715.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+480.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,660.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+495.0,TRUCK_003,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,647.9,31.6,RESERVE_SLOT_SWITCHBACK_01_0009,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+525.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,616.8,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+540.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,598.1,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+555.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,538.3,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+570.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,451.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+585.0,TRUCK_006,SLOT,Hairpin switchback mutual exclusion slot confirmed,SWITCHBACK_01,0.0,1.0,313.2,31.6,RESERVE_SLOT_SWITCHBACK_01_0010,Conflict-free traversal of single-lane section,"Slot active, opposing traffic held"
+588.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,274.4,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+589.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,260.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+590.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,245.1,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+591.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,229.2,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+592.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,212.2,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad
+593.0,TRUCK_004,RELEASE,Bottleneck capacity restored,NONE,0.0,0.0,194.1,31.6,RELEASE_METERED,Smooth entry into haul network,Resumed metered departure
+594.0,TRUCK_004,HOLD,Bottleneck queue shaping / severe fog capacity collapse,SWITCHBACK_01,2.0,4.0,174.7,31.6,HOLD_AT_STAGING,Prevent bottleneck queue explosion and ramp gridlock,Vehicle held safely at loading/buffer pad

@@ -1,0 +1,11 @@
+parameter,value,classification,source
+Brake System Architecture,Front Dry Caliper Disc / Rear Oil-Cooled Wet Multi-Disc,KNOWN,BEML BH100 OEM Technical Specification Sheet
+Loaded Tire Rolling Radius,1.35 m,KNOWN,Bridgestone 27.00R49 E-4 Mining Radial Catalog
+Gross Mechanical Rim Braking Force,"550,000 N",INFERRED,Derived from ISO 3450 service brake criteria (~3.32 m/s2 level ground)
+Continuous Retarder Dissipation,"1,200 kW",INFERRED,Rear oil-cooled retarding absorption curve for 100-tonne class
+Nominal Actuator Build-Up Time,250 ms,ASSUMED,Mining equipment pneumatic line fill literature
+Worst-Case Actuator Build-Up Time,350 ms,ASSUMED,Degraded reservoir pneumatic fill literature
+Surrogate Actuator Bench Mean Delay,200.16 ms,KNOWN,Physical automotive electro-hydraulic test bench (surrogate)
+Nominal Brake Line Pressure,12.5 MPa,UNKNOWN,"UNVERIFIED — Proposed field sensor target, not OEM verified"
+Caliper Piston Total Area,UNAVAILABLE,UNKNOWN,OEM internal hydraulic design drawings not in public domain
+Brake Pad Friction Coefficient,UNAVAILABLE,UNKNOWN,Proprietary OEM wet/dry friction material formulation

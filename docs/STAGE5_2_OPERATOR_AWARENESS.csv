@@ -1,0 +1,9 @@
+scenario,visibility_m,road_condition,grade_pct,current_speed_mps,safe_speed_mps,command_speed_mps,stopping_distance_m,safe_headway_m,actual_headway_m,vehicle_ahead,comm_state,safety_state,recommended_action,authoritative_source
+CLEAR_NOMINAL,100.0,dry,0.0,8.0,11.11,11.11,14.0,29.52,-1.0,NONE,V2V_ONLINE,SAFE,NORMAL,Tier-1 Local Governor (BrakingModel + FrictionModel)
+MODERATE_FOG_RAMP,25.0,wet,6.25,7.5,8.64,8.64,15.48,31.0,45.0,TRUCK_02,V2V_ONLINE,SAFE,CAUTION,Tier-1 Local Governor (BrakingModel + FrictionModel)
+DENSE_FOG_FLAT,12.0,wet,0.0,5.0,5.3,5.3,6.35,21.87,30.0,TRUCK_02,V2V_ONLINE,SAFE,CAUTION,Tier-1 Local Governor (BrakingModel + FrictionModel)
+DENSE_FOG_CLOSE_LEADER,12.0,wet,6.25,4.5,4.79,3.0,6.29,21.81,16.0,TRUCK_02,V2V_ONLINE,WARNING,REDUCE SPEED,Tier-1 Local Governor (BrakingModel + FrictionModel)
+ORIGIN_STAGING_HOLD,12.0,wet,0.0,0.0,5.3,0.0,0.0,15.52,-1.0,NONE,V2V_ONLINE,RESTRICTED,HOLD,Tier-1 Local Governor (BrakingModel + FrictionModel)
+SEVERE_FOG_SHUTDOWN,5.0,wet,6.25,0.0,0.0,0.0,0.0,15.52,-1.0,NONE,V2V_ONLINE,EMERGENCY_HALT,STOP,Tier-1 Local Governor (BrakingModel + FrictionModel)
+COMM_DEGRADED_FOG,12.0,wet,0.0,4.0,5.3,5.3,4.39,19.91,25.0,TRUCK_02,DEGRADED,SAFE,CAUTION,Tier-1 Local Governor (BrakingModel + FrictionModel)
+COMM_LOSS_FAILSAFE,12.0,wet,6.25,0.0,4.79,0.0,0.0,15.52,0.0,UNKNOWN,OFFLINE,RESTRICTED,CAUTION,Tier-1 Local Governor (BrakingModel + FrictionModel)

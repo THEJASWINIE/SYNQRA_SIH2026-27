@@ -1,0 +1,6 @@
+Deceleration_Category,Deceleration_mps2,Gross_Mass_kg,Grade_pct,Friction_mu,Rolling_Resistance_Crr,Gross_Braking_Force_N,Net_Retarding_Force_N,Evidence_Level,Physical_Status,Documentation
+PHYSICALLY_DERIVED_CANONICAL,2.7856,165500.0,-8.0,0.35,0.025,550000.0,461019.3,DERIVED_MODEL,GREEN,Derived from force balance on -8% grade with 165.5t GVW and 550 kN rim brake force
+PHYSICALLY_DERIVED_LEGACY,2.7466,165000.0,-8.0,0.35,0.02,550000.0,453190.3,DERIVED_MODEL,GREEN,"Legacy force balance (165.0t, Crr=0.02, g=9.81) yielding exactly 2.7466 m/s^2"
+MEASURED_FIELD_DECELERATION,UNAVAILABLE,165500.0,-8.0,UNMEASURED,UNMEASURED,UNMEASURED,UNMEASURED,FIELD_UNVALIDATED,OPEN,Physical decelerometer / GPS brake run on BEML BH100 at Bailadila not yet conducted
+ENGINEERING_SCENARIO_SERVICE_COMFORT,1.2,165500.0,-8.0,0.35,0.025,288126.3,198600.0,ASSUMED,YELLOW,Mining haulage standard comfort limit to prevent load shifting and spillage
+ENGINEERING_SCENARIO_SLICK_MUD,2.4926,165500.0,-8.0,0.3,0.035,485175.0,412525.0,ENGINEERING_SCENARIO,YELLOW,Degraded monsoon hematite slime surface scenario

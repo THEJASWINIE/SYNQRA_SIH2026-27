@@ -1,0 +1,48 @@
+{
+  "schema_version": "2.0.0",
+  "description": "Authoritative Vehicle-Specific Speed Calibration for FOG-ORCHESTRATOR 2.0",
+  "calibration_method": "Elevated chassis optical encoder pulse accumulation over stabilized PWM staircase",
+  "test_environment": "STABILIZED_BENCH_CHASSIS",
+  "provenance_classification": "PHYSICAL (derived)",
+  "floor_distance_gate_status": "OPEN (Physical floor ground-truth validation deferred)",
+  "vehicles": {
+    "TRUCK_01": {
+      "vehicle_id": "TRUCK_01",
+      "description": "Vehicle A - 4-wheel differential drive prototype",
+      "motor_driver": "TB6612FNG",
+      "raw_ppr": 42.0,
+      "k_cal": 34.58,
+      "wheel_diameter_m": 0.06,
+      "wheel_circumference_m": 0.18849556,
+      "distance_per_pulse_m": 0.005451,
+      "max_pwm": 220,
+      "max_rpm": 445.6,
+      "vmax_mps": 1.4,
+      "vmax_kmh": 5.04,
+      "sample_count": 184,
+      "measurement_window": "STABILIZED_BENCH_CHASSIS",
+      "calibration_timestamp": "2026-09-27T10:34:55Z",
+      "provenance": "PHYSICAL (derived)",
+      "notes": "Calibrated with TB6612FNG driver, PWM limited to 220. Effective PPR K_cal=34.58."
+    },
+    "TRUCK_02": {
+      "vehicle_id": "TRUCK_02",
+      "description": "Vehicle B - 2-wheel drive prototype with TB6612FNG driver",
+      "motor_driver": "TB6612FNG",
+      "raw_ppr": 43.0,
+      "k_cal": 34.58,
+      "wheel_diameter_m": 0.06,
+      "wheel_circumference_m": 0.18849556,
+      "distance_per_pulse_m": 0.005451,
+      "max_pwm": 240,
+      "max_rpm": 413.8,
+      "vmax_mps": 1.3,
+      "vmax_kmh": 4.68,
+      "sample_count": 178,
+      "measurement_window": "STABILIZED_BENCH_CHASSIS",
+      "calibration_timestamp": "2026-09-27T10:34:55Z",
+      "provenance": "PHYSICAL (derived)",
+      "notes": "Calibrated with TB6612FNG driver, safe PWM limited to 240. 43 physical slots distinct from Vehicle A."
+    }
+  }
+}

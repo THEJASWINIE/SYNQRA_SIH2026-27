@@ -1,0 +1,52 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 - Vehicle Configuration
+# Reference Class: BEML BH100-class Rigid Mining Dump Truck (100-tonne class)
+# ==============================================================================
+
+vehicle:
+  model_name: "BEML BH100 Reference Mining Dumper"
+  classification: "HEMM Rigid Dump Truck"
+
+  # Physical Mass Parameters
+  mass:
+    tare_tonnes: 74.0               # [REFERENCE] Unladen/empty vehicle inertia (approx 74 t)
+    rated_payload_tonnes: 91.5      # [REFERENCE] Nominal rated payload capacity (approx 91-91.5 t)
+    gross_tonnes: 165.5             # [REFERENCE] Fully laden maximum vehicle mass (approx 165-165.5 t)
+
+  # Physical Dimensions & Geometry
+  geometry:
+    length_m: 10.52                 # [REFERENCE] Overall vehicle length (m)
+    width_m: 5.52                   # [REFERENCE] Overall vehicle width (m)
+    height_m: 5.25                  # [REFERENCE] Overall canopy/body height (m)
+    wheelbase_m: 5.25               # [REFERENCE] Axle-to-axle spacing for weight transfer (m)
+    standstill_margin_m: 5.0        # [MODEL CONFIG] Minimum static safety spacing between stopped trucks
+    min_headway_m: 15.52            # [MODEL CONFIG] Hard lower bound center-to-center headway (10.52 + 5.0)
+
+  # Powertrain & Retarder Parameters
+  powertrain:
+    max_engine_power_kw: 895.0      # [REFERENCE] Rated diesel engine power (~1200 hp / 895 kW)
+    max_retarder_power_kw: 1200.0   # [REFERENCE] Continuous hydrodynamic/dynamic retarding absorption ceiling
+    max_drive_force_n: 350000.0     # [REFERENCE] Maximum tractive effort limit
+
+  # Braking & Latency Parameters
+  braking:
+    f_hardware_max_n: 450000.0      # [REFERENCE] Maximum pneumatic/hydraulic service brake actuator clamping force
+    rolling_resistance_coeff: 0.025 # [MODEL CONFIG] Baseline unpaved haul road rolling resistance coefficient (C_rr)
+    drag_coefficient_cd: 0.9        # [REFERENCE] Aerodynamic drag coefficient
+    frontal_area_m2: 22.0           # [REFERENCE] Projected frontal area (m^2)
+    air_density_kg_m3: 1.225        # [MODEL CONFIG] Standard ambient air density
+
+  # Latency & Reaction Times
+  latency:
+    sensor_s: 0.05                  # [MODEL CONFIG] Sensor acquisition and filtering delay
+    comm_s: 0.05                    # [MODEL CONFIG] V2V / LoRa network latency baseline
+    decision_s: 0.05                # [MODEL CONFIG] Tier-1 safety governor decision cycle
+    human_reaction_s: 0.00          # [MODEL CONFIG] Zero for autonomous mode; 1.2-1.5s for human baseline
+    hydraulic_buildup_s: 0.25       # [MODEL CONFIG] Conservative brake pressure buildup / ECU response time
+    tau_total_autonomous_s: 0.40    # [MODEL CONFIG] Sum of autonomous latencies (0.05 + 0.05 + 0.05 + 0.25)
+
+  # Switchback Coordination & Safety Clearance Margins
+  switchback:
+    stop_line_margin_m: 3.0         # Setback before single-lane switchback entrance apron (m)
+    lookahead_m: 25.0               # Lookahead distance to evaluate switchback reservation (m)
+    safety_buffer_s: 0.5            # Temporal safety guard buffer between sequential slot allocations (s)

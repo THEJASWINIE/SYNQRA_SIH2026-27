@@ -1,0 +1,17 @@
+﻿failure_id,failure_name,class,detected,detection_mechanism,detection_latency,false_pos_risk,false_neg_risk,affects_v_safe,affects_road_capacity,affects_orchestration,required_fallback,gap_in_current_arch,closed_by_health_layer
+F01,Sensor Dropout,A,PARTIAL,Freshness timeout,T_STALE_ENV=60s,LOW,LOW,YES,YES,YES,STALE->UNAVAILABLE,YES (env only),YES
+F02,Stale Data,A,PARTIAL,Timestamp age comparison,One cycle after threshold,MEDIUM,LOW,YES,YES,YES,DEGRADED conservative r_eff,YES (env only),YES
+F03,Communication Loss,A,YES,FailSafeState.NO_GATEWAY,max_command_age_s=1s,LOW,LOW,NO,NO,YES,Local governor independent,NO,NO (already handled)
+F04,Out-of-Range Value,B,PARTIAL,Range check on ingestion,Immediate,LOW,LOW,YES,YES,YES,REJECT value; use conservative default,YES (vis upstream),YES
+F05,Stuck-At Value,B,NO,Rate-of-change rolling window,T_STUCK_MIN=300s,MEDIUM,MEDIUM,YES,YES,YES,DEGRADED after detection,YES,YES (with latency)
+F06,Bias/Offset,C,NO,Cross-source comparison (no 2nd source),N/A,HIGH,HIGH,YES,YES,YES,Cannot determine without 2nd source,YES,NO (no 2nd source)
+F07,Drift,C,NO,Long-term trend analysis,Hours-days,MEDIUM,HIGH,YES,YES,YES,Requires calibration event,YES,NO (no 2nd source)
+F08,High Noise,B,NO,std_dev rolling window,5-10 samples,LOW,LOW,YES,YES,YES,DEGRADED; filter/smooth,YES,YES
+F09,Intermittent Data,A,PARTIAL,Packet loss rate; hysteresis,Few cycles,LOW,LOW,YES,YES,YES,DEGRADED; hold last valid with decay,YES (env only),YES
+F10,Timestamp Error,B,PARTIAL,Skew check; monotonicity,Immediate,LOW,LOW,YES,YES,YES,Use received_at fallback; DEGRADED,YES,YES
+F11,Sequence Error,A,YES,BoundedSequenceTracker,Immediate per-packet,LOW,LOW,LOW,LOW,LOW,Reject duplicate; drop OOO,NO,NO (already handled)
+F12,Duplicate Data,A,YES,BoundedSequenceTracker,Immediate,LOW,LOW,LOW,LOW,LOW,Reject,NO,NO (already handled)
+F13,Cross-Sensor Disagreement,B,NO,|A-B|>threshold (no 2nd source),N/A,MEDIUM,MEDIUM,YES,YES,YES,Use min(A B) when 2nd source available,YES (no 2nd source),FUTURE
+F14,Spatially Stale Env Data,C,NO,Zone-vis association (not implemented),N/A,HIGH,HIGH,YES,YES,YES,Spatial uncertainty penalty on r_eff,YES,FUTURE
+F15,Plausible But Wrong,C,NO,Requires independent reference,NEVER without 2nd source,VERY HIGH,VERY HIGH,CRITICAL,YES,YES,CANNOT determine without ground truth,YES,NO (EXPLICIT LIMITATION)
+F16,Complete Env Unavailability,A,NO,Global staleness timeout on all env inputs,T_GRACE_PERIOD=120s,LOW,LOW,YES,YES,YES,UNAVAILABLE -> R_UNAVAILABLE_MIN,YES,YES

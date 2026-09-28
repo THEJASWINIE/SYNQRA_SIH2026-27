@@ -1,0 +1,8 @@
+{
+  "fault_id": "F18",
+  "fault_name": "Vehicle Controller Link Loss",
+  "detected_state": "CONTROLLER_LOST",
+  "safety_transition": "Gateway Marks Offline",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:21.000332Z"
+}

@@ -1,0 +1,172 @@
+{
+  "vehicle_id": "TRUCK_02",
+  "static": {},
+  "dynamic": {
+    "speed_mps": {
+      "value": 0.8812,
+      "timestamp": 1788612968.4420903,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "speed_mps_pwm_derived": {
+      "value": 2.5,
+      "timestamp": 1788612968.4420903,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "rpm": {
+      "value": 198.0,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "ax_mps2": {
+      "value": 0.12,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "ay_mps2": {
+      "value": -0.05,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "az_mps2": {
+      "value": 9.81,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "gx_rad_s": {
+      "value": 0.02,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "gy_rad_s": {
+      "value": 0.01,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "gz_rad_s": {
+      "value": -0.03,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "communication_state": {
+      "value": "HEALTHY",
+      "timestamp": 1788612968.4420903,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "rssi_dbm": {
+      "value": -68.0,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "snr_db": {
+      "value": 9.4,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "sequence": {
+      "value": 11500001,
+      "timestamp": 1788612968.4420903,
+      "source": "HARDWARE",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "HARDWARE"
+    },
+    "received_at": {
+      "value": 1788612968.4420903,
+      "timestamp": 1788612968.4420903,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "DERIVED"
+    },
+    "telemetry_transport": {
+      "value": "DIRECT_WIFI",
+      "timestamp": 1788612968.4420903,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.01992630958557129,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "DERIVED"
+    }
+  },
+  "has_hardware_data": true
+}

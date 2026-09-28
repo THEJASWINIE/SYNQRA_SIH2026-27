@@ -1,0 +1,21 @@
+component,status,evidence,last_tested,failure,severity,next_action
+HMI Frontend Build,PASS,npm run build clean (0 errors),2026-09-27T09:33:42Z,None,None,Deploy to production
+HMI Frontend Tests,PASS,Vitest 1860/1860 passed (71 files),2026-09-27T09:20:00Z,None,None,Maintain test suite
+HMI Backend Service,PASS,Uvicorn running on 0.0.0.0:8000 (PID 19908),2026-09-27T09:40:00Z,None,None,Keep service running
+Backend Unit Tests,PARTIAL,1185 pass / 4 fail on Windows Python 3.14,2026-09-27T09:33:17Z,Socketpair PermissionError,P2,Refactor to AsyncClient
+3D Digital Twin Engine,PASS,Running on 0.0.0.0:8080 (PID 23832),2026-09-27T09:40:00Z,None,None,Maintain twin sync
+Vehicle A Firmware Build,PASS,arduino-cli compiles clean,2026-09-27T09:38:00Z,None,None,Flash to chassis
+Vehicle B Firmware Build,PASS,arduino-cli compiles clean,2026-09-27T09:38:00Z,CONTINUOUS_FORWARD_TEST=true,P0,Set flag to false
+LoRa Gateway Firmware Build,PASS,arduino-cli compiles clean (1039892 bytes),2026-09-27T09:40:38Z,None,None,Verified on COM11
+COM11 LoRa Gateway Hardware,PASS,Online at 192.168.137.185 (433MHz RX),2026-09-27T09:40:00Z,None,None,Maintain gateway link
+COM14 Auxiliary ESP32 Hardware,FAIL,Corrupted flash bootloop (Image hash failed),2026-09-27T09:35:25Z,Bootloader error E(338),P1,Erase & reflash
+COM21 Auxiliary ESP32 Hardware,BLOCKED,Port locked by Arduino IDE session,2026-09-27T09:35:18Z,PermissionError 13,P2,Close IDE or assign
+Vehicle A Live Wi-Fi Telemetry,PASS,Frames 1-15 ingested over 192.168.137.43,2026-09-27T09:20:45Z,Odometry dt latch-up,P1,Fix wheel_imu_odometry.py
+Vehicle B Live Wi-Fi Telemetry,CONFIGURED ONLY,IP 192.168.137.126 pingable (80ms),2026-09-27T09:22:01Z,Direct Wi-Fi disabled,None,Uses 433MHz LoRa
+Vehicle Motor Drive (Physical),NOT TESTED,Bench stationary during audit session,2026-09-27T09:40:00Z,None,None,Execute physical rolling run
+Vehicle Encoder Accuracy (Physical),NOT TESTED,Track displacement (0.5m-5m) unexercised,2026-09-27T09:40:00Z,None,None,Perform measured track test
+Safety Governor Clamping,PASS,Clamps v_dispatch to v_safe (1.40 m/s),2026-09-27T09:42:00Z,None,None,Maintain Tier-1 priority
+Safe Beacon Logical Transition,PASS,State triggers on link degradation,2026-09-27T09:42:00Z,None,None,Verify physical strobe
+CAN / J1939 Decoupling,SIMULATION ONLY,Decodes PGN/SPN in software loopback,2026-09-27T09:42:59Z,None,None,Field test on OEM HEMM
+OEM HEMM Physical Validation,NOT TESTED,No physical BEML/CAT/Komatsu hauler CAN,2026-09-27T09:46:30Z,No physical vehicle,None,Gather field CAN log
+Bailadila Mine Field Validation,NOT TESTED,No field deployment in NMDC Bailadila pit,2026-09-27T09:46:30Z,No pit data,None,Conduct field trial

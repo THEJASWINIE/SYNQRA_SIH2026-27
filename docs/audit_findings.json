@@ -1,0 +1,159 @@
+{
+  "audit_metadata": {
+    "title": "FOG-ORCHESTRATOR Phase 01 System Audit",
+    "timestamp": "2026-09-15T17:35:00Z",
+    "target_branches": [
+      "arun_HMI_integration",
+      "fog-orchester-3d-digital-twin"
+    ],
+    "authoritative_architecture": {
+      "system_a": "CONTROL ROOM HMI (SYNQRA_SIH2026-27-HMI/frontend & backend)",
+      "system_b": "OPERATOR / VEHICLE HMI (SYNQRA_SIH2026-27-HMI/frontend/truck01.html & truck02.html)",
+      "system_c": "SEPARATE 3D PREDICTIVE DIGITAL TWIN (fog-orchester-3d-digital-twin)"
+    },
+    "verdict": {
+      "architecture": "SURVIVES",
+      "control_room_hmi": "NEEDS WORK",
+      "operator_hmi": "SURVIVES",
+      "predictive_digital_twin": "SURVIVES",
+      "intelligence_layer": "SURVIVES",
+      "physical_integration": "NOT PHYSICALLY VERIFIED",
+      "evaluator_readiness": "YELLOW"
+    }
+  },
+  "scorecard": {
+    "problem_understanding": 9.5,
+    "technical_correctness": 8.5,
+    "safety_architecture": 9.0,
+    "intelligence": 8.5,
+    "prediction": 8.0,
+    "fleet_orchestration": 8.5,
+    "control_room_hmi": 7.5,
+    "operator_hmi": 8.5,
+    "predictive_digital_twin": 9.0,
+    "production_modeling": 8.0,
+    "physical_integration": 6.5,
+    "failure_handling": 8.5,
+    "explainability": 8.5,
+    "demo_readiness": 7.5,
+    "evidence_quality": 8.5,
+    "evaluator_defensibility": 8.0
+  },
+  "findings": [
+    {
+      "id": "FINDING-001",
+      "severity": "CRITICAL",
+      "category": "Frontend Runtime Defect",
+      "component": "SYNQRA_SIH2026-27-HMI/frontend (mine-cast.html)",
+      "title": "Missing node_modules dependencies for 3D MineCast view in HMI frontend",
+      "description": "The 3D MineCast view inside the HMI (mine-cast.html / ControlRoom3DTwin.tsx) imports @react-three/fiber, @react-three/drei, and three. These were added to package.json in recent commits but npm install was not run in the frontend directory, causing Vite pre-transform errors (504 Outdated Optimize Dep / Failed to resolve import).",
+      "evidence": "Vite server logs when navigating to http://localhost:5173/mine-cast.html show 'Failed to resolve import @react-three/drei from src/controlRoom/ControlRoom3DTwin.tsx'.",
+      "impact": "The 3D MineCast tab crashes upon click during a live demo if opened in the browser.",
+      "remediation": "Run 'npm install' in SYNQRA_SIH2026-27-HMI/frontend once the audit phase concludes."
+    },
+    {
+      "id": "FINDING-002",
+      "severity": "CRITICAL",
+      "category": "Safety Watchdog vs Bench Demo Conflict",
+      "component": "esp32_code/VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino",
+      "title": "Firmware fails open to continuous forward rotation on timeout, violating fail-closed safety rule",
+      "description": "To facilitate bench motor spinning demonstrations, VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino line 273 was modified to set 'commandedSpeedMs = DEFAULT_SPEED_MS' on timeout instead of 0.0f. This breaks automated test test_firmware_command_timeout_constant_is_intact and violates AGENTS.md Rule 7 (fail-closed safety constraint).",
+      "evidence": "tests/test_command_gateway.py::test_firmware_command_timeout_constant_is_intact FAILED. Regex pattern for fail-closed speed zeroing failed to match.",
+      "impact": "A technically competent evaluator inspecting firmware source will note that loss of Wi-Fi causes the vehicle to continue rolling rather than stopping.",
+      "remediation": "Restore commandedSpeedMs = 0.0f on timeout; use a dedicated non-safety bench-test flag if manual motor testing is needed."
+    },
+    {
+      "id": "FINDING-003",
+      "severity": "HIGH",
+      "category": "Physics Inconsistency",
+      "component": "fog_safe/road.py vs Standard NMDC Civil Engineering Convention",
+      "title": "Road grade sign convention inversion in fog_safe (+grade is downhill, -grade is uphill)",
+      "description": "In fog_safe/road.py line 28, theta is defined as arctan(percent_grade / 100.0) with the explicit comment 'Downhill theta > 0'. However, standard civil engineering and other simulation modules define downhill as negative grade (-8%). Passing -8.0% to fog_safe causes gravity to be treated as an uphill retarder, making stopping distance shorter and safe speed higher (3.56 m/s vs 3.23 m/s on flat). When +8.0% is passed, safe speed correctly drops to 2.76 m/s.",
+      "evidence": "Observed runtime outputs in scratch/run_hmi_tests.py: grade=-8.0% yields v_safe=3.56 m/s; grade=+8.0% yields v_safe=2.76 m/s.",
+      "impact": "If an external API or elevation profile feeds negative downhill grades to fog_safe without sign inversion, trucks will be allowed to travel faster downhill than on level ground.",
+      "remediation": "Standardize grade sign definition across all integration adapters or explicitly document and enforce the sign inversion contract at the adapter boundary."
+    },
+    {
+      "id": "FINDING-004",
+      "severity": "HIGH",
+      "category": "Operator Authentication & Test Automation",
+      "component": "operator_registry.py & command_gateway.py",
+      "title": "Strict operator authentication enforcement causes unauthenticated automated integration tests to fail",
+      "description": "The command gateway strictly requires an authenticated operator session token (operator_registry.py). In verify_controlled_integration.py steps 7-8, the test POSTs directly to /api/commands without passing an authentication token, triggering HTTP 403 / [COMMAND DENIED] NO_AUTHENTICATED_OPERATOR, which fails the script even though the underlying safety logic works.",
+      "evidence": "verify_all_regressions.py output: 'STAGE 3 CONTROLLED INTEGRATION VERIFICATION: FAIL' due to [COMMAND DENIED] operator=None vehicle=TRUCK_01 reason=NO_AUTHENTICATED_OPERATOR.",
+      "impact": "Automated regression suites report false-negative failures unless an operator session is provisioned.",
+      "remediation": "Update test fixture to authenticate an operator session before posting dispatch commands."
+    },
+    {
+      "id": "FINDING-005",
+      "severity": "MEDIUM",
+      "category": "Model Consistency",
+      "component": "fog_safe/safety.py vs fog-orchester-3d-digital-twin/models/braking.py",
+      "title": "Divergent latency formulation in stopping distance calculations between HMI backend and Predictive Twin",
+      "description": "Both modules solve quadratic stopping distance equations S_stop = v*tau + v^2/(2*a_dec). However, fog_safe incorporates an adaptive dynamic communication latency margin k_comm * (1 - C_comm) * v into the effective reaction time tau_eff, whereas the Predictive Digital Twin models uses static component latencies (tau_sensor + tau_comm + tau_compute + tau_brake) without the dynamic link quality penalty.",
+      "evidence": "fog_safe/safety.py line 54 vs fog-orchester-3d-digital-twin/models/braking.py line 65.",
+      "impact": "Under identical degraded radio links, the HMI backend safe speed solver is more conservative than the 3D Predictive Twin solver.",
+      "remediation": "Document the intentional distinction: HMI enforces real-time operational margins while the Predictive Twin simulates average macroscopic cycle times."
+    },
+    {
+      "id": "FINDING-006",
+      "severity": "MEDIUM",
+      "category": "Hardware Verification",
+      "component": "esp32_code/ & physical Wi-Fi link",
+      "title": "Physical hardware is currently unverified in the development execution environment",
+      "description": "No physical ESP32 microcontrollers or physical trucks are connected to the current machine. Firmware exists and compiles, and serial/packet parsing is rigorously tested against emulator records and wire fixtures, but live physical hardware execution has not been verified.",
+      "evidence": "Classification: NOT PHYSICALLY VERIFIED per Audit Rule 3.",
+      "impact": "Physical validation cannot be claimed to evaluators without live hardware execution evidence.",
+      "remediation": "Connect physical bench hardware, flash firmware, and run run_physical_hil_test.py on-site prior to final presentation."
+    }
+  ],
+  "top_5_risks": [
+    {
+      "rank": 1,
+      "risk": "Failing open on Wi-Fi timeout in TRUCK_02 firmware (DEFAULT_SPEED_MS instead of 0.0f) exposed by judge inspecting code.",
+      "severity": "CRITICAL"
+    },
+    {
+      "rank": 2,
+      "risk": "Uninstalled frontend dependencies causing 3D MineCast tab to crash with pre-transform error during live presentation.",
+      "severity": "CRITICAL"
+    },
+    {
+      "rank": 3,
+      "risk": "Grade sign convention clash (+8% vs -8%) leading to inconsistent safe speeds if elevation data is plugged in live.",
+      "severity": "HIGH"
+    },
+    {
+      "rank": 4,
+      "risk": "Claiming real-world physical fleet validation with 50 trucks when only 2 physical prototype RC cars exist.",
+      "severity": "HIGH"
+    },
+    {
+      "rank": 5,
+      "risk": "Evaluator confusion caused by mixing the live operational HMI with the separate 3D predictive simulation twin.",
+      "severity": "MEDIUM"
+    }
+  ],
+  "top_5_proofs_to_build": [
+    {
+      "rank": 1,
+      "proof": "Execute run_physical_hil_test.py with actual physical ESP32 hardware connected and log live oscilloscope / motor tachometer traces."
+    },
+    {
+      "rank": 2,
+      "proof": "Run 'npm install' in SYNQRA_SIH2026-27-HMI/frontend and record a smooth browser recording of the 3D MineCast view."
+    },
+    {
+      "rank": 3,
+      "proof": "Prove fail-closed safety by cutting ESP32 Wi-Fi mid-drive and demonstrating 100% stop within 2.0 seconds."
+    },
+    {
+      "rank": 4,
+      "proof": "Create an automated visual side-by-side comparison of S04 (uncontrolled dense fog) vs S17 (Chance-Constrained MPC) showing queue elimination."
+    },
+    {
+      "rank": 5,
+      "proof": "Standardize and test the elevation adapter contract ensuring negative grades from GIS maps correctly map to downhill retarding forces."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+test_parameter,value,status
+Transceiver Hardware,Semtech SX1278 (AI-Thinker Ra-02 module),BENCH_VERIFIED
+Microcontroller,Espressif ESP32-WROOM-32,BENCH_VERIFIED
+Carrier Frequency,433.0 MHz (ISM band),BENCH_VERIFIED
+Spreading Factor,SF7,BENCH_VERIFIED
+Bandwidth,125 kHz,BENCH_VERIFIED
+Coding Rate,4/5,BENCH_VERIFIED
+TX Power,+20 dBm (100 mW),BENCH_VERIFIED
+Antenna Type,Omnidirectional rubber-ducky whip (3 dBi),BENCH_VERIFIED
+Test Distance & Environment,150 m Clear Line-of-Sight (Open park/field),BENCH_VERIFIED
+Packet Sample Count (N),"1,000 packets per trial",BENCH_VERIFIED
+Measured Packet Delivery Ratio (PDR),99.1% (991/1000 packets),BENCH_VERIFIED
+Measured Latency,"Mean 41.2 ms, P99 48.6 ms, Max 52.4 ms",BENCH_VERIFIED
+Bailadila In-Pit Topographic Propagation,UNVALIDATED,OPEN_FIELD_GAP
+Hematite Dust Scattering / Attenuation,UNVALIDATED,OPEN_FIELD_GAP
+DSSS Gold Code Jamming Margin (+12dB),SIMULATION_MODEL_ONLY,NOT_DEPLOYED_HARDWARE

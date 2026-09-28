@@ -1,0 +1,8 @@
+{
+  "fault_id": "F01",
+  "fault_name": "RF Packet Loss (20%)",
+  "detected_state": "DEGRADED",
+  "safety_transition": "Headway buffer +20%",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.989692Z"
+}

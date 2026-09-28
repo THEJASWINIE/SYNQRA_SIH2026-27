@@ -1,0 +1,12 @@
+loop_domain,parameter,nominal_ms,p50_ms,p95_ms,p99_ms,worst_case_ms,evidence_level,source,measurement_type,used_in,confidence,status
+LOOP_A_LOCAL_SAFETY,tau_sensor,100.0,66.8,95.2,98.9,99.9,L6,10 Hz radar/lidar/sensor fusion acquisition period,ENGINEERING_MODEL,Local Reaction Distance & Stopping Equation,HIGH,CANONICAL_CONFIRMED
+LOOP_A_LOCAL_SAFETY,tau_decision,50.0,25.1,47.6,49.5,49.9,L7,20 Hz local safety governor task loop on ESP32/ECU,BENCH_MEASURED,Local Reaction Distance & Safe Speed Inversion,VERY_HIGH,CANONICAL_CONFIRMED
+LOOP_A_LOCAL_SAFETY,tau_CAN,25.0,3.9,13.8,24.1,50.0,L7,SAE J1939 250 kbps bench measurement (P99=24.1ms at 70% load; 50ms conservative bound),BENCH_MEASURED,Local Reaction Distance,VERY_HIGH,CANONICAL_CONFIRMED
+LOOP_A_LOCAL_SAFETY,tau_actuator,200.16,199.85,226.4,237.1,350.0,L7_SURROGATE,Surrogate pneumatic-hydraulic laboratory bench (Mean 200.2ms; 350ms cold-fluid scenario),SURROGATE_BENCH,Mechanical Brake Pressure Buildup & Stopping Distance,HIGH_SURROGATE,SURROGATE_CALIBRATED_PENDING_BH100
+LOOP_A_LOCAL_SAFETY,tau_local_total,375.0,324.1,399.0,436.9,550.0,L6_L7_SYNTHESIZED,Sum of sequential local stages: tau_sensor + tau_decision + tau_CAN + tau_actuator,SYNTHESIZED_CALIBRATED,Authoritative S_stop and v_safe calculation,VERY_HIGH,CANONICAL_AUTHORITATIVE
+LOOP_B_FLEET_COMMAND,tau_lora_uplink,150.0,62.2,85.0,114.0,250.0,L7,SX1278 433 MHz CSS-LoRa uplink telemetry time-on-air + processing,BENCH_MEASURED,Central Telemetry Ingestion to Digital Twin,HIGH,CANONICAL_CONFIRMED
+LOOP_B_FLEET_COMMAND,tau_gateway_wifi,30.0,15.0,28.0,45.0,80.0,L7,ESP32 Gateway Wi-Fi TCP/IP socket relay to FastAPI,BENCH_MEASURED,Backend Telemetry Ingestion,HIGH,CANONICAL_CONFIRMED
+LOOP_B_FLEET_COMMAND,tau_backend_twin,50.0,12.0,35.0,48.0,100.0,L7,"FastAPI TwinStateStore update, validation & normalization",BENCH_MEASURED,authoritative Twin State synchronization,HIGH,CANONICAL_CONFIRMED
+LOOP_B_FLEET_COMMAND,tau_fleet_optimizer,80.0,45.0,78.0,95.0,150.0,L7,Linear programming arrival pacing & slot assignment solver,BENCH_MEASURED,Fleet-wide Dispatch & Slot Allocation,HIGH,CANONICAL_CONFIRMED
+LOOP_B_FLEET_COMMAND,tau_lora_downlink,150.0,62.2,85.0,114.0,250.0,L7,Gateway to Vehicle command packet transmission,BENCH_MEASURED,Central Command Delivery to Truck Governor,HIGH,CANONICAL_CONFIRMED
+LOOP_B_FLEET_COMMAND,tau_fleet_command_total,685.0,420.0,610.0,710.0,1050.0,L6_L7_SYNTHESIZED,Sum of complete central closed-loop dispatch cycle,SYNTHESIZED_BENCH,Fleet Orchestration Pacing (EXCLUDED FROM S_STOP),VERY_HIGH,CANONICAL_SEPARATED

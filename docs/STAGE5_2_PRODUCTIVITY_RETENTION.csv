@@ -1,0 +1,10 @@
+visibility_m,v_safe_ramp_mps,Q_clear_baseline_TPH,Q_fog_actual_TPH,PR_retention_pct,physical_operational_state,retention_formula
+100.0,8.33,3294.0,3294.0,100.0,NOMINAL_CLEAR,Q_fog / Q_clear * 100 (Non-circular)
+50.0,8.33,3294.0,3294.0,100.0,DEGRADED_FLOW,Q_fog / Q_clear * 100 (Non-circular)
+25.0,8.33,3294.0,2013.0,61.1,DEGRADED_FLOW,Q_fog / Q_clear * 100 (Non-circular)
+12.0,4.79,3294.0,732.0,22.2,DEGRADED_FLOW,Q_fog / Q_clear * 100 (Non-circular)
+10.0,3.93,3294.0,732.0,22.2,DEGRADED_FLOW,Q_fog / Q_clear * 100 (Non-circular)
+8.0,2.88,3294.0,183.0,5.6,DEGRADED_FLOW,Q_fog / Q_clear * 100 (Non-circular)
+5.0,0.0,3294.0,0.0,0.0,HALT_ZERO_MOVEMENT,Q_fog / Q_clear * 100 (Non-circular)
+4.0,0.0,3294.0,0.0,0.0,HALT_ZERO_MOVEMENT,Q_fog / Q_clear * 100 (Non-circular)
+3.0,0.0,3294.0,0.0,0.0,HALT_ZERO_MOVEMENT,Q_fog / Q_clear * 100 (Non-circular)

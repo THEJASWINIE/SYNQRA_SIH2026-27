@@ -1,0 +1,10 @@
+Metric,Baseline,Fog_Orchestrator,Absolute_Difference,Percentage_Improvement
+"Total Ore Hauled (tonnes)",364.00,273.00,-91.00,"-25.00%"
+"Average Cycle Time (seconds)",450.00,600.00,+150.00,"-33.33%"
+"Max Crusher Queue (vehicles)",3.00,1.00,-2.00,"+66.67%"
+"Average Queue Length (vehicles)",1.65,0.67,-0.98,"+59.24%"
+"Average Waiting Time (seconds)",593.20,241.80,-351.40,"+59.24%"
+"Average Fleet Speed (km/h)",4.77,3.17,-1.61,"-33.64%"
+"Crusher Utilization Ratio",0.80,0.60,-0.20,"-25.00%"
+"Critical Bottleneck Duration (seconds)",368.00,0.00,-368.00,"+100.00%"
+"Safety Violations Count",0.00,0.00,+0.00,"0.00%"

@@ -1,0 +1,16 @@
+Requirement ID,Requirement Description,Validation Gate,Test Method,Verification Script / Artifact,Status
+REQ-P1-001,Vehicle A Telemetry Ingestion,Gate 1,Automated & Hardware,verify_phase1_final.py (CHECK 1),PASS
+REQ-P1-002,Vehicle B Telemetry Ingestion,Gate 1,Automated & Hardware,verify_phase1_final.py (CHECK 1),PASS
+REQ-P1-003,Vehicle ID Separation (TRUCK_01 vs TRUCK_02),Gate 4,Automated,verify_phase1_final.py (CHECK 4),PASS
+REQ-P1-004,End-to-End Latency Measurement (T_E2E < 50ms),Gate 1,Instrumentation,LATENCY_VALIDATION_REPORT.md,PASS
+REQ-P1-005,Sequence Number Continuity & Tracking,Gate 1,Automated,verify_phase1_final.py (CHECK 2),PASS
+REQ-P1-006,Stale Telemetry Timeout (ONLINE -> STALE -> OFFLINE),Gate 2,Automated & Hardware,verify_phase1_final.py (CHECK 3),PASS
+REQ-P1-007,Communication Recovery (OFFLINE -> RECOVERING -> ONLINE),Gate 2,Automated,verify_phase1_final.py (CHECK 5),PASS
+REQ-P1-008,Vehicle Failure Isolation (TRUCK_01 fail != TRUCK_02 fail),Gate 4,Automated,verify_phase1_final.py (CHECK 10),PASS
+REQ-P1-009,HMI -> Vehicle Command Dispatch,Gate 3,Automated,verify_phase1_final.py (CHECK 6),PASS
+REQ-P1-010,Vehicle ACK Correlation using command_id,Gate 3,Automated,verify_phase1_final.py (CHECK 7),PASS
+REQ-P1-011,Unsafe Command Speed Clamping (25m/s -> 10.87m/s CLAMPED),Gate 3,Automated,verify_phase1_final.py (CHECK 8),PASS
+REQ-P1-012,Duplicate Command ID Rejection,Gate 3,Automated,verify_phase1_final.py (CHECK 9),PASS
+REQ-P1-013,Mock Mode Regression Preservation,Regression,Automated,verify_phase1_final.py (CHECK 11),PASS
+REQ-P1-014,WebSocket Regression Preservation,Regression,Automated,verify_phase1_final.py (CHECK 12),PASS
+REQ-P1-015,Digital Twin Non-Interference (0 Imports),Scope,Static Analysis,PHASE1_FINAL_VALIDATION_REPORT.md,PASS

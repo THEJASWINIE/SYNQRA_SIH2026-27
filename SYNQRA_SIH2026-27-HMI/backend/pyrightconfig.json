@@ -1,0 +1,13 @@
+{
+  "include": [
+    ".",
+    "app",
+    "tests"
+  ],
+  "extraPaths": [
+    ".",
+    "../../",
+    "../../SYNQRA_SIH2026-27-main"
+  ],
+  "reportMissingImports": "none"
+}

@@ -1,0 +1,18 @@
+{
+  "scenario_id": "S06",
+  "scenario_name": "Rapid Fog Incursion",
+  "dispatch_mode": "FLEET_ONLY",
+  "fleet_size": 10,
+  "duration_seconds": 300.0,
+  "total_steps": 300,
+  "production_tonnes": 183.0,
+  "throughput_vph": 24.0,
+  "safety_violations_count": 0,
+  "average_queue_length": 0.0,
+  "peak_queue_length": 0.0,
+  "average_node_utilization": 0.0,
+  "estimated_travel_time_s": 526.9269003562162,
+  "primary_bottleneck_id": "ROAD_03_INT1_TO_SWITCH1",
+  "bottleneck_migrations_count": 2,
+  "execution_status": "COMPLETED_SUCCESS"
+}

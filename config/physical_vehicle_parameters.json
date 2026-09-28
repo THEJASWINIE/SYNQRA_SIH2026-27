@@ -1,0 +1,54 @@
+{
+  "TRUCK_01": {
+    "vehicle_id": "TRUCK_01",
+    "description": "Vehicle A - 4-wheel differential drive prototype",
+    "motor_driver": "TB6612FNG",
+    "wheel_radius_m": 0.030,
+    "wheel_diameter_m": 0.060,
+    "wheel_circumference_m": 0.188495559,
+    "raw_encoder_ppr": 42.0,
+    "encoder_effective_ppr": 34.58,
+    "pulses_per_revolution": 34.58,
+    "effective_ppr": 34.58,
+    "distance_per_pulse_m": 0.005451,
+    "chassis_mass_kg": 2.20,
+    "max_physical_speed_mps": 1.40,
+    "max_physical_acceleration_mps2": 2.00,
+    "initial_pose": {
+      "x": 0.0,
+      "y": 0.0,
+      "heading_rad": 0.0
+    }
+  },
+  "TRUCK_02": {
+    "vehicle_id": "TRUCK_02",
+    "description": "Vehicle B - 2-wheel TB6612FNG drive prototype",
+    "motor_driver": "TB6612FNG",
+    "pinout": {
+      "LEFT_IN1": 25,
+      "LEFT_IN2": 26,
+      "LEFT_PWM": 27,
+      "RIGHT_IN1": 32,
+      "RIGHT_IN2": 33,
+      "RIGHT_PWM": 14,
+      "MOTOR_STBY": 13,
+      "SPEED_SENSOR_PIN": 35
+    },
+    "wheel_radius_m": 0.030,
+    "wheel_diameter_m": 0.060,
+    "wheel_circumference_m": 0.188495559,
+    "raw_encoder_ppr": 43.0,
+    "encoder_effective_ppr": 34.58,
+    "pulses_per_revolution": 34.58,
+    "effective_ppr": 34.58,
+    "distance_per_pulse_m": 0.005451,
+    "chassis_mass_kg": 1.85,
+    "max_physical_speed_mps": 1.40,
+    "max_physical_acceleration_mps2": 2.00,
+    "initial_pose": {
+      "x": 5.0,
+      "y": 0.0,
+      "heading_rad": 0.0
+    }
+  }
+}

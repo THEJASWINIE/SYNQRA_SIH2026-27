@@ -1,0 +1,117 @@
+{
+  "vehicle_id": "TRUCK_01",
+  "static": {},
+  "dynamic": {
+    "speed_mps": {
+      "value": 8.0,
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "rpm": {
+      "value": 1528.0,
+      "timestamp": 1788595521.1442723,
+      "source": "SIMULATION",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "v_safe_mps": {
+      "value": 6.0,
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "safe_headway_m": {
+      "value": 25.0,
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "headway_m": {
+      "value": 18.0,
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "lead_vehicle_id": {
+      "value": "TRUCK_02",
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "active_constraint": {
+      "value": "STOPPING_DISTANCE",
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "risk_level": {
+      "value": "HIGH",
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "headway_violation": {
+      "value": true,
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    },
+    "envelope_violation": {
+      "value": false,
+      "timestamp": 1788595521.1442723,
+      "source": "DERIVED",
+      "quality": "GOOD",
+      "age_s": 0.0044,
+      "available": true,
+      "clock_domain": "WALL_CLOCK",
+      "freshness": "CURRENT",
+      "origin": "SIMULATION"
+    }
+  },
+  "has_hardware_data": false
+}

@@ -1,0 +1,12 @@
+step,visibility_m,v_unbuffered_mps,state_unbuffered,rapid_cycle_event
+0,4.9,0.0,STAGED_HOLD,False
+1,5.1,0.2104,MOVING,True
+2,4.8,0.0,STAGED_HOLD,True
+3,5.2,0.3932,MOVING,True
+4,4.95,0.0,STAGED_HOLD,True
+5,5.05,0.1094,MOVING,True
+6,4.7,0.0,STAGED_HOLD,True
+7,5.3,0.5571,MOVING,True
+8,5.0,0.0,STAGED_HOLD,True
+9,5.01,0.0227,MOVING,True
+10,4.99,0.0,STAGED_HOLD,True

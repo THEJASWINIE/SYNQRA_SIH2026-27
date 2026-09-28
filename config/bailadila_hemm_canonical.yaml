@@ -1,0 +1,528 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 — CANONICAL BAILADILA HEMM PARAMETER CONFIGURATION
+# SIH 2026-27 — NMDC Bailadila Iron Ore Haulage Reference Model
+# Reference Machine: BEML BH100 (100-Tonne Class Heavy Mining Dumper)
+# Deposit Reference: NMDC Bailadila Deposit 5, Bacheli Complex, Chhattisgarh
+# Schema Compliance: PART 3 Provenance Specification
+# ==============================================================================
+
+metadata:
+  schema_version: "2.1.0"
+  date_calibrated: "2026-09-18"
+  mine_site: "NMDC Bailadila Deposit 5, Bacheli Complex"
+  vehicle_class: "BEML BH100 / 100-Tonne Rigid Dumper"
+  governing_standard: "DGMS Tech Circular 09/2008, ISO 3450:2011, SAE J1939"
+  provenance_rule: "Physical Evidence > Derived Model > Engineering Assumption > Simulation Output"
+
+parameters:
+  # ----------------------------------------------------------------------------
+  # 1. Mass, Payload & Inertia (BEML BH100 OEM Reference)
+  # ----------------------------------------------------------------------------
+  mass_empty_kg:
+    name: "Unladen Tare Vehicle Mass"
+    value: 74000.0
+    unit: "kg"
+    source: "BEML BH100 Technical Specification Sheet"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [65000.0, 80000.0]
+    notes: "Empty vehicle mass including standard chassis, body, fluids, and ROPS/FOPS cab."
+
+  payload_rated_kg:
+    name: "Nominal Rated Payload Capacity"
+    value: 91500.0
+    unit: "kg"
+    source: "BEML BH100 Datasheet (91.5 metric tonnes nominal payload)"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [85000.0, 100000.0]
+    notes: "Nominal iron ore payload for 100-tonne class rear dump truck."
+
+  mass_loaded_kg:
+    name: "Gross Operating Machine Weight (GVW)"
+    value: 165500.0
+    unit: "kg"
+    source: "Sum of unladen tare mass (74.0 t) and rated payload (91.5 t)"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [150000.0, 180000.0]
+    notes: "Certified gross operating machine weight under maximum full payload."
+
+  # ----------------------------------------------------------------------------
+  # 2. Geometry & Dimensions
+  # ----------------------------------------------------------------------------
+  length_m:
+    name: "Overall Vehicle Length"
+    value: 10.52
+    unit: "m"
+    source: "BEML BH100 Technical Specification"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [9.50, 11.50]
+    notes: "Bumper-to-canopy tip overall vehicle length."
+
+  width_m:
+    name: "Overall Operating Width"
+    value: 5.52
+    unit: "m"
+    source: "BEML BH100 Technical Specification"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [5.00, 6.20]
+    notes: "Outside tire-to-tire / canopy overall operating envelope width."
+
+  height_m:
+    name: "Overall Canopy Height"
+    value: 5.25
+    unit: "m"
+    source: "BEML BH100 Technical Specification"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [4.80, 5.80]
+    notes: "Ground to top of ROPS canopy height."
+
+  wheelbase_m:
+    name: "Axle Wheelbase"
+    value: 5.25
+    unit: "m"
+    source: "BEML BH100 Technical Specification"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [4.80, 5.80]
+    notes: "Distance between front steering axle and rear drive tandem center."
+
+  turning_radius_m:
+    name: "Vehicle Minimum Turning Radius"
+    value: 10.80
+    unit: "m"
+    source: "BEML BH100 Technical Specification"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [9.50, 12.50]
+    notes: "Minimum turning circle radius clearance."
+
+  wheel_radius_m:
+    name: "Loaded Tire Rolling Radius"
+    value: 1.35
+    unit: "m"
+    source: "Bridgestone 27.00R49 E-4 Mining Radial Haul Tire Catalog"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [1.25, 1.45]
+    notes: "Static loaded radius for 27.00R49 mining radial tire on BEML BH100."
+
+  cg_height_m:
+    name: "Center of Gravity Height"
+    value: 2.50
+    unit: "m"
+    source: "Mining Haul Truck Dynamics Reference (Loaded Condition)"
+    source_type: "ASSUMED"
+    confidence: "MEDIUM"
+    valid_range: [1.80, 3.20]
+    notes: "Combined chassis + heap payload vertical center of gravity above ground."
+
+  # ----------------------------------------------------------------------------
+  # 3. Powertrain, Tractive Effort & Retarding
+  # ----------------------------------------------------------------------------
+  max_engine_power_kw:
+    name: "Rated Diesel Engine Brake Power"
+    value: 770.0
+    unit: "kW"
+    source: "Cummins KTA38-C 12-cylinder diesel engine rating (1,032 HP @ 2,100 rpm)"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [700.0, 850.0]
+    notes: "Gross flywheel engine power available for propulsion and hydraulics."
+
+  max_drive_force_n:
+    name: "Maximum Rim Pull / Tractive Force"
+    value: 350000.0
+    unit: "N"
+    source: "Transmission 1st gear converter stall rim-pull chart"
+    source_type: "DERIVED"
+    confidence: "MEDIUM"
+    valid_range: [250000.0, 450000.0]
+    notes: "Maximum longitudinal tractive effort delivered at low speed."
+
+  retarder_power_max_w:
+    name: "Continuous Retarder Heat Dissipation Absorption"
+    value: 1200000.0
+    unit: "W"
+    source: "Rear oil-cooled wet multi-disc brake retarding absorption curve (~1200 kW)"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [900000.0, 1500000.0]
+    notes: "Continuous retarding thermal dissipation ceiling without fluid overheating."
+
+  max_retarder_power_w:
+    name: "Continuous Retarder Power (Alias for Compatibility)"
+    value: 1200000.0
+    unit: "W"
+    source: "Rear oil-cooled wet multi-disc brake retarding absorption curve (~1200 kW)"
+    source_type: "OEM_REFERENCE"
+    confidence: "HIGH"
+    valid_range: [900000.0, 1500000.0]
+    notes: "Exact alias for retarder_power_max_w to satisfy regression suites."
+
+  # ----------------------------------------------------------------------------
+  # 4. Braking, Resistance & Aerodynamics
+  # ----------------------------------------------------------------------------
+  hardware_brake_max_force_n:
+    name: "Total Gross Mechanical Rim Braking Force"
+    value: 550000.0
+    unit: "N"
+    source: "ISO 3450:2011 Service Brake Deceleration Criterion (~3.32 m/s2 loaded level ground)"
+    source_type: "DERIVED"
+    confidence: "HIGH"
+    valid_range: [450000.0, 650000.0]
+    notes: "Total rated longitudinal mechanical retarding effort at tire-road interface (rim braking force). Not caliper normal clamping force (which acts internally on discs). Clamped by tire-road adhesion limit (566.2 kN on wet mu=0.35)."
+
+  a_dec_emergency_mps2:
+    name: "Net Emergency Friction Retarding Deceleration"
+    value: 2.7466
+    unit: "m/s^2"
+    source: "Derived from full mechanical rim brake (550 kN) + roll - grade force on -8% ramp"
+    source_type: "DERIVED"
+    confidence: "HIGH"
+    valid_range: [2.0, 3.5]
+    notes: "Physically derived net deceleration on -8% downhill grade. Canonical parameters (165.5t, Crr=0.025, g=9.80665) yield 2.7856 m/s2; legacy parameters (165.0t, Crr=0.020, g=9.81) yield exactly 2.7466 m/s2. Field decelerometer measurement on BEML BH100 remains UNAVAILABLE/OPEN."
+
+  a_dec_service_mps2:
+    name: "Conservative Service Braking Deceleration"
+    value: 1.2000
+    unit: "m/s^2"
+    source: "Mining haulage literature standard for loaded dumper service comfort"
+    source_type: "ASSUMED"
+    confidence: "MEDIUM"
+    valid_range: [0.8, 2.0]
+    notes: "Comfort limit to prevent rock spillage during routine controlled deceleration."
+
+  rolling_resistance_crr:
+    name: "Haul Road Rolling Resistance Coefficient"
+    value: 0.025
+    unit: "dimensionless"
+    source: "SME Mining Engineering Handbook (Compacted unpaved haul road)"
+    source_type: "RESEARCH_DERIVED"
+    confidence: "HIGH"
+    valid_range: [0.015, 0.060]
+    notes: "Baseline tire-road surface hysteresis and rutting resistance."
+
+  rolling_resistance_crr_dry:
+    name: "Dry Haul Road Rolling Resistance Coefficient"
+    value: 0.025
+    unit: "dimensionless"
+    source: "SME Mining Engineering Handbook (Compacted dry haul road)"
+    source_type: "RESEARCH_DERIVED"
+    confidence: "HIGH"
+    valid_range: [0.015, 0.040]
+    notes: "Firm compacted dry haul road rolling resistance."
+
+  rolling_resistance_crr_wet:
+    name: "Wet / Muddy Haul Road Rolling Resistance Coefficient"
+    value: 0.035
+    unit: "dimensionless"
+    source: "SME Mining Engineering Handbook (Monsoon wet surface condition)"
+    source_type: "RESEARCH_DERIVED"
+    confidence: "HIGH"
+    valid_range: [0.025, 0.070]
+    notes: "Wet unpaved surface rolling resistance."
+
+  drag_coefficient_cd:
+    name: "Aerodynamic Drag Coefficient"
+    value: 0.80
+    unit: "dimensionless"
+    source: "Heavy Mining Commercial Truck Aerodynamics Literature"
+    source_type: "ASSUMED"
+    confidence: "MEDIUM"
+    valid_range: [0.60, 1.10]
+    notes: "Longitudinal form drag coefficient for blunt heavy haul dumper."
+
+  frontal_area_m2:
+    name: "Projected Frontal Area"
+    value: 22.0
+    unit: "m^2"
+    source: "Calculated: Width 5.52m x Height 5.25m x 0.76 shape factor"
+    source_type: "DERIVED"
+    confidence: "HIGH"
+    valid_range: [18.0, 26.0]
+    notes: "Front cross-sectional aerodynamic projection area."
+
+  air_density_kg_m3:
+    name: "Ambient Air Density"
+    value: 1.225
+    unit: "kg/m^3"
+    source: "International Standard Atmosphere (ISA sea level, 15 deg C)"
+    source_type: "STANDARD"
+    confidence: "HIGH"
+    valid_range: [1.050, 1.250]
+    notes: "Ambient density for aerodynamic drag calculations."
+
+  gravity_m_s2:
+    name: "Gravitational Acceleration"
+    value: 9.80665
+    unit: "m/s^2"
+    source: "Standard Physical Gravitational Acceleration Constant"
+    source_type: "STANDARD"
+    confidence: "VERY HIGH"
+    valid_range: [9.78, 9.83]
+    notes: "Standard physical gravitational acceleration."
+
+  # ----------------------------------------------------------------------------
+  # 5. Timing, Latencies & Reaction Budget
+  # ----------------------------------------------------------------------------
+  tau_sensor_s:
+    name: "Sensor Acquisition & Perception Latency"
+    value: 0.100
+    unit: "s"
+    source: "Perception filter window and visibility estimation update cycle"
+    source_type: "ASSUMED"
+    confidence: "MEDIUM"
+    valid_range: [0.030, 0.200]
+    notes: "Delay between environmental change and state estimation update."
+
+  tau_comm_s:
+    name: "Direct V2V Wireless Transmission Latency"
+    value: 0.050
+    unit: "s"
+    source: "Phase 6 CSS-LoRa bench experiment: direct V2V cycle (mean 41.2 ms, P95 50.0 ms)"
+    source_type: "MEASURED"
+    confidence: "HIGH"
+    valid_range: [0.020, 0.120]
+    notes: "Direct peer-to-peer V2V transmission and packet processing latency."
+
+  tau_comm_v2v_s:
+    name: "Direct V2V Link Latency (Alias)"
+    value: 0.050
+    unit: "s"
+    source: "Phase 6 CSS-LoRa bench experiment"
+    source_type: "MEASURED"
+    confidence: "HIGH"
+    valid_range: [0.020, 0.120]
+    notes: "Explicit alias for V2V direct hop."
+
+  tau_comm_gw_s:
+    name: "Gateway Upstream + Wi-Fi Relay Latency"
+    value: 0.080
+    unit: "s"
+    source: "Phase 6 Gateway serial-to-Wi-Fi relay benchmark"
+    source_type: "MEASURED"
+    confidence: "HIGH"
+    valid_range: [0.050, 0.200]
+    notes: "Delay for packet relay from LoRa gateway across Wi-Fi to FastAPI backend."
+
+  tau_decision_s:
+    name: "Tier-1 Local Safety Governor Decision Loop"
+    value: 0.050
+    unit: "s"
+    source: "Safety controller running at 20 Hz (measured execution < 5 ms, 50 ms loop period)"
+    source_type: "MEASURED"
+    confidence: "HIGH"
+    valid_range: [0.020, 0.100]
+    notes: "Governor constraint evaluation and quadratic solver step."
+
+  tau_actuator_s:
+    name: "Air-Over-Hydraulic Brake Actuator Build-Up Latency"
+    value: 0.200
+    unit: "s"
+    source: "Heavy HEMM air-over-hydraulic brake dynamics literature (experimental ~260 ms)"
+    source_type: "RESEARCH_DERIVED"
+    confidence: "HIGH"
+    valid_range: [0.150, 0.350]
+    notes: "Time from solenoid pilot trigger to full disc brake line clamping pressure."
+
+  tau_actuator_worst_case_s:
+    name: "Worst-Case Air-Over-Hydraulic Brake Build-Up Latency"
+    value: 0.350
+    unit: "s"
+    source: "Heavy HEMM pneumatic fill delay upper bound under low air reservoir pressure"
+    source_type: "RESEARCH_DERIVED"
+    confidence: "MEDIUM"
+    valid_range: [0.250, 0.450]
+    notes: "Upper bound of actuation delay for conservative safety sensitivity analyses."
+
+  tau_can_assumed_s:
+    name: "CAN Bus Transmission & Arbitration Latency (Assumed)"
+    value: 0.050
+    unit: "s"
+    source: "Conservative engineering model (5-10x higher than SAE J1939 literature <10 ms)"
+    source_type: "ASSUMED"
+    confidence: "LOW"
+    valid_range: [0.010, 0.250]
+    notes: "Assumed CAN delay pending physical J1939 bus logging on BEML BH100 chassis."
+
+  tau_total_autonomous_s:
+    name: "Total Autonomous Reaction Time Baseline"
+    value: 0.450
+    unit: "s"
+    source: "Sum: tau_sensor(0.100) + tau_comm(0.050) + tau_decision(0.050) + tau_actuator(0.200) + tau_can(0.050)"
+    source_type: "DERIVED"
+    confidence: "MEDIUM"
+    valid_range: [0.250, 0.800]
+    notes: "Baseline perception-to-deceleration reaction latency used in frozen benchmarks."
+
+  tau_total_autonomous_decomposed_s:
+    name: "Full Autonomous Reaction Time (Including Gateway Hop)"
+    value: 0.530
+    unit: "s"
+    source: "Sum: tau_sensor(0.100) + tau_comm_v2v(0.050) + tau_comm_gw(0.080) + tau_decision(0.050) + tau_actuator(0.200) + tau_can(0.050)"
+    source_type: "DERIVED"
+    confidence: "MEDIUM"
+    valid_range: [0.340, 0.980]
+    notes: "Phase 7 updated end-to-end latency with separate gateway upstream relay hop."
+
+  tau_human_s:
+    name: "Human Driver Perception-Reaction Time"
+    value: 1.200
+    unit: "s"
+    source: "AASHTO Green Book Baseline Driver Reaction Time"
+    source_type: "STANDARD"
+    confidence: "HIGH"
+    valid_range: [1.000, 2.500]
+    notes: "Human operator perception, decision, and foot-to-brake transfer latency."
+
+  # ----------------------------------------------------------------------------
+  # 6. Safety Margins & Operating Thresholds
+  # ----------------------------------------------------------------------------
+  s_base_m:
+    name: "Base Standstill Safety Margin"
+    value: 5.0
+    unit: "m"
+    source: "DGMS Open-cast haulage safe standoff distance regulation & Two-State Safety Model"
+    source_type: "STANDARD"
+    confidence: "HIGH"
+    valid_range: [3.0, 10.0]
+    notes: "Minimum longitudinal standoff gap between stopped vehicles. In Two-State Model: State 1 (Moving v>0) enforces S_stop(v) + S_base <= R_eff; State 2 (Staged v=0) holds at rest with 0m forward stopping distance and D_sight = R_eff (3-5m dense fog)."
+
+  k_comm_s:
+    name: "Dynamic Communication Degradation Margin Factor"
+    value: 0.50
+    unit: "s"
+    source: "Formulation: S_margin = S_base + k_comm*(1 - C_comm)*v"
+    source_type: "RESEARCH_DERIVED"
+    confidence: "MEDIUM"
+    valid_range: [0.20, 1.50]
+    notes: "Expands safety margin when communication confidence drops below 1.0."
+
+  traction_speed_factor_mps:
+    name: "Conservative Operational Traction Ceiling Multiplier"
+    value: 30.0
+    unit: "m/s"
+    source: "Operational traction constraint: v_traction_ceiling = factor * mu"
+    source_type: "RESEARCH_DERIVED"
+    confidence: "MEDIUM"
+    valid_range: [20.0, 40.0]
+    notes: "Bounds permitted velocity on low-friction wet surfaces."
+
+  headway_safe_m:
+    name: "Safe Space Headway Distance"
+    value: 22.52
+    unit: "m"
+    source: "Reconstructed from first principles: S_stop(7.0m) + S_base(5.0m) + L_truck(10.52m)"
+    source_type: "DERIVED"
+    confidence: "HIGH"
+    valid_range: [15.0, 35.0]
+    notes: "Minimum longitudinal center-to-center vehicle following separation at 12m visibility."
+
+  v_safe_12m_emergency_mps:
+    name: "Emergency Deceleration Safe Speed at 12m Visibility"
+    value: 5.1158
+    unit: "m/s"
+    source: "Analytical positive root under a=2.7466 m/s2 and P99 latency tau=0.4371s"
+    source_type: "DERIVED"
+    confidence: "HIGH"
+    valid_range: [4.0, 6.0]
+    notes: "Emergency contingency ceiling (18.42 km/h) guaranteeing stop within 7.0m."
+
+  v_safe_12m_service_mps:
+    name: "Conservative Service Deceleration Safe Speed at 12m Visibility"
+    value: 3.6078
+    unit: "m/s"
+    source: "Analytical positive root under a=1.2000 m/s2 and P99 latency tau=0.4371s"
+    source_type: "DERIVED"
+    confidence: "HIGH"
+    valid_range: [2.5, 4.5]
+    notes: "Conservative routine service haulage speed (12.99 km/h) for operator comfort."
+
+  # ----------------------------------------------------------------------------
+  # 7. Site Operational Limits (NMDC Bailadila Deposit 5)
+  # ----------------------------------------------------------------------------
+  v_mine_speed_limit_kmh:
+    name: "Regulatory Mine Site Haulage Speed Limit"
+    value: 20.0
+    unit: "km/h"
+    source: "DGMS Technical Circular 09/2008 & NMDC Bailadila Deposit 5 Haul Road Regulation"
+    source_type: "STANDARD"
+    confidence: "VERY HIGH"
+    valid_range: [15.0, 40.0]
+    notes: "Maximum permissible haul road velocity under ideal conditions (5.556 m/s)."
+
+  v_mine_max_kmh:
+    name: "Regulatory Mine Site Speed Limit (Alias)"
+    value: 20.0
+    unit: "km/h"
+    source: "DGMS Technical Circular 09/2008"
+    source_type: "STANDARD"
+    confidence: "VERY HIGH"
+    valid_range: [15.0, 40.0]
+    notes: "Exact alias for v_mine_speed_limit_kmh."
+
+  max_ramp_grade_pct:
+    name: "Maximum Haul Road Ramp Grade"
+    value: 8.0
+    unit: "%"
+    source: "DGMS Standard for Haul Roads in Metalliferous Open Cast Mines (1:12.5 = 8%)"
+    source_type: "STANDARD"
+    confidence: "VERY HIGH"
+    valid_range: [5.0, 10.0]
+    notes: "Maximum permissible ramp gradient for heavy dumper operations."
+
+  crusher_service_time_s:
+    name: "Primary Gyratory Crusher Truck Dump Cycle"
+    value: 200.0
+    unit: "s"
+    source: "Crusher tipping, dumping, and hopper clearance cycle timing (yields 18 VPH)"
+    source_type: "STANDARD"
+    confidence: "HIGH"
+    valid_range: [150.0, 300.0]
+    notes: "Determines crusher bottleneck throughput: 18 VPH x 91.5 t = 1647 TPH."
+
+  fog_hazard_season:
+    name: "Primary Fog Hazard Season"
+    value: "MONSOON_JUN_OCT"
+    unit: "calendar_range"
+    source: "Ministry of Steel / NMDC Problem Statement SIH26007"
+    source_type: "STANDARD"
+    confidence: "VERY HIGH"
+    valid_range: ["MONSOON_JUN_OCT", "WINTER_NOV_JAN"]
+    notes: "Official problem statement specifies monsoon season as primary low-visibility hazard."
+
+  visibility_minimum_m_stated:
+    name: "Minimum Operational Visibility in Problem Statement"
+    value: 3.0
+    unit: "m"
+    source: "Ministry of Steel / NMDC Problem Statement SIH26007 (3-5 metres)"
+    source_type: "STANDARD"
+    confidence: "VERY HIGH"
+    valid_range: [1.0, 10.0]
+    notes: "Official stated visibility during dense monsoon fog in Bailadila."
+
+  crusher_capacity_ceiling_tph:
+    name: "Crusher Single Tipping Pocket Physical Ceiling"
+    value: 1647.0
+    unit: "TPH"
+    source: "Physical equipment ceiling: (3600 / 200s dump slot) * 91.5t payload"
+    source_type: "DERIVED"
+    confidence: "HIGH"
+    valid_range: [1200.0, 2000.0]
+    notes: "MODELED CRUSHER SERVICE CEILING based on nominal 200s single-truck tipping, dumping, and feeder cycle (18 trucks/hr x 91.5 t = 1647 TPH). Not field-measured pit sensor data."
+
+  level4_steady_state_tph:
+    name: "Level 4 Sustained Steady-State Throughput"
+    value: 1591.4
+    unit: "TPH"
+    source: "Delivered steady-state production under Level 4 dynamic origin staging (96.6% utilization)"
+    source_type: "DERIVED"
+    confidence: "HIGH"
+    valid_range: [1400.0, 1647.0]
+    notes: "Sustained production across continuous multi-cycle 2-hour simulation horizons."
+

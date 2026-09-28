@@ -1,0 +1,8 @@
+bus_load_pct,mean_latency_ms,p95_latency_ms,p99_latency_ms,max_latency_ms,delivered_count,budget_50ms_exceeded
+10,6.327,6.327,6.327,6.327,100,False
+25,6.693,6.693,6.693,6.693,100,False
+50,9.427,9.427,9.427,9.427,100,False
+75,16.849,16.849,16.849,16.849,100,False
+90,24.527,24.527,24.527,24.527,100,False
+95,27.736,27.736,27.736,27.736,98,False
+99,30.559,30.559,30.559,30.559,88,False

@@ -1,0 +1,4 @@
+comparison,metric,level1_mean,level4_mean,mean_difference,paired_t_statistic,p_value_t_test,wilcoxon_w_statistic,p_value_wilcoxon,cohens_d,is_statistically_significant,interpretation
+LEVEL_1_VS_LEVEL_4,hazardous_ramp_queue_wait_s,624.41,139.92,484.49,115.6303,3.384444027281428e-40,0.0,1.862645149230957e-09,21.1111,True,Extremely significant reduction in hazardous haul ramp stationary queue waiting
+LEVEL_0_VS_LEVEL_4,throughput_tph,1170.29,1594.39,424.11,58.0198,1.4989600325224694e-31,0.0,1.862645149230957e-09,10.5929,True,Statistically significant sustained throughput gain (+35.9%) via crusher pacing
+LEVEL_1_VS_LEVEL_4,total_delay_s,712.2,627.8,84.4,19.6981,2.4782698516201908e-18,0.0,1.862645149230957e-09,3.5964,True,Modest but statistically significant net cycle delay reduction (-11.6%)

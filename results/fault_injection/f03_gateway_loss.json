@@ -1,0 +1,8 @@
+{
+  "fault_id": "F03",
+  "fault_name": "Gateway Disappearance",
+  "detected_state": "NO_GATEWAY",
+  "safety_transition": "Local Safe Mode Crawl",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.990508Z"
+}

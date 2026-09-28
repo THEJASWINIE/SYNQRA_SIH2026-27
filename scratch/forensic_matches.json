@@ -1,0 +1,1567 @@
+[
+  {
+    "file": ".\\CAPACITY_FORENSIC_AUDIT.md",
+    "line": 55,
+    "text": "| **`2,745 TPH`** | 2,745.0 | TPH | 6 minutes | **Short Burst Flush Rate** | $\\frac{3 \\times 91.5\\text{ t}}{0.1000\\text{ hr}} = 2,745\\text{ "
+  },
+  {
+    "file": ".\\COMMAND_ACK_TEST_RESULTS.md",
+    "line": 19,
+    "text": "| **CMD-07 (Safety)** | `TRUCK_02` | `TARGET_SPEED` | $30.00\\text{ m/s}$ | $10.87\\text{ m/s}$ | `CLAMPED` | $15.00\\text{ ms}$ | $15.10\\text{"
+  },
+  {
+    "file": ".\\FINAL_EVIDENCE_FREEZE.md",
+    "line": 30,
+    "text": "| `wheel_radius_m` | $1.450$ | $\\text{m}$ | **L2** | 27.00-R49 Mining Haulage Radial Tyres | **FROZEN** | Static loaded rolling radius of dr"
+  },
+  {
+    "file": ".\\HARDWARE_HMI_INTEGRATION_AUDIT.md",
+    "line": 29,
+    "text": "- **Speed Sensor**: `SPEED_SENSOR_PIN = 35` (Interrupt driven, `PULSES_PER_REV = 42.0`)"
+  },
+  {
+    "file": ".\\HARDWARE_HMI_INTEGRATION_AUDIT.md",
+    "line": 53,
+    "text": "All hardware motor control logic, sensor calibration constants (`PULSES_PER_REV = 42.0`), and pinouts are preserved without modification. Th"
+  },
+  {
+    "file": ".\\HEMM_CALIBRATION_REPORT.md",
+    "line": 50,
+    "text": "- TRUCK_01 Wheel Radius: $0.050\\text{ m}$ (Diameter $0.100\\text{ m}$)"
+  },
+  {
+    "file": ".\\HEMM_CALIBRATION_REPORT.md",
+    "line": 52,
+    "text": "- TRUCK_02 Wheel Radius: $0.0425\\text{ m}$ (Diameter $0.085\\text{ m}$)"
+  },
+  {
+    "file": ".\\HEMM_CALIBRATION_REPORT.md",
+    "line": 76,
+    "text": "$$\\tau_{\\text{total}} = 0.100\\text{s} (\\text{sensor}) + 0.050\\text{s} (\\text{comm}) + 0.050\\text{s} (\\text{decision}) + 0.200\\text{s} (\\text"
+  },
+  {
+    "file": ".\\HEMM_CALIBRATION_REPORT.md",
+    "line": 87,
+    "text": "- $\\tau_{\\text{sensor}} = 0.100\\text{ s}$. Tagged as `ASSUMED` for camera/LiDAR transmission and temporal filtering window."
+  },
+  {
+    "file": ".\\HEMM_CALIBRATION_REPORT.md",
+    "line": 147,
+    "text": "| Rolling Resistance Coefficient ($C_{rr}$) | 0.025 | [0.015, 0.060] | - | DERIVED |"
+  },
+  {
+    "file": ".\\HEMM_CALIBRATION_REPORT.md",
+    "line": 173,
+    "text": "| **Rolling Resistance ($C_{rr}$)** | $0.025$ | $+0.0352$ | $-0.0605$ | $+0.0878$ | Rolling resistance provides modest passive braking assis"
+  },
+  {
+    "file": ".\\HEMM_PARAMETER_AUDIT.md",
+    "line": 22,
+    "text": "| `wheel_radius_m` (HEMM) | 1.35 | m | Bridgestone/Michelin 27.00R49 radial haul tire | DERIVED | `models/vehicle_physics.py` | HIGH |"
+  },
+  {
+    "file": ".\\HEMM_PARAMETER_AUDIT.md",
+    "line": 23,
+    "text": "| `wheel_radius_m` (TRUCK_01) | 0.050 | m | Physical caliper measurement on differential drive rig | MEASURED | `integration_adapters/wheel_"
+  },
+  {
+    "file": ".\\HEMM_PARAMETER_AUDIT.md",
+    "line": 24,
+    "text": "| `wheel_radius_m` (TRUCK_02) | 0.0425 | m | Physical caliper measurement on L298N drive rig | MEASURED | `integration_adapters/wheel_imu_od"
+  },
+  {
+    "file": ".\\HEMM_PARAMETER_AUDIT.md",
+    "line": 44,
+    "text": "| `tau_sensor` | 0.100 | s | Sensor acquisition and digital filter latency | ASSUMED | `fog_safe/config.py`, `models/vehicle_physics.py` | M"
+  },
+  {
+    "file": ".\\HEMM_PARAMETER_AUDIT.md",
+    "line": 57,
+    "text": "| `dt_simulation_s` | 0.10 to 1.00 | s | Master discrete simulation timestep | VERIFIED | `fog_safe/simulator.py`, `twin/simulator.py` | VER"
+  },
+  {
+    "file": ".\\HEMM_PARAMETER_AUDIT.md",
+    "line": 74,
+    "text": "$$\\tau_{\\text{total}} = \\tau_{\\text{sensor}} (0.100\\text{s}) + \\tau_{\\text{comm}} (0.050\\text{s}) + \\tau_{\\text{decision}} (0.050\\text{s}) +"
+  },
+  {
+    "file": ".\\HMI_LIVE_MODE_ROOT_CAUSE_REPORT.md",
+    "line": 122,
+    "text": "\"acceleration\": { \"x\": -0.105, \"y\": 0.012, \"z\": 10.047 },"
+  },
+  {
+    "file": ".\\HMI_LIVE_TELEMETRY_ROOT_CAUSE.md",
+    "line": 77,
+    "text": "\"acceleration\": { \"x\": -0.105, \"y\": 0.012, \"z\": 10.047 },"
+  },
+  {
+    "file": ".\\HMI_V2V_COMPATIBILITY_AUDIT.md",
+    "line": 53,
+    "text": "- **Vehicle A (`TRUCK_01` \u2014 PULSES_PER_REV = 42)**:"
+  },
+  {
+    "file": ".\\HMI_V2V_COMPATIBILITY_AUDIT.md",
+    "line": 55,
+    "text": "- **Vehicle B (`TRUCK_02` \u2014 PULSES_PER_REV = 43)**:"
+  },
+  {
+    "file": ".\\INTEGRATION_REPORT.md",
+    "line": 19,
+    "text": "- **Hardware Interface Freeze (H1):** Vehicle B (TRUCK_02) locked to **Toshiba TB6612FNG Dual MOSFET H-Bridge** with $43.0\\text{ PPR}$ encod"
+  },
+  {
+    "file": ".\\INTEGRATION_REPORT.md",
+    "line": 33,
+    "text": "1. `esp32_code/sketch_aug26a/sketch_aug26a.ino`: Physical Vehicle A (TRUCK_01) firmware (L298N, 42 PPR, 10 cm wheels)."
+  },
+  {
+    "file": ".\\INTEGRATION_REPORT.md",
+    "line": 34,
+    "text": "2. `esp32_code/VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR/`: Physical Vehicle B (TRUCK_02) firmware (TB6612FNG, 43 PPR, 6 cm wheels)."
+  },
+  {
+    "file": ".\\INTEGRATION_REPORT.md",
+    "line": 69,
+    "text": "| Encoder Resolution (PPR)     | 42.0 pulses/rev              | 43.0 pulses/rev         |"
+  },
+  {
+    "file": ".\\INTEGRATION_REPORT.md",
+    "line": 70,
+    "text": "| Wheel Diameter (D)           | 0.100 m (10.0 cm)            | 0.060 m (6.0 cm)        |"
+  },
+  {
+    "file": ".\\INTEGRATION_REPORT.md",
+    "line": 80,
+    "text": "> - In `esp32_code/VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino`, the firmware defines $D = 0.060\\text{ m}$ ($R = 0.030\\text{ m}$) and $\\te"
+  },
+  {
+    "file": ".\\INTEGRATION_REPORT.md",
+    "line": 81,
+    "text": "> - In `config/physical_vehicle_parameters.json`, the backend canonical contract specifies $R = 0.0425\\text{ m}$ ($D = 0.085\\text{ m}$) and "
+  },
+  {
+    "file": ".\\INTEGRATION_REPORT.md",
+    "line": 305,
+    "text": "[X] Vehicle B TB6612FNG integration verified (Pinout, PWM, STBY, 43 PPR, 0.06m D)"
+  },
+  {
+    "file": ".\\KINEMATIC_SCALE_SPEC.md",
+    "line": 14,
+    "text": "| **Wheel Diameter** | $0.100\\text{ m}$ ($10\\text{ cm}$) | $2.700\\text{ m}$ ($270\\text{ cm}$) | $1 : 27.0$ |"
+  },
+  {
+    "file": ".\\LIVE_TWO_VEHICLE_HARDWARE_VERIFICATION_REPORT.md",
+    "line": 63,
+    "text": "| Vehicle | Config radius | Config PPR | Firmware diameter | Firmware PPR | Consistent |"
+  },
+  {
+    "file": ".\\LIVE_TWO_VEHICLE_HARDWARE_VERIFICATION_REPORT.md",
+    "line": 65,
+    "text": "| TRUCK_01 | 0.050 m | 42.0 | `WHEEL_DIAMETER_M 0.10` | `PULSES_PER_REV 42.0` | **YES** |"
+  },
+  {
+    "file": ".\\LIVE_TWO_VEHICLE_HARDWARE_VERIFICATION_REPORT.md",
+    "line": 66,
+    "text": "| TRUCK_02 | 0.0425 m | 20.0 | `WHEEL_DIAMETER_M 0.085` | `PULSES_PER_REV 20.0` | **YES** |"
+  },
+  {
+    "file": ".\\mock_vehicle_generator.py",
+    "line": 24,
+    "text": "self.wheel_radius_m = 0.5"
+  },
+  {
+    "file": ".\\mock_vehicle_generator.py",
+    "line": 62,
+    "text": "rpm_a = (speed_a * 60.0) / (2.0 * math.pi * self.wheel_radius_m)"
+  },
+  {
+    "file": ".\\mock_vehicle_generator.py",
+    "line": 79,
+    "text": "rpm_b = (speed_b * 60.0) / (2.0 * math.pi * self.wheel_radius_m)"
+  },
+  {
+    "file": ".\\PHASE1_FINAL_VALIDATION_PLAN.md",
+    "line": 62,
+    "text": "- **Motor Control Logic**: Physical motor direction, PWM drivers (TB6612 & L298N), and interrupt-driven encoder logic (`PULSES_PER_REV = 42."
+  },
+  {
+    "file": ".\\PHASE1_FINAL_VALIDATION_REPORT.md",
+    "line": 41,
+    "text": "- **Motor Control Logic**: Physical motor direction, PWM drivers (TB6612 & L298N), and interrupt-driven encoder logic (`PULSES_PER_REV = 42."
+  },
+  {
+    "file": ".\\PHASE1_FINAL_VALIDATION_REPORT.md",
+    "line": 137,
+    "text": "1. **Wheel Circumference Calibration**: Vehicle B linear speed calculation relies on the configured wheel diameter constant ($0.085\\text{ m}"
+  },
+  {
+    "file": ".\\PHYSICAL_WIFI_PRE_FLIGHT_AUDIT.md",
+    "line": 38,
+    "text": "- `PULSES_PER_REV` = 42.0 (Calibrated Vehicle A PPR)"
+  },
+  {
+    "file": ".\\PHYSICAL_WIFI_PRE_FLIGHT_AUDIT.md",
+    "line": 39,
+    "text": "- `WHEEL_DIAMETER_M` = 0.10 m (10 cm)"
+  },
+  {
+    "file": ".\\PHYSICAL_WIFI_PRE_FLIGHT_AUDIT.md",
+    "line": 60,
+    "text": "- `PULSES_PER_REV` = 43 (Calibrated Vehicle B PPR) / 20.0 (Baseline firmware constant)"
+  },
+  {
+    "file": ".\\PHYSICAL_WIFI_PRE_FLIGHT_AUDIT.md",
+    "line": 61,
+    "text": "- `WHEEL_DIAMETER_M` = 0.085 m (8.5 cm)"
+  },
+  {
+    "file": ".\\PHYSICAL_WIFI_PRE_FLIGHT_AUDIT.md",
+    "line": 95,
+    "text": "| **Encoder PPR** | A=42, B=43/20 | A=42, B=43/20 | **100% MATCH** |"
+  },
+  {
+    "file": ".\\PHYSICAL_WIFI_PRE_FLIGHT_AUDIT.md",
+    "line": 112,
+    "text": "PPR Settings (A=42, B=43):         VERIFIED"
+  },
+  {
+    "file": ".\\PHYSICS_AND_UNIT_COMPATIBILITY_AUDIT.md",
+    "line": 32,
+    "text": "| **Wheel Diameter ($D$)** | $0.10\\text{ m}$ ($10\\text{ cm}$) | $2.70\\text{ m}$ ($270\\text{ cm}$) | $1 : 27.0$ | Pulse per revolution scalin"
+  },
+  {
+    "file": ".\\run_digital_twin_fog_demo.py",
+    "line": 30,
+    "text": "adapter = TwinVelocityAdapter(prototype_scale=0.10)"
+  },
+  {
+    "file": ".\\run_live_digital_twin_motor_test.py",
+    "line": 31,
+    "text": "adapter = TwinVelocityAdapter(prototype_scale=0.10)"
+  },
+  {
+    "file": ".\\telemetry_ingest.py",
+    "line": 61,
+    "text": "#                    wheelRPM = (pulsesPerSecond / PULSES_PER_REV) * 60.0"
+  },
+  {
+    "file": ".\\verify_phase1.py",
+    "line": 47,
+    "text": "pulses_per_rev = 42.0"
+  },
+  {
+    "file": ".\\verify_phase1.py",
+    "line": 50,
+    "text": "revs = pulse_count / pulses_per_rev"
+  },
+  {
+    "file": ".\\verify_phase1.py",
+    "line": 52,
+    "text": "wheel_radius_m = 0.5"
+  },
+  {
+    "file": ".\\verify_phase1.py",
+    "line": 53,
+    "text": "speed_mps = (rpm * 2.0 * math.pi * wheel_radius_m) / 60.0"
+  },
+  {
+    "file": ".\\verify_physical_fog_motor.py",
+    "line": 30,
+    "text": "# Initialize TRUCK_02 physical vehicle emulator & TwinVelocityAdapter (default PROTOTYPE_SCALE = 0.10)"
+  },
+  {
+    "file": ".\\verify_physical_fog_motor.py",
+    "line": 33,
+    "text": "adapter = TwinVelocityAdapter(prototype_scale=0.10)"
+  },
+  {
+    "file": ".\\verify_vehicle_hmi_integration.py",
+    "line": 124,
+    "text": "hw_parsed = GatewayTelemetryParser.parse_packet(\"V=TRUCK_01,RPM=240.0,SPD=2.50,AX=0.10,AY=0.00,AZ=9.81,GX=0.00,GY=0.00,GZ=0.00\")"
+  },
+  {
+    "file": ".\\WIFI_HARDWARE_INTEGRATION.md",
+    "line": 104,
+    "text": "| `speed` | `float` | m/s | **Derived** | Encoder linear speed: $v = (\\text{RPM}/60) \\cdot \\pi D$ ($D=0.10\\text{ m}$). |"
+  },
+  {
+    "file": ".\\WIFI_HARDWARE_INTEGRATION.md",
+    "line": 124,
+    "text": "$$\\text{speed}_{\\rm m/s} = \\frac{\\text{RPM}}{60.0} \\cdot \\pi \\cdot 0.10$$"
+  },
+  {
+    "file": ".\\config\\bailadila_hemm_canonical.yaml",
+    "line": 104,
+    "text": "wheel_radius_m:"
+  },
+  {
+    "file": ".\\config\\bailadila_hemm_canonical.yaml",
+    "line": 207,
+    "text": "valid_range: [0.015, 0.060]"
+  },
+  {
+    "file": ".\\config\\bailadila_hemm_canonical.yaml",
+    "line": 275,
+    "text": "value: 0.100"
+  },
+  {
+    "file": ".\\config\\bailadila_hemm_canonical.yaml",
+    "line": 320,
+    "text": "valid_range: [0.020, 0.100]"
+  },
+  {
+    "file": ".\\config\\bailadila_hemm_canonical.yaml",
+    "line": 357,
+    "text": "source: \"Sum: tau_sensor(0.100) + tau_comm(0.050) + tau_decision(0.050) + tau_actuator(0.200) + tau_can(0.050)\""
+  },
+  {
+    "file": ".\\config\\bailadila_hemm_canonical.yaml",
+    "line": 367,
+    "text": "source: \"Sum: tau_sensor(0.100) + tau_comm_v2v(0.050) + tau_comm_gw(0.080) + tau_decision(0.050) + tau_actuator(0.200) + tau_can(0.050)\""
+  },
+  {
+    "file": ".\\config\\FINAL_CANONICAL_NUMBERS.yaml",
+    "line": 52,
+    "text": "wheel_radius:"
+  },
+  {
+    "file": ".\\config\\hemm_canonical.yaml",
+    "line": 90,
+    "text": "wheel_radius_m:"
+  },
+  {
+    "file": ".\\config\\hemm_canonical.yaml",
+    "line": 163,
+    "text": "valid_range: [0.015, 0.060]"
+  },
+  {
+    "file": ".\\config\\hemm_canonical.yaml",
+    "line": 211,
+    "text": "value: 0.100"
+  },
+  {
+    "file": ".\\config\\hemm_canonical.yaml",
+    "line": 236,
+    "text": "valid_range: [0.020, 0.100]"
+  },
+  {
+    "file": ".\\config\\hemm_canonical.yaml",
+    "line": 246,
+    "text": "valid_range: [0.100, 0.350]"
+  },
+  {
+    "file": ".\\config\\integration_canonical.yaml",
+    "line": 45,
+    "text": "wheel_radius:"
+  },
+  {
+    "file": ".\\config\\physical_vehicle_parameters.json",
+    "line": 5,
+    "text": "\"wheel_radius_m\": 0.050,"
+  },
+  {
+    "file": ".\\config\\physical_vehicle_parameters.json",
+    "line": 6,
+    "text": "\"wheel_diameter_m\": 0.100,"
+  },
+  {
+    "file": ".\\config\\physical_vehicle_parameters.json",
+    "line": 7,
+    "text": "\"pulses_per_revolution\": 42.0,"
+  },
+  {
+    "file": ".\\config\\physical_vehicle_parameters.json",
+    "line": 31,
+    "text": "\"wheel_radius_m\": 0.0425,"
+  },
+  {
+    "file": ".\\config\\physical_vehicle_parameters.json",
+    "line": 32,
+    "text": "\"wheel_diameter_m\": 0.085,"
+  },
+  {
+    "file": ".\\config\\physical_vehicle_parameters.json",
+    "line": 33,
+    "text": "\"pulses_per_revolution\": 20.0,"
+  },
+  {
+    "file": ".\\docs\\EVIDENCE_BOUNDARY.md",
+    "line": 30,
+    "text": "| **Motor Drive & Encoders** | Vehicle B TB6612FNG PWM & 43 PPR odometry | **L4** | Physical Vehicle B benchtop run | *\"Validated on physica"
+  },
+  {
+    "file": ".\\docs\\FAULT_INJECTION_PLAN.md",
+    "line": 28,
+    "text": "| **F08** | Sensing | Optical Encoder Failure (Zero pulses) | Hardware pulse pin disconnected / simulated 0 PPR | $< 100\\text{ ms}$ |"
+  },
+  {
+    "file": ".\\docs\\HARDWARE_SOFTWARE_INTEGRATION.md",
+    "line": 26,
+    "text": "- `PULSES_PER_REV`: $42.0\\text{ PPR}$"
+  },
+  {
+    "file": ".\\docs\\HARDWARE_SOFTWARE_INTEGRATION.md",
+    "line": 27,
+    "text": "- `WHEEL_DIAMETER_M`: $0.100\\text{ m}$ ($10\\text{ cm}$)"
+  },
+  {
+    "file": ".\\docs\\HARDWARE_SOFTWARE_INTEGRATION.md",
+    "line": 54,
+    "text": "- **Wheel Diameter:** $D = 0.060\\text{ m}$ ($6.0\\text{ cm}$)"
+  },
+  {
+    "file": ".\\docs\\HARDWARE_SOFTWARE_INTEGRATION.md",
+    "line": 56,
+    "text": "- **Wheel Circumference:** $C = \\pi \\times D = 3.14159265 \\times 0.060 = \\mathbf{0.188496\\text{ m}}$"
+  },
+  {
+    "file": ".\\docs\\HARDWARE_SOFTWARE_INTEGRATION.md",
+    "line": 57,
+    "text": "- **Encoder Resolution:** $\\text{PPR} = \\mathbf{43.0\\text{ pulses/revolution}}$"
+  },
+  {
+    "file": ".\\docs\\HARDWARE_SOFTWARE_INTEGRATION.md",
+    "line": 63,
+    "text": "> The physical bench prototype uses $D = 0.060\\text{ m}, \\text{PPR} = 43.0$ (`VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino`). The backend c"
+  },
+  {
+    "file": ".\\docs\\HARDWARE_SOFTWARE_INTEGRATION.md",
+    "line": 73,
+    "text": "wheelRPM = ((float)deltaPulses / PULSES_PER_REV) * (60000.0f / (float)deltaTimeMs);"
+  },
+  {
+    "file": ".\\docs\\HARDWARE_SOFTWARE_INTEGRATION.md",
+    "line": 79,
+    "text": "totalDistanceM = ((float)currentPulses / PULSES_PER_REV) * WHEEL_CIRCUMFERENCE_M;"
+  },
+  {
+    "file": ".\\docs\\HEMM_PARAMETER_MIGRATION.md",
+    "line": 32,
+    "text": "| `tau_sensor_s` | $0.100\\text{ s}$ | $0.100\\text{ s}$ | Perception filter window and visibility estimation update cycle. | Engineering Assu"
+  },
+  {
+    "file": ".\\docs\\HEMM_PARAMETER_MIGRATION.md",
+    "line": 33,
+    "text": "| `tau_comm_s` (aggregate) | $0.050\\text{ s}$ / $0.100\\text{ s}$ | $0.050\\text{ s}$ (V2V) + $0.080\\text{ s}$ (Gateway) | Phase 7 research de"
+  },
+  {
+    "file": ".\\docs\\HEMM_PARAMETER_MIGRATION.md",
+    "line": 34,
+    "text": "| `tau_decision_s` | $0.100\\text{ s}$ | $0.050\\text{ s}$ | Tier-1 Safety Governor runs at $20\\text{ Hz}$ ($50\\text{ ms}$ execution cycle; in"
+  },
+  {
+    "file": ".\\docs\\INTEGRATION_BASELINE.md",
+    "line": 51,
+    "text": "- `PULSES_PER_REV`: $42.0\\text{ PPR}$ (`VERIFIED`)"
+  },
+  {
+    "file": ".\\docs\\INTEGRATION_BASELINE.md",
+    "line": 52,
+    "text": "- `WHEEL_DIAMETER_M`: $0.100\\text{ m}$ ($10.0\\text{ cm}$) (`VERIFIED`)"
+  },
+  {
+    "file": ".\\docs\\INTEGRATION_BASELINE.md",
+    "line": 53,
+    "text": "- `WHEEL_CIRCUMFERENCE_M`: $\\pi \\times 0.100 = 0.31416\\text{ m}$ (`MODEL_PARAMETER`)"
+  },
+  {
+    "file": ".\\docs\\INTEGRATION_BASELINE.md",
+    "line": 76,
+    "text": "- `PULSES_PER_REV`: $43.0\\text{ PPR}$ (`VERIFIED`)"
+  },
+  {
+    "file": ".\\docs\\INTEGRATION_BASELINE.md",
+    "line": 77,
+    "text": "- `WHEEL_DIAMETER_M`: $0.060\\text{ m}$ ($6.0\\text{ cm}$) (`VERIFIED`)"
+  },
+  {
+    "file": ".\\docs\\INTEGRATION_BASELINE.md",
+    "line": 78,
+    "text": "- `WHEEL_CIRCUMFERENCE_M`: $\\pi \\times 0.060 = 0.18850\\text{ m}$ (`MODEL_PARAMETER`)"
+  },
+  {
+    "file": ".\\docs\\INTEGRATION_BASELINE.md",
+    "line": 82,
+    "text": "* **Calibration Provenance Note:** Prototype bench firmware (`VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino`) uses $D = 0.060\\text{ m}, \\tex"
+  },
+  {
+    "file": ".\\docs\\MASTER_CONFIGURATION_AUDIT.md",
+    "line": 50,
+    "text": "| `tau_sensor_s` | `fog_orchestrator/core/config.py:42`| `0.10` | **INTENTIONAL CONSTANT** | LiDAR / Radar perception pipeline latency. |"
+  },
+  {
+    "file": ".\\docs\\MASTER_CONFIGURATION_AUDIT.md",
+    "line": 51,
+    "text": "| `tau_comm_s` | `fog_orchestrator/core/config.py:43`| `0.10` | **INTENTIONAL CONSTANT** | V2V / V2X network propagation delay estimate. |"
+  },
+  {
+    "file": ".\\docs\\MASTER_NO_FAKE_VALIDATION_AUDIT.md",
+    "line": 24,
+    "text": "| **LM393 Wheel RPM Sensor** | Physical speed sensing | Firmware ISR counts optical pulse interrupts on ESP32 GPIO (`wheelRPM = (pulses / PP"
+  },
+  {
+    "file": ".\\docs\\PHASE_HEMM_DSSS_AUDIT.md",
+    "line": 40,
+    "text": "- Properties: `mass`, `power`, `hardware_brake_max`, `c_rr`, `Cd`, `frontal_area`, `wheel_radius`."
+  },
+  {
+    "file": ".\\docs\\PHASE_HEMM_DSSS_FAILSAFE_FINAL.md",
+    "line": 35,
+    "text": "| | `wheel_radius_m` | $1.35$ | $\\text{m}$ | OEM_REFERENCE | Bridgestone 27.00R49 E-4 Radial |"
+  },
+  {
+    "file": ".\\docs\\PHASE_HEMM_DSSS_FAILSAFE_FINAL.md",
+    "line": 89,
+    "text": "$$\\tau_{\\text{total}} = \\tau_{\\text{sensor}} (0.100\\text{s}) + \\tau_{\\text{v2v}} (0.050\\text{s}) + \\tau_{\\text{gw}} (0.080\\text{s}) + \\tau_{"
+  },
+  {
+    "file": ".\\docs\\STAGE3_DIMENSIONAL_AUDIT.md",
+    "line": 118,
+    "text": "- **Resolution**: Unified $\tau_{ecu} = 0.10\text{ s} \\implies \tau_{total} = 0.80\text{ s}$ across all configurations. Safe speed is canonicall"
+  },
+  {
+    "file": ".\\docs\\STAGE3_EXECUTIVE_SUMMARY.md",
+    "line": 37,
+    "text": "- **Forensic Truth**: Divergence was caused by unharmonized config files (`core/config.py` had $\\tau_{\\text{ecu}} = 0.25\\text{ s}$ vs $\\tau_"
+  },
+  {
+    "file": ".\\docs\\STAGE3_EXECUTIVE_SUMMARY.md",
+    "line": 72,
+    "text": "| **Total Reaction Latency** | $0.80\\text{ s}$ and $0.65\\text{ s}$ | **$0.650\\text{ s}$** | $\\tau_{\\text{sensor}} (0.05) + \\tau_{\\text{comm}"
+  },
+  {
+    "file": ".\\docs\\STAGE3_EXECUTIVE_SUMMARY.md",
+    "line": 73,
+    "text": "| **Vehicle A Wheel Diameter** | Assumed 10cm | **$0.100\\text{ m} \\pm 0.2\\text{ mm}$** | Measured with Mitutoyo Caliper | `STAGE3_HARDWARE_C"
+  },
+  {
+    "file": ".\\docs\\STAGE3_EXECUTIVE_SUMMARY.md",
+    "line": 74,
+    "text": "| **Vehicle B Wheel Diameter** | Unspecified | **$0.085\\text{ m} \\pm 0.2\\text{ mm}$** | Measured with Mitutoyo Caliper | `STAGE3_HARDWARE_CA"
+  },
+  {
+    "file": ".\\docs\\STAGE3_HARDWARE_CALIBRATION.md",
+    "line": 12,
+    "text": "| **Wheel Diameter ($D$)** | $0.100\\text{ m}$ ($100.0\\text{ mm}$) | $0.085\\text{ m}$ ($85.0\\text{ mm}$) | Mitutoyo Vernier Caliper (500-196-"
+  },
+  {
+    "file": ".\\docs\\STAGE3_HARDWARE_CALIBRATION.md",
+    "line": 15,
+    "text": "| **Encoder Pulses / Rev ($\\text{PPR}$)** | $42.0\\text{ pulses/wheel rev}$ | $43.0\\text{ pulses/wheel rev}$ | Oscilloscope Pulse Count / Ind"
+  },
+  {
+    "file": ".\\docs\\STAGE3_HARDWARE_CALIBRATION.md",
+    "line": 26,
+    "text": "$$\\text{RPM}_A = \\left( \\frac{\\Delta \\text{pulses}}{\\text{PPR}_A} \\right) \\times \\left( \\frac{60.0}{\\Delta t} \\right) = \\left( \\frac{\\Delta "
+  },
+  {
+    "file": ".\\docs\\STAGE3_HARDWARE_CALIBRATION.md",
+    "line": 27,
+    "text": "$$v_{\\text{encoder}, A} = \\frac{\\text{RPM}_A \\times \\pi \\times D_A}{60.0} = \\frac{\\text{RPM}_A \\times 3.14159 \\times 0.100}{60.0}\\quad [\\tex"
+  },
+  {
+    "file": ".\\docs\\STAGE3_HARDWARE_CALIBRATION.md",
+    "line": 30,
+    "text": "$$\\text{RPM}_B = \\left( \\frac{\\Delta \\text{pulses}}{\\text{PPR}_B} \\right) \\times \\left( \\frac{60.0}{\\Delta t} \\right) = \\left( \\frac{\\Delta "
+  },
+  {
+    "file": ".\\docs\\STAGE3_HARDWARE_CALIBRATION.md",
+    "line": 31,
+    "text": "$$v_{\\text{encoder}, B} = \\frac{\\text{RPM}_B \\times \\pi \\times D_B}{60.0} = \\frac{\\text{RPM}_B \\times 3.14159 \\times 0.085}{60.0}\\quad [\\tex"
+  },
+  {
+    "file": ".\\docs\\STAGE3_HARDWARE_CALIBRATION.md",
+    "line": 39,
+    "text": "### Table 3.1: Vehicle A (TRUCK_01, $D = 0.100\\text{ m}$, $\\text{PPR} = 42.0$)"
+  },
+  {
+    "file": ".\\docs\\STAGE3_HARDWARE_CALIBRATION.md",
+    "line": 53,
+    "text": "### Table 3.2: Vehicle B (TRUCK_02, $D = 0.085\\text{ m}$, $\\text{PPR} = 43.0$)"
+  },
+  {
+    "file": ".\\docs\\STAGE3_PARAMETER_FORENSICS.md",
+    "line": 36,
+    "text": "| LoRa V2V Transmission Delay | $\\tau_{\\text{comm}}$ | 0.100 | $\\text{s}$ | MEASURED | YES | YES | YES | YES | Measured 433 MHz SX1278 packe"
+  },
+  {
+    "file": ".\\docs\\STAGE3_PARAMETER_FORENSICS.md",
+    "line": 37,
+    "text": "| ECU Governor Decision Latency | $\\tau_{\\text{decision}}$ | 0.100 | $\\text{s}$ | MEASURED | YES | YES | YES | YES | Measured ESP32 dual-cor"
+  },
+  {
+    "file": ".\\docs\\STAGE3_PARAMETER_FORENSICS.md",
+    "line": 40,
+    "text": "| Total Machine Perception Latency | $\\tau_{\\text{total}}$ | 0.650 | $\\text{s}$ | DERIVED | YES | YES | YES | YES | $\\tau_{\\text{sensor}} (0"
+  },
+  {
+    "file": ".\\docs\\STAGE3_PARAMETER_FORENSICS.md",
+    "line": 44,
+    "text": "| Vehicle A (TRUCK_01) Wheel Diameter | $D_{\\text{wheel\\_A}}$ | 0.100 | $\\text{m}$ | MEASURED | YES | YES | YES | YES | Measured with Vernie"
+  },
+  {
+    "file": ".\\docs\\STAGE3_PARAMETER_FORENSICS.md",
+    "line": 45,
+    "text": "| Vehicle A Encoder Resolution | $\\text{PPR}_A$ | 42.0 | $\\text{pulses/rev}$ | MEASURED | YES | YES | YES | YES | Physical slotted optical e"
+  },
+  {
+    "file": ".\\docs\\STAGE3_PARAMETER_FORENSICS.md",
+    "line": 46,
+    "text": "| Vehicle B (TRUCK_02) Wheel Diameter | $D_{\\text{wheel\\_B}}$ | 0.085 | $\\text{m}$ | MEASURED | YES | YES | YES | YES | Measured with Vernie"
+  },
+  {
+    "file": ".\\docs\\STAGE3_PARAMETER_FORENSICS.md",
+    "line": 47,
+    "text": "| Vehicle B Encoder Resolution | $\\text{PPR}_B$ | 43.0 | $\\text{pulses/rev}$ | MEASURED | YES | YES | YES | YES | Measured 43.0 counts per w"
+  },
+  {
+    "file": ".\\docs\\STAGE3_SCIENTIFIC_AUDIT.md",
+    "line": 56,
+    "text": "- Sensor latency = $0.05\\text{ s}$, Decision latency = $0.10\\text{ s}$, Brake latency = $0.40\\text{ s}$, V2V = $0.10\\text{ s} \\implies \\tau_"
+  },
+  {
+    "file": ".\\docs\\STAGE3_SCIENTIFIC_AUDIT.md",
+    "line": 61,
+    "text": "- Prior to unification, ECU processing latency was set to $\\tau_{\\text{ecu}} = 0.25\\text{ s}$ instead of $0.10\\text{ s}$, yielding $\\tau_{\\t"
+  },
+  {
+    "file": ".\\docs\\STAGE4_HARDWARE_VALIDATION.md",
+    "line": 27,
+    "text": "- **Vehicle A (TRUCK_01)**: $D = 0.100\\text{ m} \\pm 0.2\\text{ mm}$, Slotted optical disc $\\text{PPR} = 42.0\\text{ pulses/rev}$."
+  },
+  {
+    "file": ".\\docs\\STAGE4_HARDWARE_VALIDATION.md",
+    "line": 28,
+    "text": "- **Vehicle B (TRUCK_02)**: $D = 0.085\\text{ m} \\pm 0.2\\text{ mm}$, Optical disc $\\text{PPR} = 43.0\\text{ pulses/rev}$."
+  },
+  {
+    "file": ".\\docs\\STAGE4_NUMERICAL_CONVERGENCE.md",
+    "line": 9,
+    "text": "We executed identical 300-second simulations with the unmodified Stage-3 simulator across four integration timesteps: $\\Delta t \\in \\{1.00\\t"
+  },
+  {
+    "file": ".\\docs\\STAGE4_NUMERICAL_CONVERGENCE.md",
+    "line": 17,
+    "text": "| **$0.10\\text{ s}$** | 3,000 | **7** | **$0.70\\text{ s}$** | $+0.4820\\text{ m/s}$ ($+1.74\\text{ km/h}$) | `ROAD_05_INT2_TO_BUFFER1` | Decel"
+  },
+  {
+    "file": ".\\esp32_code\\backup\\VEHICLE_A_HMI_FIRMWARE_BACKUP_V2V_FROZEN.ino",
+    "line": 24,
+    "text": "#define PULSES_PER_REV 42.0"
+  },
+  {
+    "file": ".\\esp32_code\\backup\\VEHICLE_A_HMI_FIRMWARE_BACKUP_V2V_FROZEN.ino",
+    "line": 25,
+    "text": "#define WHEEL_DIAMETER_M 0.10 // 10 cm wheel diameter"
+  },
+  {
+    "file": ".\\esp32_code\\backup\\VEHICLE_A_HMI_FIRMWARE_BACKUP_V2V_FROZEN.ino",
+    "line": 129,
+    "text": "wheelRPM = (pulsesPerSecond / PULSES_PER_REV) * 60.0;"
+  },
+  {
+    "file": ".\\esp32_code\\backup\\VEHICLE_A_HMI_FIRMWARE_BACKUP_V2V_FROZEN.ino",
+    "line": 130,
+    "text": "speedMps = (wheelRPM * 3.14159 * WHEEL_DIAMETER_M) / 60.0;"
+  },
+  {
+    "file": ".\\esp32_code\\backup\\VEHICLE_B_HMI_FIRMWARE_BACKUP_V2V_FROZEN.ino",
+    "line": 21,
+    "text": "#define PULSES_PER_REV 20.0  // Calibrated for Vehicle B wheel encoder"
+  },
+  {
+    "file": ".\\esp32_code\\backup\\VEHICLE_B_HMI_FIRMWARE_BACKUP_V2V_FROZEN.ino",
+    "line": 22,
+    "text": "#define WHEEL_DIAMETER_M 0.085 // 8.5 cm wheel diameter"
+  },
+  {
+    "file": ".\\esp32_code\\backup\\VEHICLE_B_HMI_FIRMWARE_BACKUP_V2V_FROZEN.ino",
+    "line": 126,
+    "text": "wheelRPM = (pulsesPerSecond / PULSES_PER_REV) * 60.0;"
+  },
+  {
+    "file": ".\\esp32_code\\backup\\VEHICLE_B_HMI_FIRMWARE_BACKUP_V2V_FROZEN.ino",
+    "line": 127,
+    "text": "speedMps = (wheelRPM * 3.14159 * WHEEL_DIAMETER_M) / 60.0;"
+  },
+  {
+    "file": ".\\esp32_code\\sketch_aug26a\\sketch_aug26a.ino",
+    "line": 51,
+    "text": "#define PULSES_PER_REV   42.0"
+  },
+  {
+    "file": ".\\esp32_code\\sketch_aug26a\\sketch_aug26a.ino",
+    "line": 52,
+    "text": "#define WHEEL_DIAMETER_M 0.10f // 10 cm wheel diameter (Vehicle A prototype)"
+  },
+  {
+    "file": ".\\esp32_code\\sketch_aug26a\\sketch_aug26a.ino",
+    "line": 724,
+    "text": "PULSES_PER_REV"
+  },
+  {
+    "file": ".\\esp32_code\\sketch_aug26a\\sketch_aug26a.ino",
+    "line": 735,
+    "text": "// Wheel diameter = 0.10 m (10 cm), 42 pulses per revolution."
+  },
+  {
+    "file": ".\\esp32_code\\sketch_aug26a\\sketch_aug26a.ino",
+    "line": 737,
+    "text": "vehicleSpeed = (wheelRPM * 3.14159265f * WHEEL_DIAMETER_M) / 60.0f;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR\\VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino",
+    "line": 55,
+    "text": "#define PULSES_PER_REV   43.0f"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR\\VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino",
+    "line": 57,
+    "text": "const float WHEEL_DIAMETER_M = 0.06f;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR\\VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino",
+    "line": 60,
+    "text": "PI * WHEEL_DIAMETER_M;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR\\VEHICLE_B_TRUCK_02_V2V_DIGITAL_TWIN_MOTOR.ino",
+    "line": 614,
+    "text": "PULSES_PER_REV;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 12,
+    "text": "Encoder PPR = 42"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 15,
+    "text": "Encoder PPR = 43"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 53,
+    "text": "const float PPR = 42.0f;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 57,
+    "text": "const float PPR = 43.0f;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 97,
+    "text": "const float WHEEL_DIAMETER_M = 0.06f;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 100,
+    "text": "PI * WHEEL_DIAMETER_M;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 221,
+    "text": "Serial.print(\"PPR              : \");"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 222,
+    "text": "Serial.println(PPR);"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 225,
+    "text": "Serial.print(WHEEL_DIAMETER_M, 3);"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 302,
+    "text": "(float)counts / PPR;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 394,
+    "text": "Serial.print(\"PPR: \");"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 395,
+    "text": "Serial.println(PPR);"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE A\\VEHICLE_SPEED_CALIBRATION\\VEHICLE_SPEED_CALIBRATION.ino",
+    "line": 398,
+    "text": "Serial.print(WHEEL_DIAMETER_M * 100.0f);"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 26,
+    "text": "Nominal Encoder PPR:"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 85,
+    "text": "// Vehicle B nominal PPR"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 86,
+    "text": "#define PULSES_PER_REV   34.58f"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 93,
+    "text": "const float WHEEL_DIAMETER_M = 0.06f;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 96,
+    "text": "PI * WHEEL_DIAMETER_M;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 226,
+    "text": "Serial.print(\"Nominal PPR        : \");"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 227,
+    "text": "Serial.println(PULSES_PER_REV, 2);"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 230,
+    "text": "Serial.print(WHEEL_DIAMETER_M, 3);"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 325,
+    "text": "PULSES_PER_REV;"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 455,
+    "text": "Serial.print(\"Nominal PPR: \");"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 457,
+    "text": "PULSES_PER_REV,"
+  },
+  {
+    "file": ".\\esp32_code\\VEHICLE_SPEED_CALIBRATION\\VEHICLE B\\sketch_sep17a_copy_20260917203801\\sketch_sep17a_copy_20260917203801.ino",
+    "line": 463,
+    "text": "WHEEL_DIAMETER_M * 100.0f,"
+  },
+  {
+    "file": ".\\experiments\\run_dimensional_and_physics_audit.py",
+    "line": 225,
+    "text": "- **Resolution**: Unified $\\tau_{ecu} = 0.10\\text{ s} \\implies \\tau_{total} = 0.80\\text{ s}$ across all configurations. Safe speed is canoni"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 258,
+    "text": "# Vehicle A: 4WD Differential Drive, 10cm wheel (D=0.10m), 43 pulses/rev"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 259,
+    "text": "# Vehicle B: 2WD + Caster Drive, 8.5cm wheel (D=0.085m), 20 pulses/rev"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 266,
+    "text": "d_a = 0.10"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 277,
+    "text": "\"wheel_diameter_m\": d_a,"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 278,
+    "text": "\"pulses_per_rev\": ppr_a,"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 288,
+    "text": "d_b = 0.085"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 298,
+    "text": "\"wheel_diameter_m\": d_b,"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 299,
+    "text": "\"pulses_per_rev\": ppr_b,"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 442,
+    "text": "| **Wheel Diameter ($D$)** | $0.100\\text{ m}$ ($10.0\\text{ cm}$) | $0.085\\text{ m}$ ($8.5\\text{ cm}$) | $2.40\\text{ m}$ (Tire 27.00-R49) |"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 443,
+    "text": "| **Pulses Per Revolution** | $43.0\\text{ PPR}$ | $20.0\\text{ PPR}$ | $128\\text{ PPR}$ tone ring |"
+  },
+  {
+    "file": ".\\experiments\\run_hardware_audit_suite.py",
+    "line": 447,
+    "text": "$$\\text{RPM} = \\left(\\frac{\\text{Pulses per second}}{\\text{PPR}}\\right) \\times 60.0$$"
+  },
+  {
+    "file": ".\\experiments\\run_phase6_bench_timing.py",
+    "line": 54,
+    "text": "(\"RESTORED_NOMINAL\", 100, 0.10, 1.35, 0.20, 0.0, 0.0)"
+  },
+  {
+    "file": ".\\experiments\\run_phase6_bench_timing.py",
+    "line": 70,
+    "text": "rx_time = tx_time + 0.100"
+  },
+  {
+    "file": ".\\experiments\\run_phase6_bench_timing.py",
+    "line": 133,
+    "text": "t_clock += np.random.uniform(0.040, 0.060) # ~20 Hz transmission"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_2_physical_validation.py",
+    "line": 571,
+    "text": "(\"SENSOR_DROPOUT\", \"Visibility estimation lost\", 0.100, \"EMERGENCY_STOP\", 0.0, True),"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_2_physical_validation.py",
+    "line": 573,
+    "text": "(\"SUDDEN_DENSE_FOG\", \"Visibility drops from 50m to 3m\", 0.100, \"EMERGENCY_STOP\", 0.0, True),"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_1_reconciliation.py",
+    "line": 176,
+    "text": "\"Physical_Basis\": \"3 pre-buffered trucks dumped in 6 min (3 x 91.5t / 0.100h)\","
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_1_reconciliation.py",
+    "line": 405,
+    "text": "tau_decisions = np.random.uniform(0.040, 0.060, n_samples)"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_2_independent_verification.py",
+    "line": 396,
+    "text": "\"Physical_Basis\": \"3 pre-buffered trucks dumped in 6 min (3 x 91.5t / 0.100h)\","
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_2_independent_verification.py",
+    "line": 729,
+    "text": "tau_decisions = np.random.uniform(0.040, 0.060, n_samples)"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_3_physics_and_margin_closure.py",
+    "line": 413,
+    "text": "tau_decisions = np.random.uniform(0.040, 0.060, n_samples)"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_4_independent_monte_carlo.py",
+    "line": 158,
+    "text": "comm_loss = (np.random.rand() < 0.10)"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_4_independent_monte_carlo.py",
+    "line": 211,
+    "text": "loss_rates = [0.0, 0.01, 0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95, 0.99, 1.00]"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_4_independent_monte_carlo.py",
+    "line": 212,
+    "text": "burst_gaps_s = [0.01, 0.05, 0.10, 0.50, 1.0, 5.0, 10.0, 30.0]"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_4_sensitivity.py",
+    "line": 55,
+    "text": "tau_other = 0.100 + 0.050 + 0.0371 # 187.1 ms"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_3_reconciliation.py",
+    "line": 242,
+    "text": "\"derivation_formula\": \"3 trucks dumping in 6 minutes: (3 * 91.5 t) / (0.10 hr)\","
+  },
+  {
+    "file": ".\\experiments\\run_phase7_4_safe_beacon_validation.py",
+    "line": 258,
+    "text": "(\"SAFE-25\", \"COMMAND_RECOVERY_RESYNC\", \"Resync requires 2 valid frames\", 0.100, \"NORMAL\", 4.0, \"PASS\", \"L1_DETERMINISTIC\"),"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_4_safe_beacon_validation.py",
+    "line": 299,
+    "text": "if np.random.rand() < 0.10:"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_4_safe_beacon_validation.py",
+    "line": 331,
+    "text": "has_gw = (np.random.rand() > 0.10)  # 10% gateway loss"
+  },
+  {
+    "file": ".\\experiments\\run_phase7_4_safe_beacon_validation.py",
+    "line": 332,
+    "text": "has_v2v = (np.random.rand() > 0.10) # 10% v2v loss"
+  },
+  {
+    "file": ".\\experiments\\run_sensor_degradation_benchmark.py",
+    "line": 202,
+    "text": "if rng.random() < 0.10:"
+  },
+  {
+    "file": ".\\FINAL\\FINAL_CANONICAL_MODEL.yaml",
+    "line": 48,
+    "text": "wheel_radius_loaded:"
+  },
+  {
+    "file": ".\\fog-orchester-3d-digital-twin\\optimizer\\chance_mpc.py",
+    "line": 175,
+    "text": "cap_sigma_pct: float = 0.10"
+  },
+  {
+    "file": ".\\fog-orchester-3d-digital-twin\\optimizer\\chance_mpc.py",
+    "line": 209,
+    "text": "visibility_sigma_m=twin_state.environment.default_visibility_m * 0.10,"
+  },
+  {
+    "file": ".\\fog-orchester-3d-digital-twin\\validation\\monte_carlo.py",
+    "line": 10,
+    "text": "- Perception/Network Latency tau ~ U(0.10s, 1.20s)"
+  },
+  {
+    "file": ".\\fog-orchester-3d-digital-twin\\validation\\monte_carlo.py",
+    "line": 133,
+    "text": "latencies = rng.uniform(low=0.10, high=1.20, size=self.num_iterations)"
+  },
+  {
+    "file": ".\\fog-orchester-3d-digital-twin\\validation\\physics_tests.py",
+    "line": 267,
+    "text": "mu_safe_clamped = self.friction_model.calculate_safe_friction(0.22, 0.10, 0.18, 1.645)"
+  },
+  {
+    "file": ".\\fog_orchestrator\\core\\config.py",
+    "line": 22,
+    "text": "wheel_radius_m: float = 1.2           # Dynamic tire rolling radius (m)"
+  },
+  {
+    "file": ".\\fog_orchestrator\\core\\config.py",
+    "line": 42,
+    "text": "tau_sensor_s: float = 0.10            # FMCW Radar / LiDAR processing latency (s)"
+  },
+  {
+    "file": ".\\fog_orchestrator\\core\\config.py",
+    "line": 43,
+    "text": "tau_comm_s: float = 0.10              # V2X network transmission latency (s)"
+  },
+  {
+    "file": ".\\fog_orchestrator\\core\\config.py",
+    "line": 44,
+    "text": "tau_ecu_s: float = 0.10               # ECU decision & actuation processing delay (s) (Unifies tau_total = 0.80s)"
+  },
+  {
+    "file": ".\\fog_orchestrator\\core\\config.py",
+    "line": 58,
+    "text": "arrival_shaping_buffer: float = 0.10  # Delta buffer reduction on arrival rate (fraction of mu)"
+  },
+  {
+    "file": ".\\fog_orchestrator\\tier3_central\\optimizer.py",
+    "line": 46,
+    "text": "weather_forecast_uncertainty_std: float = 0.10"
+  },
+  {
+    "file": ".\\fog_safe\\config.py",
+    "line": 33,
+    "text": "tau_sensor: float = 0.10           # Sensor processing latency (s)"
+  },
+  {
+    "file": ".\\fog_safe\\config.py",
+    "line": 34,
+    "text": "tau_comm_base: float = 0.10        # Nominal V2X communication latency (s)"
+  },
+  {
+    "file": ".\\fog_safe\\config.py",
+    "line": 35,
+    "text": "tau_decision: float = 0.10        # ECU decision loop latency (s)"
+  },
+  {
+    "file": ".\\fog_safe\\friction.py",
+    "line": 15,
+    "text": "sigma_mu: float = 0.10"
+  },
+  {
+    "file": ".\\integration_adapters\\can_twai_hil.py",
+    "line": 242,
+    "text": "CAN_ID_ENGINE_SPEED: 0.100,    # 100 ms"
+  },
+  {
+    "file": ".\\integration_adapters\\dsss_gateway_selector.py",
+    "line": 366,
+    "text": "return round(max(0.10, min(1.0, corr_proxy)), 4)"
+  },
+  {
+    "file": ".\\integration_adapters\\safe_beacon_adapter.py",
+    "line": 179,
+    "text": "future_tolerance_s: float = 0.10,"
+  },
+  {
+    "file": ".\\integration_adapters\\twin_velocity_adapter.py",
+    "line": 21,
+    "text": "def __init__(self, config_path: Optional[str] = None, prototype_scale: float = 0.10):"
+  },
+  {
+    "file": ".\\integration_adapters\\unit_converter.py",
+    "line": 40,
+    "text": "if not params or \"wheel_radius_m\" not in params:"
+  },
+  {
+    "file": ".\\integration_adapters\\unit_converter.py",
+    "line": 41,
+    "text": "logger.error(f\"[UnitConverter] Missing calibrated wheel_radius_m for vehicle '{vehicle_id}'\")"
+  },
+  {
+    "file": ".\\integration_adapters\\unit_converter.py",
+    "line": 44,
+    "text": "r_m = params[\"wheel_radius_m\"]"
+  },
+  {
+    "file": ".\\integration_adapters\\wheel_imu_odometry.py",
+    "line": 9,
+    "text": "Pulses Per Revolution (PPR): 42.0"
+  },
+  {
+    "file": ".\\integration_adapters\\wheel_imu_odometry.py",
+    "line": 10,
+    "text": "Wheel Diameter: 0.10 m (Wheel Radius: 0.05 m)"
+  },
+  {
+    "file": ".\\integration_adapters\\wheel_imu_odometry.py",
+    "line": 15,
+    "text": "delta_distance = (delta_pulses / 42.0) * pi * 0.10"
+  },
+  {
+    "file": ".\\integration_adapters\\wheel_imu_odometry.py",
+    "line": 41,
+    "text": "PPR = 42.0"
+  },
+  {
+    "file": ".\\integration_adapters\\wheel_imu_odometry.py",
+    "line": 42,
+    "text": "WHEEL_DIAMETER_M = 0.10"
+  },
+  {
+    "file": ".\\integration_adapters\\wheel_imu_odometry.py",
+    "line": 43,
+    "text": "WHEEL_CIRCUMFERENCE_M = math.pi * WHEEL_DIAMETER_M  # ~0.31415926535 m"
+  },
+  {
+    "file": ".\\integration_adapters\\wheel_imu_odometry.py",
+    "line": 129,
+    "text": "delta_distance = (pulses_to_integrate / self.PPR) * self.WHEEL_CIRCUMFERENCE_M"
+  },
+  {
+    "file": ".\\reports\\02_PARAMETER_RECONCILIATION.md",
+    "line": 27,
+    "text": "| `tau_sensor_s` | 0.100 | **0.100** | s | **KEEP** | L6 | 10 Hz Radar / Perception Filter Window | Conservative upper bound on obstacle & v"
+  },
+  {
+    "file": ".\\reports\\05_FINAL_HEADWAY_CAPACITY.md",
+    "line": 75,
+    "text": "- 3 queued trucks dumped in 6 minutes ($0.100\\text{ hr}$):"
+  },
+  {
+    "file": ".\\reports\\05_FINAL_HEADWAY_CAPACITY.md",
+    "line": 76,
+    "text": "$$\\text{Rate} = \\frac{3 \\times 91.5\\text{ t}}{0.100\\text{ hr}} = \\mathbf{2,745.0\\text{ TPH}}$$"
+  },
+  {
+    "file": ".\\reports\\06_CAPACITY_FORENSIC_AUDIT.md",
+    "line": 56,
+    "text": "| **`2,745 TPH`** | 2,745.0 | TPH | 6 minutes | **Short Burst Flush Rate** | $\\frac{3 \\times 91.5\\text{ t}}{0.1000\\text{ hr}} = 2,745\\text{ "
+  },
+  {
+    "file": ".\\reports\\10_FAILURE_INJECTION_FINAL.md",
+    "line": 40,
+    "text": "| **FI-13** | **Sensor Dropout / Blackout** | Fog sensor disconnected / NaN | 0.100 s | `EMERGENCY_STOP` | Forced to $0.00\\text{ m/s}$ | **P"
+  },
+  {
+    "file": ".\\reports\\10_MONTE_CARLO_REVALIDATION.md",
+    "line": 25,
+    "text": "Governor Decision (tau_gov)  Uniform Continuous       0.040 s          0.060 s          ESP32 20 Hz Task Period"
+  },
+  {
+    "file": ".\\reports\\phase6_parameter_provenance.md",
+    "line": 31,
+    "text": "| **Sensor Reaction Time ($\\tau_{\\text{sensor}}$)** | $0.100\\text{ s}$ ($100\\text{ ms}$) | LiDAR/Radar Filter Frame Time | No | Yes | Yes | "
+  },
+  {
+    "file": ".\\reports\\phase7_1_forensic_evidence_audit.md",
+    "line": 162,
+    "text": "| **$450\\text{ ms}$** | Baseline autonomous reaction time budget ($\\tau_{\\text{total}}$) | Synthesis: $\\tau_{\\text{sensor}}(0.10) + \\tau_{\\t"
+  },
+  {
+    "file": ".\\reports\\phase7_1_forensic_evidence_audit.md",
+    "line": 350,
+    "text": "\u2502  Nominal Local Latency:   0.100 + 0.050 + 0.050 + 0.200 = 0.400 s           \u2502"
+  },
+  {
+    "file": ".\\reports\\phase7_1_forensic_evidence_audit.md",
+    "line": 351,
+    "text": "\u2502  Worst-Case Local Latency: 0.100 + 0.050 + 0.050 + 0.350 = 0.550 s          \u2502"
+  },
+  {
+    "file": ".\\reports\\phase7_1_forensic_evidence_audit.md",
+    "line": 451,
+    "text": "- $\\tau = \\tau_{\\text{sensor}}(0.10) + \\tau_{\\text{comm}}(0.10) + \\tau_{\\text{dec}}(0.10) + \\tau_{\\text{human}}(0.50) = \\mathbf{0.800\\text{ "
+  },
+  {
+    "file": ".\\reports\\phase7_1_forensic_evidence_audit.md",
+    "line": 508,
+    "text": "| `tau_sensor` | Perception Latency | $0.100\\text{ s}$ | **KEEP** | **L6** | Defensible estimation window for optical visibility filter. |"
+  },
+  {
+    "file": ".\\reports\\phase7_1_forensic_evidence_audit.md",
+    "line": 514,
+    "text": "| `tau_total_local` | Local Safety Reaction | $0.400\\text{ s}$ | **NEW / KEEP** | **L6** | True autonomous chassis stopping latency ($0.10+0"
+  },
+  {
+    "file": ".\\reports\\phase7_2_e8_failure_injection.md",
+    "line": 28,
+    "text": "| **SENSOR_DROPOUT** | Visibility sensor telemetry lost / invalid | 0.100 | `EMERGENCY_STOP` | 0.00 | **PASS (I8)** |"
+  },
+  {
+    "file": ".\\reports\\phase7_2_e8_failure_injection.md",
+    "line": 30,
+    "text": "| **SUDDEN_DENSE_FOG** | Visibility drops from 50 m to 3 m | 0.100 | `EMERGENCY_STOP` | 0.00 | **PASS (I8)** |"
+  },
+  {
+    "file": ".\\reports\\PHASE7_3_4_CLAIM_LANGUAGE_AUDIT.md",
+    "line": 25,
+    "text": "| **`guaranteed`** | 6 | **OVERSTATED** | **Prohibited in absolute terms.** Safety cannot be universally \"guaranteed\" against physical brake"
+  },
+  {
+    "file": ".\\reports\\phase7_deep_research_master.md",
+    "line": 196,
+    "text": "| 1 | Fog detection/visibility sensing | tau_sensor | 0.100 | 0.050-0.200 | ENGINEERING ASSUMPTION |"
+  },
+  {
+    "file": ".\\reports\\phase7_deep_research_master.md",
+    "line": 199,
+    "text": "| 4 | Safety governor cycle 20 Hz | tau_decision | 0.050 | 0.020-0.100 | BENCH MEASURED Phase 6 |"
+  },
+  {
+    "file": ".\\reports\\phase7_deep_research_master.md",
+    "line": 206,
+    "text": "Prior tau_total_autonomous_s = 0.450 s (0.100+0.050+0.050+0.200+0.050)"
+  },
+  {
+    "file": ".\\reports\\PHASE_7_4_SAFE_BEACON_AUDIT.md",
+    "line": 49,
+    "text": "- $t_{\\text{beacon}} > t_{\\text{clock}} + 0.10\\text{ s}$: rejected as `FUTURE_TIMESTAMP`."
+  },
+  {
+    "file": ".\\reports\\PHASE_7_4_SECURITY_BOUNDARY.md",
+    "line": 26,
+    "text": "| **Timestamp Window Verification** | `SafeBeaconAdapter.parse_beacon_packet()` | Stale packet injection, future timestamp replay | Rejects "
+  },
+  {
+    "file": ".\\results\\safe_beacon\\safe_beacon_trace.json",
+    "line": 7,
+    "text": "\"beacon_packet\": \"BEACON,TRUCK_02,1,NORMAL,100.100,ZONE_RAMP_D5\""
+  },
+  {
+    "file": ".\\scratch\\run_phase9_1_redteam.py",
+    "line": 219,
+    "text": "noise_sigmas = [0.02, 0.05, 0.10, 0.15, 0.20, 0.30]"
+  },
+  {
+    "file": ".\\sensor_degradation_research\\09_SENSOR_DEGRADATION_BENCHMARK.md",
+    "line": 90,
+    "text": "D1: {type: \"DROPOUT\", params: {rate: 0.10}}"
+  },
+  {
+    "file": ".\\sensor_degradation_research\\REPRODUCIBILITY_CONFIG.yaml",
+    "line": 27,
+    "text": "params: {rate: 0.10}"
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\backend\\app\\gateway_serial_reader.py",
+    "line": 245,
+    "text": "spd_a = (rpm_a * 3.14159 * 0.10) / 60.0"
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\backend\\app\\gateway_serial_reader.py",
+    "line": 256,
+    "text": "spd_b = (rpm_b * 3.14159 * 0.085) / 60.0"
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\contracts\\scene_routes.json",
+    "line": 549,
+    "text": "1150.107,"
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\contracts\\scene_routes.json",
+    "line": 957,
+    "text": "1150.107,"
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 983,
+    "text": "\"version\": \"0.10.17\","
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 984,
+    "text": "\"resolved\": \"https://registry.npmjs.org/@mediapipe/tasks-vision/-/tasks-vision-0.10.17.tgz\","
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 1024,
+    "text": "\"@mediapipe/tasks-vision\": \"0.10.17\","
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 1032,
+    "text": "\"maath\": \"^0.10.8\","
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 2311,
+    "text": "\"version\": \"0.10.8\","
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 2312,
+    "text": "\"resolved\": \"https://registry.npmjs.org/maath/-/maath-0.10.8.tgz\","
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 2478,
+    "text": "\"node\": \">=0.10.0\""
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 2502,
+    "text": "\"node\": \">=0.10.0\""
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 2521,
+    "text": "\"node\": \">=0.10.0\""
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 2545,
+    "text": "\"node\": \">=0.10.0\""
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\package-lock.json",
+    "line": 2645,
+    "text": "\"node\": \">=0.10.0\""
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\src\\screens\\GeoSiteMap.tsx",
+    "line": 372,
+    "text": "fill={i === 0 ? \"url(#cr-hatch-dump)\" : \"rgba(139,143,150,0.10)\"}"
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\src\\state\\speedContract.test.tsx",
+    "line": 473,
+    "text": "expect(text, rel).not.toMatch(/rpm\\s*\\*|\\*\\s*Math\\.PI|wheel_radius|pulses/i);"
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-HMI\\frontend\\src\\state\\speedContract.ts",
+    "line": 17,
+    "text": "*                           rpm x 2*pi*wheel_radius_m / 60, computed by the backend"
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-main\\frontend\\package-lock.json",
+    "line": 2081,
+    "text": "\"node\": \">=0.10.0\""
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-main\\frontend\\package-lock.json",
+    "line": 2103,
+    "text": "\"node\": \">=0.10.0\""
+  },
+  {
+    "file": ".\\SYNQRA_SIH2026-27-main\\frontend\\package-lock.json",
+    "line": 2182,
+    "text": "\"node\": \">=0.10.0\""
+  },
+  {
+    "file": ".\\tests\\test_clock_domains.py",
+    "line": 76,
+    "text": "acceleration={\"x\": 0.10, \"y\": 0.0, \"z\": 9.81},"
+  },
+  {
+    "file": ".\\tests\\test_dsss_gateway_selection.py",
+    "line": 195,
+    "text": "bad_obs = BeaconObservation(\"GW-01\", \"PN-A\", 0.10, -130.0, -25.0, curr_time, crc_valid=False)"
+  },
+  {
+    "file": ".\\tests\\test_hemm_canonical_regression.py",
+    "line": 118,
+    "text": "tau_sensor = 0.100"
+  },
+  {
+    "file": ".\\tests\\test_hybrid_coexistence.py",
+    "line": 84,
+    "text": "acceleration={\"x\": 0.10, \"y\": 0.0, \"z\": 9.81},"
+  },
+  {
+    "file": ".\\tests\\test_phase6_timing_and_rf.py",
+    "line": 56,
+    "text": "tau_sensor = 0.100"
+  },
+  {
+    "file": ".\\tests\\test_phase6_timing_and_rf.py",
+    "line": 196,
+    "text": "assert p[\"tau_sensor_s\"][\"value\"] == 0.100"
+  },
+  {
+    "file": ".\\tests\\test_phase7_2_validation.py",
+    "line": 110,
+    "text": "tau_sensor_nom = 0.100"
+  },
+  {
+    "file": ".\\tests\\test_phase7_4_safe_beacon.py",
+    "line": 416,
+    "text": "res99 = adapter.ingest_beacon(\"BEACON,TRUCK_02,99,NORMAL,100.10,ZONE_A\", now=100.10)"
+  },
+  {
+    "file": ".\\tests\\test_phase7_4_safe_beacon.py",
+    "line": 461,
+    "text": "adapter = SafeBeaconAdapter(local_vehicle_id=\"TRUCK_01\", future_tolerance_s=0.10, max_beacon_age_s=1.0, clock=lambda: 100.0)"
+  },
+  {
+    "file": ".\\tests\\test_phase7_4_safe_beacon.py",
+    "line": 463,
+    "text": "# Future timestamp: 105.0 > 100.0 + 0.10"
+  },
+  {
+    "file": ".\\tests\\test_speed_truth_contract.py",
+    "line": 9,
+    "text": "speed_mps              CANONICAL actual speed = rpm x 2*pi*wheel_radius_m / 60,"
+  },
+  {
+    "file": ".\\tests\\test_speed_truth_contract.py",
+    "line": 31,
+    "text": "R01 = 0.050  # config/physical_vehicle_parameters.json TRUCK_01 wheel_radius_m (measured)"
+  },
+  {
+    "file": ".\\tests\\test_truck01_odometry.py",
+    "line": 5,
+    "text": "1. 1 wheel revolution (42 pulses) produces the expected distance (pi * 0.10 ~ 0.314159 m)."
+  },
+  {
+    "file": ".\\tests\\test_truck01_odometry.py",
+    "line": 6,
+    "text": "2. PPR conversion for PPR = 42."
+  },
+  {
+    "file": ".\\tests\\test_truck01_odometry.py",
+    "line": 7,
+    "text": "3. Wheel diameter = 0.10 m."
+  },
+  {
+    "file": ".\\tests\\test_truck01_odometry.py",
+    "line": 44,
+    "text": "\"\"\"Requirement 1 & 2 & 3: 42 pulses = 1 revolution = pi * 0.10 m (~0.314159 m).\"\"\""
+  },
+  {
+    "file": ".\\tests\\test_truck01_odometry.py",
+    "line": 51,
+    "text": "expected_dist = (42.0 / 42.0) * math.pi * 0.10"
+  },
+  {
+    "file": ".\\tests\\test_truck01_odometry.py",
+    "line": 59,
+    "text": "\"\"\"Requirement 2: PPR = 42 conversion check for fractional revolutions.\"\"\""
+  },
+  {
+    "file": ".\\tests\\test_truck01_odometry.py",
+    "line": 64,
+    "text": "expected_dist = (21.0 / 42.0) * math.pi * 0.10"
+  },
+  {
+    "file": ".\\tests\\integration\\fault_injection_matrix.md",
+    "line": 17,
+    "text": "| **F04** | Gateway Handover Flapping | Multipath noise $\\sigma = 0.20$ on candidate | $42.0\\text{ ms}$ | `HANDOVER_PENDING` | Hysteresis lo"
+  },
+  {
+    "file": ".\\tests\\integration\\test_end_to_end_integration.py",
+    "line": 104,
+    "text": "\"\"\"Verify wheel diameter and PPR distance and speed calculations.\"\"\""
+  },
+  {
+    "file": ".\\tests\\integration\\test_end_to_end_integration.py",
+    "line": 109,
+    "text": "d = truck_b[\"wheel_diameter_m\"]"
+  },
+  {
+    "file": ".\\tests\\integration\\test_end_to_end_integration.py",
+    "line": 110,
+    "text": "ppr = truck_b[\"pulses_per_revolution\"]"
+  },
+  {
+    "file": ".\\tests\\integration\\test_end_to_end_integration.py",
+    "line": 112,
+    "text": "assert ppr > 0.0"
+  },
+  {
+    "file": ".\\tests\\integration\\test_end_to_end_integration.py",
+    "line": 115,
+    "text": "# In 1 second, ppr pulses recorded = 1 rev = wheel_circ m"
+  },
+  {
+    "file": ".\\tests\\integration\\test_end_to_end_integration.py",
+    "line": 116,
+    "text": "delta_pulses = ppr"
+  },
+  {
+    "file": ".\\tests\\integration\\test_end_to_end_integration.py",
+    "line": 118,
+    "text": "speed_mps = (delta_pulses / ppr) * wheel_circ / delta_t_s"
+  },
+  {
+    "file": ".\\tests\\integration\\test_end_to_end_integration.py",
+    "line": 122,
+    "text": "total_dist = (100.0 / ppr) * wheel_circ"
+  },
+  {
+    "file": ".\\validation\\phase9_1\\DSSS_REDTEAM.md",
+    "line": 25,
+    "text": "2. `SWITCH_MARGIN = 0.10` (Hysteresis margin: candidate gateway must exceed current by 10% correlation)."
+  },
+  {
+    "file": ".\\validation\\phase9_1\\DSSS_REDTEAM.md",
+    "line": 40,
+    "text": "| **0.10** | Moderate Multipath ($\\text{SNR} \\approx 12\\text{ dB}$) | 5 | 0.5% | 200 cycles | **MARGINAL (5 flaps)** |"
+  },
+  {
+    "file": ".\\validation\\phase9_1\\DSSS_REDTEAM.md",
+    "line": 50,
+    "text": "- **Mechanism:** In the middle zone where true correlation of both Gateway A and Gateway B is approximately 0.75, random noise fluctuations "
+  },
+  {
+    "file": ".\\validation\\phase9_1\\DSSS_REDTEAM.md",
+    "line": 64,
+    "text": "- Hysteresis margin `SWITCH_MARGIN = 0.10` is **insufficient** for multipath-rich pit environments with high metallic reflection from excava"
+  },
+  {
+    "file": ".\\validation\\phase9_1\\DSSS_REDTEAM.md",
+    "line": 74,
+    "text": "1. **Increase Hysteresis:** `SWITCH_MARGIN: 0.10` $\\to$ **`0.18`**."
+  },
+  {
+    "file": ".\\validation\\phase9_1\\FAILURE_BOUNDARIES.md",
+    "line": 55,
+    "text": "sigma = 0.10: Flaps = 5 / 1000   [Marginal]"
+  }
+]

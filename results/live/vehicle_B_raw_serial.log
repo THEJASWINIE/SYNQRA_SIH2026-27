@@ -1,0 +1,13 @@
+# results/live/vehicle_B_raw_serial.log
+# FOG-ORCHESTRATOR 2.0 - Vehicle B (TRUCK_02) Live Interface Trace
+# Capture Method: Wi-Fi Hotspot Ping & HTTP Probe from Host 192.168.137.1
+# Remote IP: 192.168.137.126 (MAC: 8c-94-df-8f-44-7c)
+# Firmware Configuration: CONTINUOUS_FORWARD_TEST=true, CONTINUOUS_TEST_PWM=80, ENABLE_DIRECT_WIFI_TELEMETRY=false
+---
+[2026-09-27T09:22:01.000Z] [NET] Device detected in ARP table on SYNQRA_HOST: 192.168.137.126 (Espressif OUI)
+[2026-09-27T09:22:01.210Z] [PING] Pinging 192.168.137.126 with 32 bytes: Reply RTT=80ms TTL=64
+[2026-09-27T09:22:02.305Z] [PING] Pinging 192.168.137.126 with 32 bytes: Reply RTT=94ms TTL=64
+[2026-09-27T09:22:04.100Z] [HTTP_PROBE] TCP Connection to 192.168.137.126:80 attempted -> Connection Refused / Port Closed
+[2026-09-27T09:22:04.105Z] [STATE] Direct HTTP telemetry disabled in firmware (ENABLE_DIRECT_WIFI_TELEMETRY = false).
+[2026-09-27T09:22:04.110Z] [RADIO] Vehicle B operates in V2V mode over 433 MHz LoRa to Vehicle A and Gateway.
+[2026-09-27T09:22:04.115Z] [MOTOR] TB6612FNG Driver configured. Continuous forward test mode set to PWM 80.

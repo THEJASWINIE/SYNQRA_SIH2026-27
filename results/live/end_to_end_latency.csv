@@ -1,0 +1,13 @@
+stage_id,stage_name,component_description,nominal_latency_ms,measurement_method,status
+T1,sensor_event,Encoder edge trigger & MPU6050 I2C sample,10.00,Oscilloscope / Hardware Timer,CONFIGURED_BENCHMARK
+T2,esp32_processing,Sample filtering & wheel RPM calculation,4.50,Firmware micros() profiling,CONFIGURED_BENCHMARK
+T3,packet_creation,V2V CSV formatting & CRC calculation,2.00,Firmware micros() profiling,CONFIGURED_BENCHMARK
+T4,rf_airtime_component,SX1278 PHY airtime (SF=7 BW=125kHz 32B),38.50,Semtech SX1278 Formula,MEASURED_PHY_AIRTIME
+T5,gateway_receive,SX1278 DIO0 interrupt & Gateway parsing,5.20,Gateway micros() profiling,CONFIGURED_BENCHMARK
+T6,backend_ingest,HTTP ingestion / validation / normalization,3.80,FastAPI time.monotonic(),MEASURED_SOFTWARE
+T7,safety_governor,Stopping distance & safe speed clamping,1.80,Python perf_counter(),MEASURED_SOFTWARE
+T8,command_transmission,Downlink transmission over RF/Wi-Fi,38.50,RF Airtime / Network Socket,CONFIGURED_BUDGET
+T9,esp32_receive,Vehicle receiver interrupt & command parsing,4.50,Firmware micros() profiling,CONFIGURED_BENCHMARK
+T10,motor_command,LEDC PWM duty cycle update on driver pins,1.20,Hardware Timer,MEASURED_FIRMWARE
+T11,observable_response,Motor armature mechanical torque response,14.00,High-speed video / Current shunt,CONFIGURED_BENCHMARK
+total_e2e_reaction_budget,complete_loop,Full closed-loop perception-to-actuation,124.00,Sum of stages T1 to T11,DERIVED_BUDGET_124MS

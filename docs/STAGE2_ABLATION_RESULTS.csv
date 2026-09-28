@@ -1,0 +1,8 @@
+Level,Name,Description,Production_Tonnes,Throughput_VPH,Safety_Violations,Safe_Speed_Violations,Headway_Violations,Clamped_Commands,Average_Queue,Peak_Queue,Average_Utilization_Pct,Average_Speed_MPS,Estimated_Travel_Time_S,Idle_Time_Pct,Hold_Actions,Release_Actions,Primary_Bottleneck
+LEVEL_-1,STOP_ALL,Conservative zero-motion shutdown,0.0,0.0,0,0,0,0,0.0,0.0,0.0,0.01,4000.0,99.7,0,0,ROAD_01_SHOVEL1_TO_INT1
+LEVEL_0,NO_INTELLIGENCE,Human Permissive (nominal 40 km/h fixed),183.0,24.0,2,2,0,3000,0.0,0.0,0.0,4.26,469.9,2.9,0,0,ROAD_03_INT1_TO_SWITCH1
+LEVEL_1,SAFETY_ONLY,Local reactive v_safe speed reduction only,183.0,24.0,2,2,0,0,0.0,0.0,0.0,4.26,469.9,2.9,0,0,ROAD_03_INT1_TO_SWITCH1
+LEVEL_2,SAFETY_CAPACITY,v_safe + safe headway H_safe + road capacity,183.0,24.0,2,2,0,0,0.0,0.0,0.0,4.26,469.9,2.9,0,0,ROAD_03_INT1_TO_SWITCH1
+LEVEL_3,SAFETY_CAPACITY_QUEUE,Safety + capacity + queue tracking,183.0,24.0,2,2,0,0,0.0,0.0,0.0,4.26,469.9,2.9,0,0,ROAD_03_INT1_TO_SWITCH1
+LEVEL_4,FOG_ORCHESTRATOR,Full causal chain + predictive virtual slots & HOLD/RELEASE,183.0,24.0,30,30,0,78,0.0,0.0,0.0,4.25,471.1,2.2,231,231,ROAD_03_INT1_TO_SWITCH1
+LEVEL_5,CHANCE_MPC,Chance-constrained stochastic MPC,183.0,24.0,0,0,0,11,0.0,0.0,0.0,3.19,627.3,0.2,0,0,ROAD_03_INT1_TO_SWITCH1

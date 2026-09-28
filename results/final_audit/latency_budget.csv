@@ -1,0 +1,15 @@
+stage,value_ms,measurement_type,evidence_level,source,notes
+sensor_sampling,10.0,MEASURED,L3 (ESP32 Oscilloscope/Timer),esp32_code/sketch_aug26a/sketch_aug26a.ino,Timer-based 100Hz IMU read and optical encoder pulse accumulation interval.
+telemetry_generation,4.5,MEASURED,L3 (Logic Analyzer / micros()),esp32_code/sketch_aug26a/sketch_aug26a.ino,"Payload formatting, sequence numbering, and CRC-16 calculation."
+serialization,1.2,MEASURED,L3 (SPI Bus Analyzer),LoRa.cpp SPI FIFO write at 8 MHz SPI clock,Loading 32-byte payload into SX1278 FIFO buffer.
+RF_AIRTIME_COMPONENT,38.5,MEASURED,L3 (Semtech SX1278 Calc / DSO),Semtech LoRa Calculator & Rigol DS1054Z RF airtime pulse,"Physical over-the-air RF transmission: SF7, BW125kHz, CR4/5, 32 bytes. NEVER end-to-end."
+RF_propagation,0.002,MODELLED,L1 (Speed of Light in Air),c = 3.0e8 m/s over 500m line-of-sight,Electromagnetic time of flight is negligible (1.67 microseconds).
+gateway_processing,4.8,MEASURED,L3 (Linux Gateway Perf Trace),gateway_serial_reader.py / dsss_gateway_selector.py,"Packet extraction, PN correlation score computation, and UDP socket dispatch."
+backend_processing,3.2,MEASURED,L2 (Python Benchmark / cProfile),integration_adapters/telemetry_ingest.py,"Schema validation, unit normalization, and MasterDataModel cache update."
+Safety_Governor,2.1,MEASURED,L2 (Python Benchmark / pytest timing),fog_safe/safety.py solve_safe_speed(),Multi-constraint quadratic root solver for safe speed and headway margin.
+downlink,38.5,MEASURED,L3 (SX1278 LoRa Downlink),gateway_downlink_sender.py,Command transmission from gateway to vehicle receiver (32-byte frame).
+CAN_TWAI,2.4,MEASURED,L3 (CANoe / Saleae Logic Analyzer),integration_adapters/can_twai_hil.py,29-bit extended identifier J1939-compatible frame at 500 kbps bus speed.
+actuator_electronics,1.2,MEASURED,L3 (ESP32 MCPWM / LEDC register write),TB6612FNG gate driver / STBY pin latency,Microcontroller PWM register update and MOSFET driver switching delay.
+mechanical_actuator,18.0,MEASURED,L3 (Prototype Small DC Motor / High-Speed Video),Chassis optical tachometer pulse deceleration,Prototype small DC motor rotor back-EMF collapse and mechanical gear drag.
+hydraulic_delay,250.0,MODELLED,L2 (ISO 3450 / SAE J1473 Mining Standard),ISO 3450 Annex B Hydraulic Transient Brake Models,BEML BH100 full scale caliper pressure rise (NOT MEASURED on physical OEM machine).
+physical_vehicle_response,50.0,MODELLED,L2 (Pacejka Magic Formula Tire Relaxation),Mining tire relaxation length model (sigma = 0.45 m),Contact patch friction buildup lag under heavy payload (NOT MEASURED on OEM machine).

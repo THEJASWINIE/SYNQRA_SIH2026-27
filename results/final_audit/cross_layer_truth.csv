@@ -1,0 +1,19 @@
+parameter,esp32_val,backend_val,operator_hmi_val,control_room_hmi_val,digital_twin_val,difference,allowed_delay_ms,cause,severity,status
+vehicle_id,TRUCK_02,TRUCK_02,TRUCK_02,TRUCK_02,TRUCK_02,0.0,43.5,Identity field preserved,NONE,PASS
+event_timestamp,1727180000.125,1727180000.125,1727180000.125,1727180000.125,1727180000.125,0.0,43.5,Telemetry timestamp preserved,NONE,PASS
+speed_mps,0.754,0.754,0.75,0.75,0.754,0.0,43.5,Kinematic conversion identical,NONE,PASS
+speed_kmh,2.71,2.7,2.7,2.7,2.7,0.0,43.5,km/h display projection,NONE,PASS
+safe_speed_mps,1.4,1.4,1.4,1.4,1.4,0.0,43.5,Governor output ceiling,NONE,PASS
+safe_speed_kmh,5.04,5.0,5.0,5.0,5.0,0.0,43.5,km/h safe speed ceiling,NONE,PASS
+commanded_speed_mps,0.754,0.754,0.75,0.75,0.754,0.0,43.5,Clamped speed command,NONE,PASS
+encoder_count,1000,1000,N/A (Shown as distance),N/A (Fleet View),1000,0.0,43.5,Display abstraction,INFO,PASS
+distance_m,5.451,5.451,5.451,5.5,5.451,0.0,43.5,Odometry track distance,NONE,PASS
+grade_pct,-4.0,-4.0,-4.0,-4.0,-4.0,0.0,43.5,Civil slope parameter,NONE,PASS
+visibility_m,45.0,45.0,45.0,45.0,45.0,0.0,43.5,Sensor visibility range,NONE,PASS
+rf_state,CONNECTED,CONNECTED,ONLINE,GW_01 (CONNECTED),CONNECTED,0.0,43.5,RF link status,NONE,PASS
+gateway_id,GW_01,GW_01,GW_01,GW_01,CONNECTED,0.0,43.5,Serving gateway identity,NONE,PASS
+rssi_dbm,-68.0,-68.0,-68.0,-68.0,-68.0,0.0,43.5,RF RSSI metric,NONE,PASS
+snr_db,9.5,9.5,9.5,9.5,9.5,0.0,43.5,RF SNR metric,NONE,PASS
+sensor_health,VALID,VALID,VALID,VALID,VALID,0.0,43.5,Sensor diagnostic quality,NONE,PASS
+safety_state,NORMAL,NORMAL,NORMAL,NORMAL,NORMAL,0.0,43.5,Safety governor mode,NONE,PASS
+safe_beacon_state,INACTIVE,INACTIVE,INACTIVE,False,INACTIVE,0.0,43.5,Safe Beacon status,NONE,PASS

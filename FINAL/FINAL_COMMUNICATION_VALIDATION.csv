@@ -1,0 +1,15 @@
+condition_id,description,communication_state,vehicle_motion_state,safe_speed_ceiling_mps,commanded_speed_mps,safety_invariant_preserved,fail_closed_behavior,evidence_level,architectural_notes
+A_NORMAL_GATEWAY,Nominal LoRa/DSSS Gateway + V2V,NORMAL_DSSS_GATEWAY,GOVERNED_NORMAL,5.12,5.12,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+B_GATEWAY_FAILURE,Gateway link lost; peer V2V active,V2V_LOCAL_DEGRADED,SAFE_CONVOY_DEFENSIVE,4.38,4.38,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+C_V2V_FAILURE,Peer V2V lost; central gateway active,GATEWAY_ONLY,GOVERNED_NORMAL,5.12,5.12,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+D_GATEWAY_V2V_FAIL,Simultaneous Gateway and V2V failure,SAFE_BEACON_FALLBACK,SAFE_DEFENSIVE_CRAWL,3.6,3.6,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+E_BEACON_FAILURE,Safe Beacon timeout (peer silence),COMM_LOSS,SAFE_LOCAL_AUTONOMOUS,3.6,3.6,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+F_TOTAL_RF_FAILURE,Total RF silence (Zero comms),TOTAL_RF_LOSS,SAFE_LOCAL_AUTONOMOUS,3.6,3.6,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+G_PACKET_LOSS,50% burst packet loss injected,INTERMITTENT_LOSS,SAFE_CONVOY_DEFENSIVE,4.38,4.38,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+H_DUPLICATE_FRAME,Replayed duplicate sequence numbers,DUPLICATE_REJECTED,GOVERNED_NORMAL,5.12,5.12,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+I_REPLAY_ATTACK,Old timestamp command injection,REPLAY_REJECTED,GOVERNED_NORMAL,5.12,5.12,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+J_OUT_OF_ORDER,Disordered sequence reception,DISORDER_NORMALIZED,GOVERNED_NORMAL,5.12,5.12,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+K_MALFORMED_FRAME,CRC mismatch / corrupted payload,FRAME_DISCARDED,GOVERNED_NORMAL,5.12,5.12,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+L_STALE_FRAME,Frame age > 150 ms watchdog expiry,STALE_TIMEOUT,FAIL_CLOSED_STOP,0.0,0.0,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+M_POWER_INTERRUPT,Microcontroller reset / brownout,INITIALIZING,FAIL_CLOSED_STOP,0.0,0.0,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state
+N_RECOVERY_RESYNC,Gateway restoration (N >= 2 frames),RECOVERY_SYNC,GOVERNED_RAMP_UP,4.0,4.0,True,True,L7_BENCH_MEASURED,Communication failure strictly separated from vehicle safety state

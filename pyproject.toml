@@ -1,0 +1,16 @@
+[tool.pyright]
+include = [
+    ".",
+    "SYNQRA_SIH2026-27-main",
+    "SYNQRA_SIH2026-27-HMI/backend",
+    "tests"
+]
+extraPaths = [
+    ".",
+    "SYNQRA_SIH2026-27-main",
+    "SYNQRA_SIH2026-27-HMI/backend"
+]
+reportMissingImports = "none"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

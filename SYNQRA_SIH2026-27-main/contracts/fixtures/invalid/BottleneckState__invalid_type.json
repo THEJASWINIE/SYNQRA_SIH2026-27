@@ -1,0 +1,13 @@
+{
+  "node_id": "N-1",
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "lambda_vph": null,
+  "mu_vph": null,
+  "queue": null,
+  "queue_max": null,
+  "utilization": null,
+  "criticality": "LOW",
+  "bottleneck_score": "high",
+  "queue_history": null,
+  "queue_forecast": null
+}

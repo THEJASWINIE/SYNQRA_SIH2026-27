@@ -1,0 +1,107 @@
+﻿# REPRODUCIBILITY CONFIGURATION
+## FOG-ORCHESTRATOR 2.0 — Sensor Degradation Benchmark
+## sensor_degradation_benchmark_config.yaml
+## Date: 2026-09-21
+## Status: DESIGN — to be used when benchmark is executed after implementation
+
+benchmark:
+  name: "Sensor Degradation Benchmark SD-1.0"
+  version: "1.0.0"
+  seeds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+  duration_s: 7200
+  n_trucks: 6
+  grade_pct: -8.0
+  base_visibility_m: 12.0
+  mass_loaded_kg: 165500.0
+  mu_effective: 0.35
+  s_base_m: 5.0
+  tau_total_s: 0.8
+
+scenarios:
+  D0:
+    type: NONE
+    params: {}
+    description: "Baseline - no degradation injected"
+  D1:
+    type: DROPOUT
+    params: {rate: 0.10}
+    description: "10% random packet dropout on visibility stream"
+  D2:
+    type: DROPOUT
+    params: {rate: 0.25}
+    description: "25% random packet dropout"
+  D3:
+    type: DROPOUT
+    params: {rate: 0.50}
+    description: "50% random packet dropout"
+  D4:
+    type: DROPOUT
+    params: {rate: 0.75}
+    description: "75% random packet dropout"
+  D5:
+    type: STALE
+    params: {start_s: 1800, duration_s: 3600}
+    description: "Visibility stream stops at t=1800s for 3600s"
+  D6:
+    type: STUCK_AT
+    params: {start_s: 1800, duration_s: 3600, true_vis_final_m: 5.0}
+    description: "Sensor locks to last value while true vis drops to 5m"
+  D7:
+    type: BIAS
+    params: {offset_m: 15.0, true_vis_m: 12.0}
+    description: "CLASS C LIMITATION - sensor over-reads by 15m constantly"
+    expected_result: "UNDETECTABLE - unsafe commands expected - DOCUMENT AS LIMITATION"
+  D8:
+    type: NOISE
+    params: {std_m: 10.0}
+    description: "Gaussian noise sigma=10m added to visibility"
+  D9:
+    type: CONFLICT
+    params: {source_B_vis_m: 8.0}
+    description: "Simulated second source disagrees - uses min(A,B)"
+    note: "Requires second-source simulation injection"
+  D10:
+    type: INTERMITTENT
+    params: {valid_s: 10, absent_s: 10}
+    description: "Alternating 10s valid / 10s absent throughout run"
+  D11:
+    type: COMM_LOSS
+    params: {start_s: 3600, duration_s: 600}
+    description: "Full communication loss for 600s - local safety must persist"
+  D12:
+    type: FULL_LOSS
+    params: {start_s: 1800}
+    description: "All environmental data ceases permanently at t=1800s"
+
+health_config:
+  T_DEGRADED_ENV_s: 30.0
+  T_STALE_ENV_s: 60.0
+  T_GRACE_PERIOD_s: 120.0
+  T_STUCK_MIN_s: 300.0
+  STUCK_THRESHOLD: 0.1
+  NOISE_THRESHOLD_m: 15.0
+  CONFLICT_THRESHOLD_m: 15.0
+  V_MAX_PLAUSIBLE_m: 2000.0
+  V_MIN_PLAUSIBLE_m: 0.5
+  DEGRADED_FACTOR: 0.7
+  STALE_FACTOR: 0.5
+  R_MIN_m: 5.0
+  R_UNAVAILABLE_MIN_m: 8.0
+  RECOVERY_HYSTERESIS_FROM_STALE: 2
+  RECOVERY_HYSTERESIS_FROM_UNAVAILABLE: 3
+
+success_criteria:
+  SC1_safety: "unsafe_commands = 0 for D0-D6 D8-D12"
+  SC2_detection: "detection_latency_s <= T_STALE_ENV + 1 cycle for D5 D10"
+  SC3_conservative: "r_effective_mean < base_visibility_m for DEGRADED/STALE runs"
+  SC4_comm: "unsafe_commands = 0 during D11 comm loss window"
+  SC5_conflict: "r_effective = min(A,B) in D9"
+  SC6_no_artifact: "throughput D0+health within 2pct of canonical D0"
+  SC7_complexity: "EnvironmentalDataHealth LOC <= 250"
+  SC8_reproducible: "same seed produces identical results"
+  SC9_limitation: "D7 documented as NOT DETECTABLE, not as test failure"
+
+evidence_classification:
+  all_results: "SIMULATION - health layer modeled"
+  canonical_comparison: "SIMULATION - canonical Phase 7"
+  physical_validation: "NOT PERFORMED - DEPLOYMENT REQUIREMENT"

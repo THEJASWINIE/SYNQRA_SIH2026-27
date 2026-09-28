@@ -1,0 +1,635 @@
+﻿INFO:     Started server process [19908]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52452 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     192.168.0.111:53208 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     192.168.137.185:52533 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51732 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60145 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51681 - "WebSocket /api/ws" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:53809 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60145 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:51732 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60145 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:51732 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54842 - "WebSocket /api/ws" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:51732 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60145 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:51732 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51732 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:60145 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60215 - "WebSocket /api/ws" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:57457 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:52921 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53809 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:61624 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     192.168.137.185:59784 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57830 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:60614 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:64889 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52827 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:49943 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.43:60013 - "GET /api/hardware/sequence?vehicle_id=TRUCK_01 HTTP/1.1" 200 OK
+INFO:     192.168.137.43:60014 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     192.168.137.43:60015 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     192.168.137.43:60016 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     192.168.137.43:60017 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58188 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.43:60018 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.43:60019 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=11.751 for odometry update on TRUCK_01
+INFO:     192.168.137.43:60020 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=13.822 for odometry update on TRUCK_01
+INFO:     192.168.137.43:60021 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:64146 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:61407 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49985 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49985 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50757 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50757 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50757 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50757 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54019 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54019 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54019 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54019 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54019 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:63430 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54019 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54019 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.43:51475 - "GET /api/hardware/sequence?vehicle_id=TRUCK_01 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54019 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56262 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56262 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56262 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=110.615 for odometry update on TRUCK_01
+INFO:     192.168.137.43:51476 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=112.616 for odometry update on TRUCK_01
+INFO:     192.168.137.43:51477 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=114.620 for odometry update on TRUCK_01
+INFO:     192.168.137.43:51478 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=116.620 for odometry update on TRUCK_01
+INFO:     192.168.137.43:51479 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=118.668 for odometry update on TRUCK_01
+INFO:     192.168.137.43:51480 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52757 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56971 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56816 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56816 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51511 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:51511 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61919 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61919 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60385 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:60385 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60385 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:60385 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61418 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61418 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50311 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:60632 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49171 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49171 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49171 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49171 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57536 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49171 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49171 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49171 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49171 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49171 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49171 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49171 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62090 - "GET /api/truck/TRUCK_01 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55162 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53597 - "GET /api/vehicles HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59768 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58259 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54431 - "WebSocket /api/ws" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50060 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:50060 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53510 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53510 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:60331 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49685 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53872 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54047 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54047 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54047 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     192.168.137.185:50225 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     192.168.137.185:61950 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51745 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53026 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53026 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:64855 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:64855 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:63703 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56099 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56099 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56099 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57962 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:53972 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.185:50701 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     192.168.137.185:59516 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     192.168.137.185:54949 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58473 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58473 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58473 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     192.168.137.185:56218 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     192.168.137.185:60357 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     192.168.137.185:61429 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58338 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:58338 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58338 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:51104 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51104 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     192.168.137.43:49706 - "GET /api/hardware/sequence?vehicle_id=TRUCK_01 HTTP/1.1" 200 OK
+Invalid dt=722.496 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49707 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=724.218 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49708 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=726.215 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49709 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=728.216 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49710 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=730.222 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49711 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=732.227 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49712 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=734.247 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49713 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+Invalid dt=736.222 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49714 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=738.225 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49715 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=740.314 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49716 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=742.264 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49717 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=744.270 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49718 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=746.279 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49719 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=748.301 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49720 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=750.269 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49721 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=752.273 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49722 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=754.269 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49723 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=756.276 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49724 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=758.274 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49725 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=760.272 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49726 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=762.267 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49727 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=764.583 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49728 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=766.528 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49729 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=768.268 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49730 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=770.285 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49731 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=772.273 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49732 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=774.413 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49733 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=776.564 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49734 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=778.303 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49735 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=780.268 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49736 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=782.311 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49737 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=784.554 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49738 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=786.410 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49739 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=788.273 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49740 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=790.265 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49741 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=792.274 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49742 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=794.381 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49743 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=796.284 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49744 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=798.271 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49745 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=800.524 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49746 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=802.274 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49747 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=804.271 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49748 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=806.373 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49749 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=808.279 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49750 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=810.358 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49751 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=812.279 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49752 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=814.275 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49753 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=816.276 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49754 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=818.279 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49755 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=820.280 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49756 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=822.277 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49757 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=824.294 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49758 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=826.276 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49759 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=828.277 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49760 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=830.325 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49761 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=832.474 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49762 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=834.277 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49763 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=836.278 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49764 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=838.309 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49765 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+Invalid dt=840.290 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49766 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+Invalid dt=842.278 for odometry update on TRUCK_01
+INFO:     192.168.137.43:49767 - "POST /api/hardware/telemetry HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52286 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57490 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57490 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57490 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57490 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57490 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57490 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57490 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57490 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57490 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:57490 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61746 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61746 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61746 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61746 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61746 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61746 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61746 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61746 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61746 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61746 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61746 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61746 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61746 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:61746 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49666 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49666 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54767 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54767 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56251 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56251 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60504 - "GET /api/observability HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60504 - "GET /api/operator/context HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:60504 - "GET /api/observability HTTP/1.1" 200 OK

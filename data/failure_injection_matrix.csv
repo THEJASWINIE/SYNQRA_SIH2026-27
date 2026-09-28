@@ -1,0 +1,13 @@
+failure_mode,description,detection_time_s,resulting_fallback_state,enforced_speed_mps,safety_invariant_held
+GATEWAY_TOTAL_LOSS,Gateway radio severed,1.05,NO_GATEWAY,0.0,True
+V2V_BEACON_DROP,Direct peer beacon lost,0.35,DEGRADED_COMMUNICATION,4.5,True
+STALE_COMMAND_INJECTION,Command timestamp delta > 1.0s,0.05,STALE_COMMAND,4.5,True
+DUPLICATE_REPLAY,Command sequence rolled back,0.05,INVALID_COMMAND,4.5,True
+OUT_OF_ORDER_PACKET,Sequence jumps backward,0.05,INVALID_COMMAND,4.5,True
+CORRUPTED_PAYLOAD,Checksum/CRC failure,0.02,INVALID_COMMAND,4.5,True
+NEGATIVE_SPEED_CMD,Negative requested speed,0.05,NORMAL,0.0,True
+NAN_SPEED_CMD,NaN floating point injection,0.05,INVALID_COMMAND,0.0,True
+SENSOR_DROPOUT,Visibility estimation lost,0.1,EMERGENCY_STOP,0.0,True
+DOWN_GRADE_RUNAWAY,Sudden low friction mu=0.15,0.05,UNSAFE_COMMAND,1.5,True
+SUDDEN_DENSE_FOG,Visibility drops from 50m to 3m,0.1,EMERGENCY_STOP,0.0,True
+BACKEND_SERVER_DISCONNECT,FastAPI server drops,1.05,NO_GATEWAY,4.5,True

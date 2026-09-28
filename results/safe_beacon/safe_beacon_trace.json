@@ -1,0 +1,107 @@
+[
+  {
+    "time_s": 100.1,
+    "timed_out": false,
+    "system_state": "NORMAL",
+    "is_standalone_active": false,
+    "beacon_packet": "BEACON,TRUCK_02,1,NORMAL,100.100,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 100.2,
+    "timed_out": false,
+    "system_state": "NORMAL",
+    "is_standalone_active": false,
+    "beacon_packet": "BEACON,TRUCK_02,2,NORMAL,100.200,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 100.3,
+    "timed_out": false,
+    "system_state": "NORMAL",
+    "is_standalone_active": false,
+    "beacon_packet": "BEACON,TRUCK_02,3,NORMAL,100.300,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 100.4,
+    "timed_out": false,
+    "system_state": "NORMAL",
+    "is_standalone_active": false,
+    "beacon_packet": "BEACON,TRUCK_02,4,NORMAL,100.400,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 100.5,
+    "timed_out": false,
+    "system_state": "NORMAL",
+    "is_standalone_active": false,
+    "beacon_packet": "BEACON,TRUCK_02,5,NORMAL,100.500,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 100.6,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,6,DEGRADED,100.600,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 100.7,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,7,DEGRADED,100.700,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 100.8,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,8,DEGRADED,100.800,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 100.9,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,9,DEGRADED,100.900,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 101.0,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,10,DEGRADED,101.000,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 101.1,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,11,DEGRADED,101.100,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 101.2,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,12,DEGRADED,101.200,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 101.3,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,13,DEGRADED,101.300,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 101.4,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,14,DEGRADED,101.400,ZONE_RAMP_D5"
+  },
+  {
+    "time_s": 101.5,
+    "timed_out": true,
+    "system_state": "COMM_LOSS",
+    "is_standalone_active": true,
+    "beacon_packet": "BEACON,TRUCK_02,15,DEGRADED,101.500,ZONE_RAMP_D5"
+  }
+]

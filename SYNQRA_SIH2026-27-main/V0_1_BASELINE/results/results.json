@@ -1,0 +1,51 @@
+{
+    "DEMO_01_CLEAR": {
+        "tonnes_hauled": 546.0,
+        "safety_violations_count": 0,
+        "average_speed_kmh": 5.878618336936912,
+        "max_crusher_queue": 1,
+        "max_shovel_queue": 4
+    },
+    "DEMO_02_DENSE_FOG": {
+        "tonnes_hauled": 546.0,
+        "safety_violations_count": 0,
+        "average_speed_kmh": 5.346220636404534,
+        "max_crusher_queue": 1,
+        "max_shovel_queue": 4
+    },
+    "DEMO_03_FOG_RECOVERY": {
+        "tonnes_hauled": 546.0,
+        "safety_violations_count": 0,
+        "average_speed_kmh": 5.84945406652585,
+        "max_crusher_queue": 2,
+        "max_shovel_queue": 4
+    },
+    "DEMO_04_CRUSHER_BOTTLENECK": {
+        "tonnes_hauled": 364.0,
+        "safety_violations_count": 0,
+        "average_speed_kmh": 4.772339029381532,
+        "max_crusher_queue": 3,
+        "max_shovel_queue": 4
+    },
+    "DEMO_05_ARRIVAL_SHAPING_OFF": {
+        "tonnes_hauled": 364.0,
+        "safety_violations_count": 0,
+        "average_speed_kmh": 4.772339029381532,
+        "max_crusher_queue": 3,
+        "max_shovel_queue": 4
+    },
+    "DEMO_05_ARRIVAL_SHAPING_ON": {
+        "tonnes_hauled": 273.0,
+        "safety_violations_count": 0,
+        "average_speed_kmh": 3.1667970552020828,
+        "max_crusher_queue": 1,
+        "max_shovel_queue": 4
+    },
+    "DEMO_06_FULL_VERTICAL_SLICE": {
+        "tonnes_hauled": 364.0,
+        "safety_violations_count": 0,
+        "average_speed_kmh": 3.8387009482854615,
+        "max_crusher_queue": 2,
+        "max_shovel_queue": 4
+    }
+}

@@ -1,0 +1,16 @@
+evidence_id,claim,evidence_type,source,source_level,confidence,notes
+E01,visibility_m has no freshness check before entering r_effective,CODE_INSPECTION,fog_safe/environment.py fog_safe/safety.py,L1 (primary source),HIGH,EnvironmentState constructor takes r_effective directly with no timestamp or quality field
+E02,TelemetryQualityFilter guards vehicle telemetry only,CODE_INSPECTION,integration_adapters/telemetry_quality_filter.py,L1 (primary source),HIGH,filter_telemetry() processes vehicle packets; no visibility_m input path
+E03,solve_safe_speed fails closed on mu<=0,CODE_INSPECTION,fog_safe/safety.py:114-116,L1 (primary source),HIGH,Explicit guard: if not isfinite(mu) or mu<=0: return _invalid_friction_result
+E04,v_safe at r_eff=12m ≈ 2.70 m/s (canonical params),MODELLED,fog_safe.safety.solve_safe_speed (canonical Phase 7 params),L1 (model),HIGH,Computed with mass=165500kg grade=-8% mu=0.35 tau=0.8s s_base=5.0m
+E05,v_safe at r_eff=50m ≈ 8.52 m/s (canonical params),MODELLED,fog_safe.safety.solve_safe_speed (canonical Phase 7 params),L1 (model),HIGH,Same conditions as E04; over-permission of +5.82 m/s demonstrated
+E06,BEML BH100 uses J1939 at 250 kbps,FACT PARTIAL,BEML documentation references web-verified; J1939 standard,L1 partial,MEDIUM,Specific PGN/SPN list for BH100 NOT verified from authoritative BEML source
+E07,NMDC uses on-site meteorological stations at Bailadila,FACT,NMDC ICCC documentation (public),L2,MEDIUM,Zone-level visibility NOT documented
+E08,Single weather station insufficient for open-pit zone visibility,FACT,Mining meteorology research literature,L5,HIGH,Multiple peer-reviewed sources confirm spatial variation
+E09,ISO 17757 applies to ASAMS not FMS orchestration,FACT,ISO 17757:2019 scope clause (verified),L1,HIGH,BH100 in standard config is human-operated; not ASAMS
+E10,IEC 61508 lambda_DU concept applies to Class C failures,FACT,IEC 61508 Part 1 (concept verified),L4,HIGH,Not a compliance mandate; guidance for fail-closed design
+E11,Phase 8 HIL verified I3 (local safety independent of comms loss),MEASURED,tests/test_phase8_hil.py 60 passed; experiments/run_phase8_hil_validation.py 105/105,L1 (bench measured),HIGH,D11 comm loss scenario extends this; already validated
+E12,TRUCK_02 speed field is PWM-derived not encoder-measured,FACT,telemetry_ingest.py:66-73; firmware comment cited,L1 (primary source),HIGH,Cannot be used as confirmed vehicle speed
+E13,Environmental data health is a partial gap in FMS literature,LITERATURE REVIEW,Multiple mining FMS papers reviewed; specific env-health-state not found,L5/L8,MEDIUM,Vehicle sensor monitoring is common; env data health state in FMS is partial gap
+E14,Class C (plausible-but-wrong) requires independent source,FACT,IEC 61508 lambda_DU; functional safety literature,L4/L5,HIGH,Cannot detect without second measurement; no second source on prototype
+E15,AHS vehicles implement degraded-mode safe speed,FACT PARTIAL,Komatsu FrontRunner Caterpillar Command (commercial docs),L1 partial,MEDIUM,Different sensor class (LiDAR/radar) vs meteorological vis; concept applies

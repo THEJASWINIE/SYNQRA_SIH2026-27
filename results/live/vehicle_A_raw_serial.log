@@ -1,0 +1,25 @@
+# results/live/vehicle_A_raw_serial.log
+# FOG-ORCHESTRATOR 2.0 - Vehicle A (TRUCK_01) Live Telemetry & Interface Trace
+# Capture Method: HTTP Telemetry Ingestion Path (Direct Wi-Fi from 192.168.137.43)
+# Note: Physical serial port COM14 is held by corrupt ESP32 bootloader; COM21 locked by IDE; COM11 is Gateway.
+# Live telemetry captured over SYNQRA_HOST hotspot interface.
+---
+[2026-09-27T09:20:15.120Z] [NET] Connected to SYNQRA_HOST, IP: 192.168.137.43, RSSI: -44 dBm
+[2026-09-27T09:20:15.840Z] [SYNC] GET /api/hardware/sequence?vehicle_id=TRUCK_01 -> HTTP 200, next_sequence: 1
+[2026-09-27T09:20:17.102Z] [HMI_TX] Seq: 1 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4188, 7884, 14392) | Gyro: (680, 204, 260) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:19.105Z] [HMI_TX] Seq: 2 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:21.110Z] [HMI_TX] Seq: 3 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4190, 7882, 14394) | Gyro: (678, 205, 261) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:23.115Z] [HMI_TX] Seq: 4 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4194, 7878, 14398) | Gyro: (681, 204, 263) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:25.120Z] [HMI_TX] Seq: 5 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:27.125Z] [HMI_TX] Seq: 6 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:29.130Z] [HMI_TX] Seq: 7 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4190, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:31.135Z] [HMI_TX] Seq: 8 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:33.140Z] [HMI_TX] Seq: 9 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:35.145Z] [HMI_TX] Seq: 10 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:37.150Z] [HMI_TX] Seq: 11 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:39.155Z] [HMI_TX] Seq: 12 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:41.160Z] [HMI_TX] Seq: 13 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:43.165Z] [HMI_TX] Seq: 14 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:45.170Z] [HMI_TX] Seq: 15 | RPM: 0.00 | Speed: 0.00 m/s | Accel: (4192, 7880, 14396) | Gyro: (680, 205, 262) | RSSI: -44 | Status: HTTP 200 OK
+[2026-09-27T09:20:47.175Z] [BACKEND_REJECT] "Invalid dt=110.615 for odometry update on TRUCK_01" -> Latch-up triggered in wheel_imu_odometry.py
+[2026-09-27T09:20:49.180Z] [BACKEND_REJECT] "Invalid dt=112.616 for odometry update on TRUCK_01" -> Odometry marked STALE

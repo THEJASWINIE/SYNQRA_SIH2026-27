@@ -1,0 +1,19 @@
+{
+  "physical_hardware": "Semtech SX1278 (Ra-02) 433 MHz LoRa",
+  "carrier_freq_mhz": 433.0,
+  "bandwidth_khz": 125,
+  "spreading_factor": 7,
+  "coding_rate": "4/5",
+  "nominal_airtime_ms": 38.5,
+  "measured_rssi_range_dbm": [
+    -65.0,
+    -105.0
+  ],
+  "measured_snr_range_db": [
+    -5.0,
+    12.0
+  ],
+  "gateway_handover_hysteresis": 0.18,
+  "gateway_persistence_cycles": 5,
+  "open_safety_dependency": "Single-transceiver half-duplex blocking during Safe Beacon TX (38.5 ms)"
+}

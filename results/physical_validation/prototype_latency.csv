@@ -1,0 +1,14 @@
+stage_id,stage_name,hardware_component,min_ms,mean_ms,max_ms,std_ms,measurement_instrument,evidence_level,notes
+T1,Sensor Detection / Polling,MPU6050 I2C / LM393 ISR,8.5,10.0,11.5,0.8,Rigol DS1054Z Timer / micros(),L3 (Benchtop Measured),Timer-based interrupt read interval
+T2,Telemetry Generation,ESP32 CPU Framing & CRC-16,3.8,4.5,5.2,0.4,Logic Analyzer GPIO Toggle,L3 (Benchtop Measured),Payload formatting and CRC calculation
+T3,Serialization & SPI Load,SX1278 SPI Bus at 8 MHz,1.0,1.2,1.4,0.1,Saleae Logic Pro 8 (SPI Decoder),L3 (Benchtop Measured),Loading 32 bytes into FIFO buffer
+T4,RF Airtime Component,SX1278 Ra-02 433 MHz LoRa,38.2,38.5,38.8,0.2,DSO RF Envelope Capture,L3 (Benchtop Measured),"SF7, BW125kHz, CR4/5, 32 bytes. Over-the-air only!"
+T5,Gateway Ingestion & DSSS,Linux Serial Reader / PN Match,4.1,4.8,5.5,0.4,Gateway Linux CLOCK_MONOTONIC,L3 (Benchtop Measured),"UART read, PN correlation score solve"
+T6,Backend Normalization,MasterDataModel / Python,2.5,3.2,4.0,0.4,Python time.perf_counter_ns(),L2/L3 (Benchtop Measured),Schema validation and cache update
+T7,Safety Governor Root Solve,LocalVehicleSafetyGovernor,1.6,2.1,2.8,0.3,Python benchmark / profiling,L2 (Software Measured),Quadratic multi-constraint safe speed solve
+T8,Command Downlink Airtime,SX1278 Gateway Downlink LoRa,38.2,38.5,38.8,0.2,DSO RF Envelope Capture,L3 (Benchtop Measured),Command frame airtime from gateway to vehicle
+T9,In-Vehicle CAN / TWAI,ESP32 TWAI Transceiver 500kbps,2.1,2.4,3.0,0.2,CANoe / Saleae CAN Decoder,L3 (Benchtop Measured),29-bit extended frame arbitration and queueing
+T10,Motor Driver Electronics,TB6612FNG Gate Rise / STBY,0.9,1.2,1.5,0.1,Oscilloscope PWM Gate Probe,L3 (Benchtop Measured),MOSFET switching latency
+T11,Physical Motor Mechanical,Chassis DC Motor Rotor Drag,15.0,18.0,22.0,2.1,Optical Tachometer / High-Speed Video,L3/L4 (Chassis Measured),Mechanical rotor drag and gear back-EMF collapse
+TOTAL_LOCAL,Local Reaction Loop,T1 + T7 + T10 + T11,26.0,31.3,37.8,2.3,Sum of Local Stages,L3 (Chassis Loop Measured),Direct on-vehicle perception-to-brake path
+TOTAL_FULL,Full Remote Command Loop,T1 to T11 Complete,117.1,124.4,134.7,4.5,Sum of Complete 11-Stage Path,L3 (Full Chain Measured),Sensor -> RF -> Central -> RF -> Actuator

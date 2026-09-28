@@ -1,0 +1,222 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 — FINAL CANONICAL PHYSICS & PARAMETER MODEL
+# SIH 2026-27 | Problem Statement: SIH26007
+# Reference Vehicle: BEML BH100 Rigid Mining Haul Truck (100-tonne payload class)
+# Reference Mine Site: NMDC Bailadila Deposit-5 Iron Ore Mine
+# Status: FINAL EVIDENCE FREEZE (LOCKED & IMMUTABLE)
+# ==============================================================================
+
+metadata:
+  system_name: "FOG-ORCHESTRATOR 2.0"
+  phase: "FINAL_EVIDENCE_FREEZE"
+  version: "2.0.0"
+  freeze_date: "2026-09-19"
+  governing_standard: "DGMS Tech Circular / ISO 3450 Earth-Moving Machinery Braking"
+  reference_platform: "ESP32-WROOM-32D Dual-Core Microcontroller + CAN/TWAI 250 kbps"
+
+vehicle_kinematics_and_mass:
+  gross_operating_weight_loaded:
+    value: 165500.0
+    unit: "kg"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification Brochure (74.0 t tare + 91.5 t payload)"
+    notes: "Gross Vehicle Mass (GVM) under 100% rated payload"
+  tare_mass_unladen:
+    value: 74000.0
+    unit: "kg"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification Brochure"
+    notes: "Empty vehicle mass with rock body and FOPS/ROPS cabin"
+  payload_rated_nominal:
+    value: 91500.0
+    unit: "kg"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 Specification Sheet (91.5 metric tonnes)"
+    notes: "Nominal ore payload per haul cycle"
+  vehicle_length_bumper_to_bumper:
+    value: 10.525
+    unit: "m"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 General Dimensional Drawing"
+    notes: "Total length used in bumper-to-bumper space headway"
+  vehicle_width_operating:
+    value: 5.920
+    unit: "m"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 Dimensional Drawing"
+    notes: "Overall width across dual rear tires"
+  wheel_radius_loaded:
+    value: 1.450
+    unit: "m"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "27.00-R49 Mining Haulage Radial Tire Specification"
+    notes: "Static loaded rolling radius of rear drive wheels"
+
+longitudinal_dynamics_and_forces:
+  equation_of_motion: "m * dv/dt = F_drive + m*g*sin(theta) - F_roll - F_aero - F_retarder - F_brake"
+  gravity_standard:
+    value: 9.80665
+    unit: "m/s^2"
+    evidence_level: "L4_STANDARD"
+    source: "ISO 80000-3 Standard Acceleration of Free Fall"
+  rolling_resistance_coefficient_crr:
+    value: 0.025
+    unit: "dimensionless"
+    evidence_level: "L5_LITERATURE"
+    source: "Mining Haul Road Design Guidelines (Packed dry dirt/gravel with hematite fines)"
+    equation: "F_roll = C_rr * m * g * cos(theta)"
+  aerodynamic_drag_coefficient_cd:
+    value: 0.90
+    unit: "dimensionless"
+    evidence_level: "L5_LITERATURE"
+    source: "Heavy Bluff-Body Mining Truck Aerodynamics Literature"
+    equation: "F_aero = 0.5 * rho * C_d * A * v^2"
+  frontal_area_a:
+    value: 18.5
+    unit: "m^2"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 Projected Frontal Cross-Section"
+  air_density_rho:
+    value: 1.225
+    unit: "kg/m^3"
+    evidence_level: "L4_STANDARD"
+    source: "ISA Standard Atmosphere at Sea Level / Low Altitude"
+  tire_road_friction_nominal:
+    value: 0.35
+    unit: "dimensionless"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    classification: "conservative low-friction engineering assumption"
+    source: "Standard conservative baseline for compacted mine haul roads"
+    equation: "F_mu = mu * m * g * cos(theta)"
+  tire_road_friction_wet:
+    value: 0.30
+    unit: "dimensionless"
+    evidence_level: "L5_LITERATURE"
+    source: "Moist hematite clay slurry haul road surface"
+  tire_road_friction_monsoon_slick:
+    value: 0.25
+    unit: "dimensionless"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    source: "Saturated monsoon clay mud slick sensitivity limit"
+  maximum_rated_brake_force:
+    value: 550000.0
+    unit: "N"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "Reverse-derived from ISO 3450 stopping distance criteria on 165.5 t vehicle"
+    notes: "Total mechanical rim braking capability under dry adhesion"
+
+grade_and_inclination:
+  canonical_ramp_grade:
+    value: -0.08
+    unit: "dimensionless (-8% slope)"
+    sign_convention: "Negative is downhill, Positive is uphill"
+    angle_rad: -0.07983
+    angle_deg: -4.574
+    evidence_level: "L3_NMDC_DOCUMENTED"
+    source: "NMDC Bailadila Deposit-5 Main Haul Ramp Civil Survey"
+  uphill_return_grade:
+    value: 0.08
+    unit: "dimensionless (+8% slope)"
+    evidence_level: "L3_NMDC_DOCUMENTED"
+    source: "Empty return haul road grade"
+
+braking_regimes_and_deceleration:
+  emergency_deceleration_canonical:
+    value: 2.7856
+    unit: "m/s^2"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "First-principles force balance: m=165.5t, theta=-8%, Crr=0.025, F_brake=550kN"
+    equation: "a_dec = (F_brake + F_roll + m*g*sin(theta)) / m"
+    notes: "Governing net emergency deceleration on -8% ramp under nominal friction"
+  emergency_deceleration_legacy:
+    value: 2.7466
+    unit: "m/s^2"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "Legacy force balance (m=165.0t, Crr=0.020, g=9.81 m/s^2) retained in baseline tests"
+    notes: "Conservative legacy derived value"
+  service_deceleration_modeled:
+    value: 1.2000
+    unit: "m/s^2"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    source: "Open-cast haulage literature on driver comfort and ore spillage prevention"
+    notes: "Modeled service brake deceleration ceiling. NOT statutory ISO 3450 limit."
+
+latency_and_timing_budget:
+  sensor_sampling_period:
+    value: 0.025
+    unit: "s (25 ms)"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "ESP32 IMU / Wheel speed telemetry acquisition and filtering cycle"
+  tier1_governor_decision_interval:
+    value: 0.050
+    unit: "s (50 ms)"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "Deterministic 20 Hz periodic task tick in FreeRTOS"
+  can_twai_wire_and_queue_delay:
+    value: 0.0126
+    unit: "s (12.6 ms)"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "ESP32 TWAI driver 250 kbps bench testbed under chassis traffic"
+  actuator_pneumatic_buildup_delay:
+    value: 0.2000
+    unit: "s (200 ms nominal, [200, 350] ms bounds)"
+    evidence_level: "L6_MODELED"
+    source: "Heavy vehicle pneumatic brake build-up literature (SAE J1452 / ISO 3450)"
+    notes: "Time to 90% full hydraulic/pneumatic pressure. NOT measured on live BH100 chassis."
+  p99_total_command_latency_budget:
+    value: 0.4371
+    unit: "s (437.1 ms)"
+    evidence_level: "L7_L6_COMBINED"
+    source: "Conservatively budgeted total perception-reaction-actuation time"
+    notes: "Used as canonical tau in stopping envelope formulation"
+
+stopping_envelope_and_safety_governor:
+  stopping_distance_formula: "S_stop = v * tau_total + (v^2) / (2 * a_dec)"
+  base_safety_buffer:
+    value: 5.0
+    unit: "m"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    source: "Geometric design margin: half truck length (5.26m) and cab blind-spot clearance"
+    notes: "Defensive stopping clearance. S_base = 5.0m."
+  safety_invariant: "S_stop + S_base <= R_effective"
+  safe_speed_envelope_formula: "v_safe = min(v_stop, v_retarder, v_traction, v_curve, v_mine)"
+  v_stop_analytical_root: "v_stop = -a*tau + sqrt((a*tau)^2 + 2*a*(R_effective - S_base))"
+  command_governor_clamp: "v_command = min(v_dispatch, v_safe)"
+  blindout_halt_threshold:
+    value: 5.0
+    unit: "m"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "Quadratic root yields v_safe = 0.0 m/s when R_effective <= S_base"
+    action: "Controlled vehicle halt (staged state)"
+
+space_headway_and_road_capacity:
+  space_headway_formula: "H_space = S_stop + S_base + L_truck"
+  canonical_dense_fog_headway:
+    value: 22.52
+    unit: "m"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "H = 6.99m (stopping at 5.12 m/s) + 5.0m (buffer) + 10.525m (truck) = 22.52m"
+  theoretical_road_flow_formula: "C_road = 3600 * v_safe / H_space"
+  theoretical_kinematic_flux_dense_fog:
+    value: 817.8
+    unit: "VPH"
+    evidence_level: "L6_ANALYTICAL"
+    notes: "Theoretical pipe flow flux; does NOT equal delivered mine production"
+  theoretical_kinematic_flux_service:
+    value: 587.2
+    unit: "VPH"
+    evidence_level: "L6_ANALYTICAL"
+    notes: "Theoretical service road flow flux at 1.2 m/s^2 comfortable decel ceiling (v=3.61 m/s, H=22.13 m). ROAD FLOW ONLY."
+
+mine_crusher_bottleneck:
+  crusher_dump_cycle:
+    value: 200.0
+    unit: "s"
+    evidence_level: "L3_L6_OPERATIONAL_MODEL"
+    source: "NMDC Bailadila Deposit-5 primary gyratory crusher operational cycle"
+  crusher_physical_intake_ceiling:
+    value: 1647.0
+    unit: "TPH"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "(3600 s / 200 s) * 91.5 t = 18 dumps/hr * 91.5 t = 1647.0 TPH"
+    notes: "Hard physical barrier on mine haulage output"

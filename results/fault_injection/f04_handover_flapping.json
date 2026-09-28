@@ -1,0 +1,8 @@
+{
+  "fault_id": "F04",
+  "fault_name": "Gateway Handover Flapping",
+  "detected_state": "HANDOVER_PENDING",
+  "safety_transition": "Hysteresis Lock (0.18 margin)",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.990804Z"
+}

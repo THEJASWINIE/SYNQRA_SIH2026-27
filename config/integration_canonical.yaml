@@ -1,0 +1,232 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 — INTEGRATION CANONICAL PARAMETERS
+# SIH 2026-27 | Problem Statement: SIH26007
+# Authoritative Single Source of Truth for Hardware-Software Integration (Phase 9)
+# ==============================================================================
+
+metadata:
+  system_name: "FOG-ORCHESTRATOR 2.0"
+  phase: "PHASE_9_HARDWARE_SOFTWARE_INTEGRATION"
+  site: "NMDC Bailadila Deposit-5 Iron Ore Mine"
+  vehicle: "BEML BH100 Rigid Haul Dumper"
+  status: "CANONICAL_LOCKED"
+
+vehicle:
+  loaded_gross_mass:
+    value: 165500.0
+    unit: "kg"
+    source: "BEML BH100 Technical Specification Brochure (74.0 t tare + 91.5 t payload)"
+    status: "OEM-DOCUMENTED"
+
+  tare_mass:
+    value: 74000.0
+    unit: "kg"
+    source: "BEML BH100 Technical Specification Brochure"
+    status: "OEM-DOCUMENTED"
+
+  payload:
+    value: 91500.0
+    unit: "kg"
+    source: "BEML BH100 Datasheet (91.5 metric tonnes nominal payload)"
+    status: "OEM-DOCUMENTED"
+
+  length:
+    value: 10.525
+    unit: "m"
+    source: "BEML BH100 General Dimensions Drawing"
+    status: "OEM-DOCUMENTED"
+
+  width:
+    value: 5.920
+    unit: "m"
+    source: "BEML BH100 General Dimensions Drawing"
+    status: "OEM-DOCUMENTED"
+
+  wheel_radius:
+    value: 1.450
+    unit: "m"
+    source: "27.00-R49 Mining Haulage Radial Tire Specification"
+    status: "OEM-DOCUMENTED"
+
+braking_and_retarder:
+  braking_force:
+    value: 550000.0
+    unit: "N"
+    source: "Reverse-derived from ISO 3450 level stopping distance criteria (a approx 3.32 m/s^2)"
+    status: "MODELED"
+
+  retarder_capability:
+    value: 1200000.0
+    unit: "W"
+    source: "Allison / BEML hydraulic retarder continuous absorption rating (1200 kW)"
+    status: "OEM-DOCUMENTED"
+
+  emergency_deceleration:
+    value: 2.7856
+    unit: "m/s^2"
+    source: "Force balance on -8% grade: m=165.5t, Crr=0.025, F_brake=550kN, g=9.80665 m/s^2"
+    status: "MODELED"
+
+  service_deceleration:
+    value: 1.20
+    unit: "m/s^2"
+    source: "Open-cast haulage operator comfort and spillage prevention guideline"
+    status: "ASSUMED"
+
+reaction_latency_decomposition:
+  sensor_latency:
+    value: 25.0
+    unit: "ms"
+    source: "ESP32 ADC / MPU6050 IMU periodic sampling and filtering loop"
+    status: "MEASURED"
+
+  rf_communication_latency:
+    value: 41.2
+    unit: "ms"
+    source: "Semtech SX1278 433 MHz LoRa bench testbed round-trip over-the-air measurement"
+    status: "MEASURED"
+
+  gateway_processing_latency:
+    value: 14.8
+    unit: "ms"
+    source: "ESP32 Gateway packet extraction, JSON formatting and serialization"
+    status: "MEASURED"
+
+  decision_latency:
+    value: 50.0
+    unit: "ms"
+    source: "ESP32 Tier-1 Local Safety Governor 20 Hz periodic task cycle"
+    status: "MEASURED"
+
+  can_twai_latency:
+    value: 50.0
+    unit: "ms"
+    source: "ESP32 TWAI driver 250 kbps bench testbed under 75% bus load (P99)"
+    status: "MEASURED"
+
+  actuator_delay:
+    value: 250.0
+    unit: "ms"
+    source: "ISO 3450 / SAE J1452 pneumatic/hydraulic brake pressure build-up standard. UNMEASURED on physical truck."
+    status: "ASSUMED"
+
+  total_reaction_latency_p99:
+    value: 437.1
+    unit: "ms"
+    source: "Analytical sum of measured acquisition pipeline (187.1 ms) + actuator assumption (250.0 ms)"
+    status: "MODELED"
+
+  max_design_safety_horizon:
+    value: 800.0
+    unit: "ms"
+    source: "DGMS / ISO 3450 standard perception-reaction design boundary for heavy mining equipment"
+    status: "LITERATURE-DERIVED"
+
+friction_and_road:
+  friction_dry:
+    value: 0.35
+    unit: "dimensionless"
+    source: "Compacted hematite crushed rock haul road surface standard"
+    status: "LITERATURE-DERIVED"
+
+  friction_wet:
+    value: 0.30
+    unit: "dimensionless"
+    source: "Moist hematite clay slurry haul road surface standard"
+    status: "LITERATURE-DERIVED"
+
+  friction_worst_case:
+    value: 0.25
+    unit: "dimensionless"
+    source: "Saturated monsoon mud slick haul road sensitivity point"
+    status: "ASSUMED"
+
+  friction_adhesion_crossover:
+    value: 0.3400
+    unit: "dimensionless"
+    source: "First-principles solution: F_brake / (m * g * cos(theta)) = 550kN / (165.5t * 9.80665 * cos(0.07983))"
+    status: "MODELED"
+
+  rolling_resistance_crr:
+    value: 0.025
+    unit: "dimensionless"
+    source: "Mining Haul Road Design Guidelines for graded hematite fines dirt/gravel"
+    status: "LITERATURE-DERIVED"
+
+  canonical_grade:
+    value: -0.08
+    unit: "dimensionless"
+    source: "NMDC Bailadila Deposit-5 Main Haul Ramp civil design survey (-8.0% downhill)"
+    status: "OEM-DOCUMENTED"
+
+  grade_convention:
+    value: "downhill_negative_uphill_positive"
+    unit: "string"
+    source: "Project Grade Convention Standard (Bijective mapping)"
+    status: "OEM-DOCUMENTED"
+
+stopping_distance_model:
+  equation: "S_stop = v * tau_total + v^2 / (2 * a_dec) + S_base"
+  unit: "m"
+  source: "First-principles kinematic stopping formulation under reaction lag and constant deceleration"
+  status: "MODELED"
+
+  base_safety_buffer:
+    value: 5.0
+    unit: "m"
+    source: "Geometric clearance margin (half truck length 5.26m and cab blind spot)"
+    status: "ASSUMED"
+
+safe_speed_model:
+  equation: "v_safe = min(v_stop, v_retarder, v_traction, v_curve, v_mine)"
+  unit: "m/s"
+  source: "FOG-ORCHESTRATOR multi-constraint safe speed envelope formulation"
+  status: "MODELED"
+
+  blindout_visibility_threshold:
+    value: 5.0
+    unit: "m"
+    source: "Sightline R <= S_base (5.0m) exhausts safety buffer; forces v_safe = 0.0 m/s"
+    status: "MODELED"
+
+  lookup_table_mps:
+    visibility_3m:
+      value: 0.0
+      unit: "m/s"
+      source: "Controlled vehicle halt (blindout zone)"
+      status: "MODELED"
+    visibility_4m:
+      value: 0.0
+      unit: "m/s"
+      source: "Controlled vehicle halt (blindout zone)"
+      status: "MODELED"
+    visibility_5m:
+      value: 0.0
+      unit: "m/s"
+      source: "Controlled vehicle halt at blindout boundary"
+      status: "MODELED"
+    visibility_8m:
+      value: 3.52
+      unit: "m/s"
+      source: "Dense fog crawling safe speed (12.67 km/h)"
+      status: "MODELED"
+    visibility_10m:
+      value: 4.45
+      unit: "m/s"
+      source: "Moderate fog safe operating speed (16.02 km/h)"
+      status: "MODELED"
+    visibility_12m:
+      value: 5.12
+      unit: "m/s"
+      source: "Canonical dense fog safe haulage speed (18.43 km/h)"
+      status: "MODELED"
+    visibility_25m:
+      value: 8.35
+      unit: "m/s"
+      source: "Kinematic stopping envelope governed (30.06 km/h)"
+      status: "MODELED"
+    visibility_50m:
+      value: 11.11
+      unit: "m/s"
+      source: "Mine maximum allowable haulage speed ceiling (40.0 km/h)"
+      status: "OEM-DOCUMENTED"

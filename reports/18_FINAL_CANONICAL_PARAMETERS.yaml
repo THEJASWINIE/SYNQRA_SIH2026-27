@@ -1,0 +1,367 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 — CANONICAL MODEL PARAMETERS (FINAL EVIDENCE FREEZE)
+# SIH 2026-27 — NMDC Bailadila Iron Ore Haulage Safety & Orchestration
+# Reference Vehicle: BEML BH100 (100-Tonne Rigid Rear Dump Truck)
+# Reference Mine Site: NMDC Bailadila Deposit 5, Bacheli Complex, Chhattisgarh
+# Schema Compliance: Phase 7.3 Canonical Parameter Reconciliation
+# ==============================================================================
+
+metadata:
+  schema_version: "2.3.0"
+  phase: "PHASE_7_3_FINAL_FREEZE"
+  date_calibrated: "2026-09-18"
+  governing_regulations:
+    - "DGMS (Tech) Circular No. 09 of 2008 (Haul Road Safety Standards)"
+    - "ISO 3450:2011 (Earth-moving machinery — Braking systems)"
+    - "SAE J1939 (Serial Control and Communications Vehicle Network)"
+  authority_hierarchy: "Local Safety Governor > Central Fleet Orchestrator > HMI Request"
+  provenance_rule: "Physical Evidence > Derived Model > Engineering Scenario > Simulation Output"
+
+# ------------------------------------------------------------------------------
+# 1. VEHICLE MASS, PAYLOAD & INERTIA (BEML BH100 OEM)
+# ------------------------------------------------------------------------------
+vehicle_mass:
+  tare_mass_kg:
+    value: 74000.0
+    unit: "kg"
+    evidence_level: "OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification Brochure"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  rated_payload_kg:
+    value: 91500.0
+    unit: "kg"
+    evidence_level: "OEM_DOCUMENTED"
+    source: "BEML BH100 Datasheet (91.5 metric tonnes nominal payload)"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  gross_operating_mass_kg:
+    value: 165500.0
+    unit: "kg"
+    evidence_level: "OEM_DOCUMENTED"
+    source: "Sum of certified unladen tare mass (74.0 t) and rated payload (91.5 t)"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+# ------------------------------------------------------------------------------
+# 2. VEHICLE GEOMETRY & KINEMATICS
+# ------------------------------------------------------------------------------
+geometry:
+  length_m:
+    value: 10.52
+    unit: "m"
+    evidence_level: "OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  width_m:
+    value: 5.52
+    unit: "m"
+    evidence_level: "OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  height_m:
+    value: 5.25
+    unit: "m"
+    evidence_level: "OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  turning_radius_m:
+    value: 10.80
+    unit: "m"
+    evidence_level: "OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+# ------------------------------------------------------------------------------
+# 3. MINE ENVIRONMENT & GEOMETRY (NMDC BAILADILA DEPOSIT-5)
+# ------------------------------------------------------------------------------
+environment:
+  max_ramp_grade_pct:
+    value: 8.0
+    unit: "%"
+    evidence_level: "STANDARD_REGULATION"
+    source: "DGMS (Tech) Circular No. 09 of 2008 (1-in-12.5 ramp limit)"
+    confidence: "VERY_HIGH"
+    status: "FROZEN"
+
+  grade_sign_convention:
+    uphill: "POSITIVE (+)"
+    downhill: "NEGATIVE (-)"
+    standard: "Civil / GIS Standard Convention"
+    status: "FROZEN"
+
+  friction_dry:
+    value: 0.35
+    unit: "dimensionless"
+    evidence_level: "LITERATURE_SUPPORTED"
+    source: "Crushed hematite rock compacted road surface standard"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  friction_wet:
+    value: 0.30
+    unit: "dimensionless"
+    evidence_level: "LITERATURE_SUPPORTED"
+    source: "Saturated hematite clay slurry haul road surface"
+    confidence: "MEDIUM_HIGH"
+    status: "FROZEN"
+
+  friction_worst_case:
+    value: 0.25
+    unit: "dimensionless"
+    evidence_level: "ENGINEERING_SCENARIO"
+    source: "Severe monsoon saturated slick clay sensitivity point"
+    confidence: "MEDIUM"
+    status: "FROZEN"
+
+# ------------------------------------------------------------------------------
+# 4. DECOMPOSED TIMING & LATENCY ARCHITECTURE
+# ------------------------------------------------------------------------------
+latency_architecture:
+  # A. LOCAL SAFETY LOOP (Governs Physical Emergency Stopping Distance)
+  tau_sensor_ms:
+    value: 25.0
+    unit: "ms"
+    evidence_level: "BENCH_MEASURED"
+    source: "ESP32 IMU/Wheel speed sample and filtering period"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  tau_governor_decision_ms:
+    value: 50.0
+    unit: "ms"
+    evidence_level: "BENCH_MEASURED"
+    source: "ESP32 local safety governor control loop tick"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  tau_CAN_conservative_ms:
+    value: 50.0
+    unit: "ms"
+    evidence_level: "BENCH_MEASURED"
+    source: "ESP32 TWAI 250 kbps testbed @ 70-80% load (P99 = 24.1 ms)"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  tau_actuator_nominal_ms:
+    value: 200.16
+    unit: "ms"
+    evidence_level: "SURROGATE_BENCH"
+    source: "Instrumented proportional valve surrogate bench apparatus"
+    confidence: "HIGH_SURROGATE"
+    status: "FROZEN"
+
+  tau_actuator_P99_ms:
+    value: 237.1
+    unit: "ms"
+    evidence_level: "SURROGATE_BENCH"
+    source: "Surrogate bench apparatus P99 pressure rise time"
+    confidence: "HIGH_SURROGATE"
+    status: "FROZEN"
+
+  tau_actuator_worst_ms:
+    value: 350.0
+    unit: "ms"
+    evidence_level: "ENGINEERING_SCENARIO"
+    source: "Cold oil / worn lining conservative engineering upper bound"
+    confidence: "MEDIUM"
+    status: "FROZEN"
+
+  # Canonical Aggregated Local Latency
+  tau_local_nominal_ms:
+    value: 375.0
+    unit: "ms"
+    evidence_level: "BENCH_DERIVED"
+    source: "Sum of nominal local components (25 + 50 + 50 + 250 ms)"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  tau_local_P95_ms:
+    value: 412.0
+    unit: "ms"
+    evidence_level: "BENCH_DERIVED"
+    source: "Sum of P95 local components"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  tau_local_P99_ms:
+    value: 437.1
+    unit: "ms"
+    evidence_level: "BENCH_DERIVED"
+    source: "Sum of P99 local components"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  tau_local_worst_ms:
+    value: 475.0
+    unit: "ms"
+    evidence_level: "ENGINEERING_SCENARIO"
+    source: "Conservative worst-case local reaction scenario"
+    confidence: "MEDIUM"
+    status: "FROZEN"
+
+  # B. FLEET COMMAND LOOP (Governs Central Dispatch; Excluded from Stopping)
+  tau_fleet_command_p50_ms:
+    value: 685.0
+    unit: "ms"
+    evidence_level: "BENCH_MEASURED"
+    source: "ESP32 -> LoRa -> Gateway -> Wi-Fi -> FastAPI -> Twin -> Command"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  tau_fleet_command_p99_ms:
+    value: 1120.0
+    unit: "ms"
+    evidence_level: "BENCH_MEASURED"
+    source: "P99 end-to-end cloud dispatch round trip"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+# ------------------------------------------------------------------------------
+# 5. KINEMATICS, STOPPING & SAFE SPEED
+# ------------------------------------------------------------------------------
+kinematics:
+  stopping_deceleration_mps2:
+    value: -1.20
+    unit: "m/s^2"
+    evidence_level: "OEM_STANDARD"
+    source: "ISO 3450 service brake certified deceleration curve"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  base_safety_margin_m:
+    value: 5.0
+    unit: "m"
+    evidence_level: "ENGINEERING_ASSUMPTION"
+    source: "Minimum physical vehicle bumper-to-obstacle clear buffer"
+    confidence: "VERY_HIGH"
+    status: "FROZEN"
+
+  # Canonical Safe Speeds (Loaded 165.5t, Downhill -8%, mu = 0.35)
+  v_safe_100m_mps:
+    value: 11.11
+    unit: "m/s"
+    kmh: 40.0
+    notes: "Capped by statutory mine speed limit"
+    status: "FROZEN"
+
+  v_safe_25m_mps:
+    value: 8.35
+    unit: "m/s"
+    kmh: 30.1
+    notes: "Kinematic stopping envelope governed"
+    status: "FROZEN"
+
+  v_safe_12m_mps:
+    value: 5.12
+    unit: "m/s"
+    kmh: 18.4
+    notes: "Supersedes legacy 4.3815 m/s under canonical autonomous timing"
+    status: "FROZEN"
+
+  v_safe_10m_mps:
+    value: 4.45
+    unit: "m/s"
+    kmh: 16.0
+    notes: "Moderate fog safe operating speed"
+    status: "FROZEN"
+
+  v_safe_8m_mps:
+    value: 3.52
+    unit: "m/s"
+    kmh: 12.7
+    notes: "Dense fog safe crawl speed"
+    status: "FROZEN"
+
+  v_safe_5m_mps:
+    value: 0.00
+    unit: "m/s"
+    kmh: 0.0
+    notes: "Controlled vehicle staging (stopping distance exceeds sightline)"
+    status: "FROZEN"
+
+  v_safe_4m_mps:
+    value: 0.00
+    unit: "m/s"
+    kmh: 0.0
+    notes: "Controlled vehicle staging (stopping distance exceeds sightline)"
+    status: "FROZEN"
+
+  v_safe_3m_mps:
+    value: 0.00
+    unit: "m/s"
+    kmh: 0.0
+    notes: "Controlled vehicle staging (stopping distance exceeds sightline)"
+    status: "FROZEN"
+
+# ------------------------------------------------------------------------------
+# 6. CAPACITIES & BOTTLENECK CEILINGS
+# ------------------------------------------------------------------------------
+capacities:
+  crusher_cycle_time_s:
+    value: 200.0
+    unit: "s"
+    evidence_level: "PHYSICAL_CALCULATED"
+    source: "Tipping pocket positioning, discharge, and clearing cycle"
+    confidence: "VERY_HIGH"
+    status: "FROZEN"
+
+  crusher_steady_state_ceiling_tph:
+    value: 1647.0
+    unit: "TPH"
+    evidence_level: "PHYSICAL_CALCULATED"
+    source: "18 dumps/hour * 91.5 metric tonnes per dump"
+    confidence: "VERY_HIGH"
+    status: "FROZEN"
+
+  level4_sustained_production_tph:
+    value: 1591.4
+    unit: "TPH"
+    evidence_level: "SIMULATION_AUDITED"
+    source: "30-seed closed loop simulation (96.6% crusher utilization)"
+    confidence: "HIGH_SIMULATION"
+    status: "FROZEN"
+
+  transient_queue_flush_tph:
+    value: 3294.0
+    unit: "TPH"
+    evidence_level: "DISPROVEN_ARTIFACT"
+    source: "10-minute queue dump burst (disproven as sustained capacity)"
+    confidence: "DISPROVEN"
+    status: "INVALIDATED"
+
+# ------------------------------------------------------------------------------
+# 7. COMMUNICATIONS & HARDWARE ENCODING
+# ------------------------------------------------------------------------------
+communications:
+  physical_transceiver: "Semtech SX1278 (Ra-02 Module)"
+  carrier_frequency_mhz: 433.0
+  physical_modulation: "Chirp Spread Spectrum (CSS) LoRa"
+  direct_v2v_pdr_150m_pct:
+    value: 99.1
+    unit: "%"
+    evidence_level: "BENCH_MEASURED"
+    confidence: "HIGH"
+    status: "FROZEN"
+
+  dsss_gold_code_status:
+    classification: "ARCHITECTURAL_SIMULATION_MODEL"
+    notes: "Simulated research model; physical SX1278 uses proprietary CSS"
+    status: "FROZEN"
+
+  hardware_failsafe_detection_ms:
+    value: 52.4
+    unit: "ms"
+    evidence_level: "HARDWARE_VERIFIED"
+    source: "ESP32 firmware watchdog interrupt & command cut-off"
+    confidence: "VERY_HIGH"
+    status: "FROZEN"

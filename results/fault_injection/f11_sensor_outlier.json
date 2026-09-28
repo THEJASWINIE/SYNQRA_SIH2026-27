@@ -1,0 +1,8 @@
+{
+  "fault_id": "F11",
+  "fault_name": "IMU Acceleration Outlier Spike",
+  "detected_state": "OUTLIER",
+  "safety_transition": "Plausibility Gate Drop",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.995055Z"
+}

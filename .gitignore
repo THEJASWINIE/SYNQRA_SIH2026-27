@@ -1,24 +1,52 @@
-# Node
+# Dependencies
 node_modules/
+**/node_modules/
 frontend/dist/
-frontend/node_modules/
+**/dist/
 
-# Python
+# Python caches and bytecode
 __pycache__/
+**/__pycache__/
 *.py[cod]
-.venv/
-venv/
+*$py.class
 *.egg-info/
 .pytest_cache/
+**/.pytest_cache/
 .ruff_cache/
+**/.ruff_cache/
 
-# Environment — never commit real values (NFR-011)
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment Variables
 .env
 .env.local
 *.env
 !.env.example
+!**/.env.example
 
-# Editor / OS
+# OS & IDE
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
+*.swp
+*.swo
+
+# ESP32 firmware deployment secrets (SSID / password / backend endpoint).
+# Only the *.example.h templates are tracked. Never commit secrets.h.
+esp32_code/**/secrets.h
+secrets.h
+!esp32_code/**/secrets.example.h
+
+# Build outputs and compilation artifacts
+build_test/
+*.elf
+*.bin
+*.map
+*.o
+*.a
+

@@ -1,0 +1,8 @@
+{
+  "fault_id": "F16",
+  "fault_name": "CAN Watchdog Silence",
+  "detected_state": "BUS_SILENCE",
+  "safety_transition": "Emergency Stop Dynamic Brake",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.997844Z"
+}

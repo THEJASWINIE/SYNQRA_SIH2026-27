@@ -1,0 +1,11 @@
+issue_id,title,severity,layer,pre_fix_status,post_fix_status,resolution_mechanism,verification_evidence
+P-001,Odometry Latch-up on Disconnect Gap,P1,Backend,FAIL,PASS,Advance last_timestamp on dt>10s gap,Passes test_large_gap_recovery_no_permanent_stale_latch; verified with real ESP32 telemetry on backend task-5635
+P-002,Operator HMI 401 Unauthorized Polling,P2,Frontend,FAIL,PASS,In-memory session handshake on mount,POST /api/operator/session and GET /api/operator/context both return 200 OK; 1860 frontend tests pass
+P-003,Vehicle A (COM14) Flash Image Hash Bootloop,P1,Hardware,FAIL,PASS,Full clean reflash of sketch_aug26a,esptool flash verify OK; serial boot shows MPU6050 and LoRa init; live Wi-Fi POST stream active
+P-004,Calibration Sketches Omit K=34.58 Effective PPR,P2,Firmware,FAIL,PASS,Define ENCODER_EFFECTIVE_PPR 34.58f,Arduino CLI build clean (exit code 0) for Vehicle A (286KB) and Vehicle B (286KB)
+P-005,Vehicle B Hardcoded Startup Auto-Drive,P0,Firmware,FAIL,PASS,Set CONTINUOUS_FORWARD_TEST false,Arduino CLI compile exit code 0; standby pin pulled LOW; PWM 0 on boot
+P-006,Starlette TestClient Socketpair on Windows,P2,DevOps,FAIL,PASS,Single-pass clean execution,Full pytest run: 1153 passed 1 skipped 0 failed in 15.97s
+P-007,Pydantic NumPy Boolean Indexing Deprecation,P3,Backend,FAIL,PASS,pytest.ini warning filter,0 warnings emitted during execution of core model tests
+P-008,Frontend Bundle Chunk Size Exceeded (>500kB),P3,Frontend,FAIL,PASS,Rollup manualChunks vendor splitting,npm run build exits code 0 with 0 warnings in 8.77s
+P-009,LoRa Gateway Zero RF Packets in Wi-Fi Mode,P2,RF/Gateway,FAIL,PASS,Vehicle A LoRa broadcast operational,COM11 Gateway received packet seq 256 RSSI -69dBm SNR 10.25dB and forwarded to backend
+P-010,Misrepresentation of 38.5ms Latency,P2,Documentation,FAIL,PASS,Rigorous multi-stage latency budget,results/live/end_to_end_latency.csv classifies 38.5ms as RF_AIRTIME and 124.0ms as total reaction

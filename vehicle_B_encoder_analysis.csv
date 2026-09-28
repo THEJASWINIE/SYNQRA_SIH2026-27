@@ -1,0 +1,12 @@
+parameter,value,unit,formula,derivation_notes
+wheel_diameter_D,0.060,m,nominal_spec,Calibrated prototype wheel diameter
+wheel_circumference_C,0.18849556,m,pi * D,Ground distance per 1 wheel revolution
+raw_encoder_ppr,43.0,pulses/rev,measured_hardware,Hardware optical disk physical slot count (Vehicle B)
+raw_pulses_per_meter,228.1221,pulses/m,raw_ppr / C,Theoretical pulse count without calibration
+effective_calibration_K,34.58,effective_ppr,empirical_calibration,Software calibration parameter used in firmware
+effective_pulses_per_meter,183.4526,pulses/m,K / C,Expected pulse rate with K=34.58
+calibration_ratio_K_over_raw,0.80418,dimensionless,K / raw_ppr,19.58% effective downscaling for slip/filter
+firmware_speed_formula,"(wheelRPM * PI * D) / 60.0",m/s,VEHICLE_B_...ino,Speed calculated from wheelRPM
+firmware_rpm_formula,"(pps / PULSES_PER_REV) * 60.0",RPM,VEHICLE_B_...ino,Uses PULSES_PER_REV=34.58
+consistency_status,INCONSISTENT_ACROSS_REPO,-,-,"Production firmware uses K=34.58; standalone calibration sketch uses raw PPR=43"
+live_test_status,BENCH_STATIONARY,-,-,"Vehicle stationary on bench; physical track run NOT TESTED"

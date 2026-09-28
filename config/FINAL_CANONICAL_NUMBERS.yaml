@@ -1,0 +1,404 @@
+# ==============================================================================
+# FOG-ORCHESTRATOR 2.0 — FINAL CANONICAL NUMBERS
+# SIH 2026-27 | Problem Statement: SIH26007
+# Authoritative Single Source of Truth for System Parameters & Verification
+# ==============================================================================
+
+metadata:
+  system_name: "FOG-ORCHESTRATOR 2.0"
+  phase: "PHASE_7_3_5_CANONICAL_CONSISTENCY_LOCK"
+  freeze_date: "2026-09-18"
+  canonical_result_id: "THROUGHPUT_FINAL_L0_L4_V1"
+  reference_vehicle: "BEML BH100 Rigid Haul Dumper"
+  reference_site: "NMDC Bailadila Deposit-5 Iron Ore Mine"
+  status: "LOCKED_IMMUTABLE"
+
+vehicle:
+  mass_loaded:
+    value: 165500.0
+    unit: "kg"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification Brochure (74.0 t tare + 91.5 t rated payload)"
+    status: "FROZEN"
+    notes: "Gross Operating Weight under 100% nominal payload capacity"
+  mass_empty:
+    value: 74000.0
+    unit: "kg"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 Technical Specification Brochure"
+    status: "FROZEN"
+    notes: "Unladen tare mass with standard rock body and ROPS/FOPS cab"
+  payload_rated:
+    value: 91500.0
+    unit: "kg"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 Datasheet (91.5 metric tonnes nominal rating)"
+    status: "FROZEN"
+    notes: "Nominal volumetric payload rating"
+  length:
+    value: 10.525
+    unit: "m"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 General Dimensions Drawing"
+    status: "FROZEN"
+    notes: "Overall bumper-to-bumper vehicle length"
+  width:
+    value: 5.920
+    unit: "m"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "BEML BH100 General Dimensions Drawing"
+    status: "FROZEN"
+    notes: "Overall operating width across dual rear tires"
+  wheel_radius:
+    value: 1.450
+    unit: "m"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "27.00-R49 Mining Haulage Radial Tire Specification"
+    status: "FROZEN"
+    notes: "Static loaded rolling radius of drive wheels"
+
+physics:
+  gravity:
+    value: 9.80665
+    unit: "m/s^2"
+    evidence_level: "L4_STANDARD"
+    source: "ISO 80000-3 Standard Acceleration of Free Fall"
+    status: "FROZEN"
+    notes: "Standard reference gravitational acceleration"
+  C_rr:
+    value: 0.025
+    unit: "dimensionless"
+    evidence_level: "L5_LITERATURE"
+    source: "Mining Haul Road Design Guidelines (Packed dry dirt/gravel with hematite fines)"
+    status: "FROZEN"
+    notes: "Canonical rolling resistance coefficient on graded haul road"
+  grade_canonical:
+    value: -0.08
+    unit: "dimensionless"
+    evidence_level: "L3_NMDC_DOCUMENTED"
+    source: "NMDC Bailadila Deposit-5 Main Haul Ramp Civil Survey (-8% grade)"
+    status: "FROZEN"
+    notes: "Maximum continuous downhill loaded haul road inclination"
+  mu_dry:
+    value: 0.35
+    unit: "dimensionless"
+    evidence_level: "L5_LITERATURE"
+    source: "Compacted hematite crushed rock surface standard"
+    status: "FROZEN"
+    notes: "Nominal dry tire-road longitudinal friction coefficient"
+  mu_wet:
+    value: 0.30
+    unit: "dimensionless"
+    evidence_level: "L5_LITERATURE"
+    source: "Moist hematite clay slurry haul road surface"
+    status: "FROZEN"
+    notes: "Degraded wet tire-road friction coefficient"
+  mu_worst_case:
+    value: 0.25
+    unit: "dimensionless"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    source: "Saturated monsoon mud slick sensitivity test point"
+    status: "FROZEN"
+    notes: "Severe monsoon degraded surface friction"
+  mu_adhesion_crossover:
+    value: 0.3400
+    unit: "dimensionless"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "First-principles solution: F_hardware / (m * g * cos(theta)) = 550,000 / (165,500 * 9.80665 * cos(0.07983))"
+    status: "FROZEN"
+    notes: "Critical friction boundary below which tire adhesion strictly limits deceleration"
+  brake_force_hardware_max:
+    value: 550000.0
+    unit: "N"
+    evidence_level: "L10_UNVERIFIED"
+    source: "Reverse-derived from ISO 3450 level stopping distance criteria (a approx 3.32 m/s^2)"
+    status: "UNVERIFIED_ENGINEERING_PARAMETER"
+    notes: "Rated total rim braking capacity parameter. Not OEM caliper-drawings certified."
+  emergency_deceleration_canonical:
+    value: 2.7856
+    unit: "m/s^2"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "Force balance: 165.5 t mass, -8% grade, Crr=0.025, g=9.80665 m/s^2, F_brake=550 kN"
+    status: "FROZEN"
+    notes: "Governing net emergency deceleration on -8% ramp under nominal friction (mu >= 0.34)"
+  emergency_deceleration_legacy:
+    value: 2.7466
+    unit: "m/s^2"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "Legacy force balance: 165.0 t mass, -8% grade, Crr=0.020, g=9.81 m/s^2, F_brake=550 kN"
+    status: "FROZEN"
+    notes: "Conservative legacy derived case retained in baseline regression test assertions"
+  service_deceleration:
+    value: 1.20
+    unit: "m/s^2"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    source: "Open-cast haulage literature on operator comfort and ore spillage prevention"
+    status: "ENGINEERING_ASSUMPTION"
+    notes: "Modeled service brake comfort deceleration threshold. NOT a statutory ISO 3450 regulation."
+
+latency:
+  sensor:
+    value: 25.0
+    unit: "ms"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "ESP32 IMU / Wheel speed telemetry sample and filtering period"
+    status: "FROZEN"
+    notes: "Bench-measured sensor acquisition cycle"
+  decision:
+    value: 50.0
+    unit: "ms"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "ESP32 Tier-1 Local Safety Governor control loop execution interval"
+    status: "FROZEN"
+    notes: "Deterministic 20 Hz periodic task tick"
+  CAN_TWAI:
+    value: 50.0
+    unit: "ms"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "ESP32 TWAI driver 250 kbps bench testbed under 75% bus load"
+    status: "FROZEN"
+    notes: "P99 chassis CAN communication latency"
+  actuator_nominal:
+    value: 250.0
+    unit: "ms"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    source: "Heavy vehicle pneumatic/hydraulic brake build-up literature (SAE J1452 / ISO 3450)"
+    status: "ENGINEERING_ASSUMPTION"
+    notes: "Time from solenoid trigger to 90% full pressure. NOT measured on physical BH100 chassis."
+  actuator_worst_case:
+    value: 350.0
+    unit: "ms"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    source: "Cold oil / worn lining conservative engineering upper bound"
+    status: "ENGINEERING_SCENARIO"
+    notes: "Upper bound actuator delay for robust envelope formulation"
+  local_P99_modeled:
+    value: 437.1
+    unit: "ms"
+    evidence_level: "L7_L6_MODELED_BUDGET"
+    source: "Sum: Bench RF (41.2 ms) + ESP32 pipeline (145.9 ms) + Actuator assumption (250.0 ms)"
+    status: "FROZEN"
+    notes: "P99 modeled end-to-end local safety reaction latency budget"
+  local_worst_case_modeled:
+    value: 475.0
+    unit: "ms"
+    evidence_level: "L7_L6_MODELED_BUDGET"
+    source: "Worst-case local perception-reaction-actuation upper bound"
+    status: "FROZEN"
+    notes: "Conservative engineering scenario for extreme fog safety proof"
+
+safety:
+  base_safety_buffer:
+    value: 5.0
+    unit: "m"
+    evidence_level: "L6_ENGINEERING_ASSUMPTION"
+    source: "Geometric design margin: half truck length (5.26 m) and cab blind-spot clearance"
+    status: "ENGINEERING_SAFETY_BUFFER"
+    notes: "S_base = 5 m engineering safety buffer. NOT a statutory DGMS legal regulation."
+  blindout_visibility_threshold:
+    value: 5.0
+    unit: "m"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "Quadratic stopping root at R <= S_base yields v_safe = 0.0 m/s"
+    status: "FROZEN"
+    notes: "Deterministic vehicle halt boundary. R <= 5.0 m forces commanded speed to 0."
+  safe_speed_3m:
+    value: 0.0
+    unit: "m/s"
+    kmh: 0.0
+    status: "FROZEN"
+    notes: "Controlled vehicle halt (sightline within safety buffer)"
+  safe_speed_4m:
+    value: 0.0
+    unit: "m/s"
+    kmh: 0.0
+    status: "FROZEN"
+    notes: "Controlled vehicle halt (sightline within safety buffer)"
+  safe_speed_5m:
+    value: 0.0
+    unit: "m/s"
+    kmh: 0.0
+    status: "FROZEN"
+    notes: "Controlled vehicle halt at blindout boundary"
+  safe_speed_8m:
+    value: 3.52
+    unit: "m/s"
+    kmh: 12.67
+    status: "FROZEN"
+    notes: "Dense fog safe crawl speed"
+  safe_speed_10m:
+    value: 4.45
+    unit: "m/s"
+    kmh: 16.02
+    status: "FROZEN"
+    notes: "Moderate fog safe operating speed"
+  safe_speed_12m:
+    value: 5.12
+    unit: "m/s"
+    kmh: 18.43
+    status: "FROZEN"
+    notes: "Canonical dense fog safe haulage speed"
+  safe_speed_25m:
+    value: 8.35
+    unit: "m/s"
+    kmh: 30.06
+    status: "FROZEN"
+    notes: "Kinematic stopping envelope governed"
+  safe_speed_50m:
+    value: 11.11
+    unit: "m/s"
+    kmh: 40.0
+    status: "FROZEN"
+    notes: "Statutory mine haul road speed limit cap"
+  safe_speed_100m:
+    value: 11.11
+    unit: "m/s"
+    kmh: 40.0
+    status: "FROZEN"
+    notes: "Statutory mine haul road speed limit cap"
+  space_headway_dense_fog:
+    value: 22.52
+    unit: "m"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "H = S_stop(5.12 m/s) + S_base + L_truck = 6.99 + 5.0 + 10.53 m = 22.52 m"
+    status: "FROZEN"
+    notes: "Minimum longitudinal bumper-to-bumper clearance envelope"
+
+communications:
+  carrier_frequency:
+    value: 433.0
+    unit: "MHz"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "ISM Band allocation for open-cast industrial telemetry"
+    status: "FROZEN"
+    notes: "Ra-02 LoRa transceiver module carrier frequency"
+  packet_size:
+    value: 32
+    unit: "bytes"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "Compact binary telemetry packet (state, vehicle_id, seq, pos, speed, crc)"
+    status: "FROZEN"
+    notes: "Standard cyclic V2V state beacon payload"
+  bench_PDR_150m:
+    value: 99.1
+    unit: "%"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "Dual ESP32 SX1278 hardware bench testbed over 150 m outdoor LOS (1,000 packets)"
+    status: "FROZEN"
+    notes: "150 m outdoor LOS SX1278 bench result. Pit multipath and dust attenuation uncharacterized."
+  bench_roundtrip_latency:
+    value: 41.2
+    unit: "ms"
+    evidence_level: "L7_BENCH_MEASURED"
+    source: "Roundtrip ping-pong latency measured on dual ESP32 LoRa testbed"
+    status: "FROZEN"
+    notes: "Over-the-air transmission and acknowledgment latency"
+  protocol_modulation:
+    value: "Chirp Spread Spectrum (CSS)"
+    evidence_level: "L7_HARDWARE_VERIFIED"
+    source: "Semtech SX1278 physical layer modulation"
+    status: "FROZEN"
+    notes: "Physical modulation is proprietary CSS LoRa. DSSS Gold codes exist only in simulation."
+
+crusher:
+  payload_dump:
+    value: 91.5
+    unit: "metric tonnes"
+    evidence_level: "L2_OEM_DOCUMENTED"
+    source: "Rated BEML BH100 payload mass discharged per tipping cycle"
+    status: "FROZEN"
+    notes: "Theoretical full rated hopper payload"
+  service_time:
+    value: 200.0
+    unit: "s"
+    evidence_level: "L3_L6_OPERATIONAL_MODEL"
+    source: "NMDC Bailadila Deposit-5 primary gyratory crusher operational estimate"
+    status: "MODELED_CRUSHER_SERVICE_TIME"
+    notes: "Truck positioning, gross ore discharge, and pocket clearing cycle"
+  modeled_intake_ceiling:
+    value: 1647.0
+    unit: "TPH"
+    evidence_level: "L6_MATHEMATICAL_DERIVATION"
+    source: "(3600 s / 200 s) * 91.5 t = 18 dumps/hr * 91.5 t = 1,647.0 TPH"
+    status: "FROZEN"
+    notes: "Hard physical throughput barrier for a single-dump gyratory crusher pocket"
+
+experiments:
+  canonical_result_id: "THROUGHPUT_FINAL_L0_L4_V1"
+  simulation_horizon:
+    value: 7200.0
+    unit: "s"
+    notes: "2-hour operational haulage shift simulation"
+  warmup_duration:
+    value: 600.0
+    unit: "s"
+    notes: "Initial fleet deployment transient excluded from throughput metrics"
+  fleet_size:
+    value: 6
+    unit: "trucks"
+    notes: "Closed-loop BEML BH100 fleet operating between Shovel 1 and Crusher"
+  visibility_condition:
+    value: 12.0
+    unit: "m"
+    notes: "Sustained dense fog visibility across main haul road"
+  final_L0_tph:
+    value: 1171.2
+    unit: "TPH"
+    evidence_level: "L9_SIMULATION_REPRODUCED"
+    source: "data/final_fleet_metrics.csv (LEVEL_0 baseline run)"
+    status: "FROZEN"
+    notes: "Conventional unmanaged haulage baseline throughput (71.1% crusher utilization)"
+  final_L4_tph:
+    value: 1591.4
+    unit: "TPH"
+    evidence_level: "L9_SIMULATION_REPRODUCED"
+    source: "data/final_fleet_metrics.csv (LEVEL_4 full orchestration run)"
+    status: "FROZEN"
+    notes: "FOG-Orchestrator dynamic origin staging sustained throughput (96.6% crusher utilization)"
+  absolute_gain_tph:
+    value: 420.2
+    unit: "TPH"
+    evidence_level: "L9_SIMULATION_REPRODUCED"
+    source: "1591.4 - 1171.2 TPH"
+    status: "FROZEN"
+    notes: "Canonical absolute production improvement"
+  relative_gain_pct:
+    value: 35.88
+    unit: "%"
+    evidence_level: "L9_SIMULATION_REPRODUCED"
+    source: "(420.2 / 1171.2) * 100 = 35.8777% approx 35.88% (or 35.9%)"
+    status: "FROZEN"
+    notes: "Canonical relative throughput improvement"
+  batch_30_seed_L0_mean_tph:
+    value: 1170.29
+    unit: "TPH"
+    notes: "Mean baseline throughput across 30 independent random seeds"
+  batch_30_seed_L4_mean_tph:
+    value: 1594.39
+    unit: "TPH"
+    notes: "Mean orchestrated throughput across 30 independent random seeds"
+  batch_30_seed_mean_gain_tph:
+    value: 424.11
+    unit: "TPH"
+    notes: "Mean absolute throughput gain across 30 seeds (+36.24%)"
+  batch_t_statistic:
+    value: 58.02
+    notes: "Paired Student's t-test statistic (p = 1.50e-31)"
+  batch_wilcoxon_w:
+    value: 0.0
+    notes: "Wilcoxon signed-rank test statistic (p = 1.86e-9)"
+  batch_cohens_d:
+    value: 10.59
+    notes: "Extremely large effect size"
+  ramp_waiting_reduction_pct:
+    value: 77.36
+    unit: "%"
+    notes: "Hazardous queue waiting on -8% ramp reduced from 625.4 s to 141.6 s (-483.8 s)"
+  staging_waiting_added_s:
+    value: 401.0
+    unit: "s"
+    notes: "Trucks safely held at flat shovel staging bays (88.2 s to 489.2 s)"
+  net_cycle_delay_reduction_pct:
+    value: 11.60
+    unit: "%"
+    notes: "Total trip delay reduced from 713.6 s to 630.8 s (-82.8 s net savings per trip)"

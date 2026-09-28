@@ -1,0 +1,8 @@
+{
+  "fault_id": "F05",
+  "fault_name": "Stale Telemetry Injection",
+  "detected_state": "STALE",
+  "safety_transition": "HMI Watermark Overlay",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.991129Z"
+}

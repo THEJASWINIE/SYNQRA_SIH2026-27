@@ -1,0 +1,8 @@
+component,nominal_ms,p99_ms,classification,provenance
+tau_sensor,100.0,100.0,ASSUMED,Sensor filter and perception window model
+tau_decision,25.0,50.0,BENCH_MEASURED,"Python safety solver profiling (<5ms compute, 50ms period)"
+tau_comm_v2v,41.2,50.0,BENCH_MEASURED,Dual-ESP32 SX1278 physical LoRa bench test (150m LOS)
+tau_can_twai,2.0,5.0,BENCH_MEASURED,ESP32 TWAI transceiver wire benchmark (<2ms)
+tau_actuator,200.16,237.1,SURROGATE_BENCH,Automotive electro-hydraulic valve surrogate bench (NOT BH100)
+tau_actuator_canonical,250.0,250.0,MODELLED_ASSUMED,Heavy HEMM air-over-hydraulic line fill model
+tau_actuator_worst,350.0,350.0,MODELLED_ASSUMED,Low reservoir pressure pneumatic lag upper bound

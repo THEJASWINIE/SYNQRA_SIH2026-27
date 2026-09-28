@@ -1,0 +1,21 @@
+{
+  "vehicle_id": "V-1",
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "position": {
+    "x": "left",
+    "y": 0.0,
+    "segment_id": "S-1",
+    "offset_m": 0.0
+  },
+  "speed_mps": 0.0,
+  "accel_mps2": 0.0,
+  "grade_rad": 0.0,
+  "friction_est": {
+    "value": 0.0,
+    "sigma": 0.0
+  },
+  "mode": "NORMAL",
+  "comm_confidence": 1.0,
+  "vehicle_kind": null,
+  "route_id": null
+}

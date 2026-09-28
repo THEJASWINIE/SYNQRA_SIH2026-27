@@ -1,0 +1,7 @@
+Capacity_Classification,Flow_VPH,Flow_TPH_Theoretical_Pipe,Operating_Scenario,Is_Mine_Production_Capacity,Scientific_Status,Mandatory_Reporting_Rule
+THEORETICAL_KINEMATIC_PIPE_FLOW_EMERGENCY,817.8,74828.7,"Continuous bumper-to-bumper emergency safe speed (5.1158 m/s, H=22.52m)",False,THEORETICAL_KINEMATIC_ROAD_FLOW,"Report in VPH only; do NOT cite 74,828.7 TPH as mine haulage capacity"
+THEORETICAL_KINEMATIC_PIPE_FLOW_SERVICE,587.2,53728.8,"Continuous bumper-to-bumper service safe speed (3.6734 m/s, H=22.52m)",False,THEORETICAL_KINEMATIC_ROAD_FLOW,Report in VPH only; represents roadway saturation limit
+THEORETICAL_KINEMATIC_PIPE_FLOW_LEGACY,700.5,64090.8,Historical calculation based on legacy 4.3815 m/s speed,False,SUPERSEDED_HISTORICAL_METRIC,Retained for traceability of legacy 700.5 VPH origin
+MODELED_CRUSHER_SERVICE_CEILING,18.0,1647.0,Primary gyratory crusher single tipping pocket (200s dump slot),True,HARD_PHYSICAL_BOTTLENECK_CEILING,Upper physical bound on mine production under any dispatch strategy
+DELIVERED_STEADY_STATE_PRODUCTION_L4,17.39,1591.4,FOG-Orchestrator Level 4 dynamic origin staging (96.6% utilization),True,AUTHORITATIVE_STEADY_STATE_BENCHMARK,Headline sustained production metric verified over 2-hour horizon
+UNMANAGED_CONVENTIONAL_FOG_BASELINE_L0,12.8,1171.2,"Level 0 uncoordinated haulage (chronic ramp jams, 71.1% utilization)",True,BASELINE_BENCHMARK,Baseline benchmark for comparative throughput gain (+35.9%)

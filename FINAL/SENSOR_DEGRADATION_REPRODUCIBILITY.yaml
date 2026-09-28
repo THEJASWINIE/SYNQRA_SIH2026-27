@@ -1,0 +1,35 @@
+# SENSOR DEGRADATION BENCHMARK REPRODUCIBILITY CONFIGURATION
+# Generated automatically by experiments/run_sensor_degradation_benchmark.py
+benchmark_version: "2.0.0"
+timestamp_iso: "2026-09-21T20:30:00Z"
+reproducibility:
+  num_matched_seeds: 30
+  seed_range: [0, 29]
+  simulation_horizon_s: 7200.0
+  scenarios_count: 14
+  scenarios: ['D0_nominal', 'D1_dropout_10', 'D2_dropout_25', 'D3_dropout_50', 'D4_dropout_75', 'D5_stale_env', 'D6_stuck_at', 'D7_biased_sensor', 'D8_noisy_sensor', 'D9_conflicting_sources', 'D10_intermittent_telemetry', 'D11_comm_loss', 'D12_complete_env_loss', 'D13_plausible_but_wrong']
+physical_parameters:
+  vehicle_type: "BEML BH100 Mining Dump Truck"
+  mass_loaded_kg: 165500.0
+  mass_empty_kg: 85000.0
+  haul_road_grade_pct: -8.0
+  friction_mu_effective: 0.35
+  tau_total_s: 0.80
+  s_base_m: 5.0
+data_health_parameters:
+  t_degraded_env_s: 30.0
+  t_stale_env_s: 60.0
+  t_grace_period_s: 120.0
+  degraded_factor: 0.70
+  stale_factor: 0.50
+  r_min_m: 5.0
+  r_unavailable_min_m: 8.0
+  recovery_hysteresis_stale: 2
+  recovery_hysteresis_unavailable: 3
+monte_carlo_validation:
+  samples: 10000
+  violations_v_command: 0
+  violations_stopping_envelope: 0
+  min_stopping_margin_m: -0.0000
+  p1_margin_m: -0.0000
+  p50_margin_m: 26.7837

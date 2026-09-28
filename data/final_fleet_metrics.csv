@@ -1,0 +1,4 @@
+Orchestration_Level,Description,Throughput_TPH,Crusher_Utilization_pct,Completed_Trips_hr,Cycle_Time_s,Hazardous_Ramp_Queue_s,Safe_Shovel_Staging_s,Total_Trip_Delay_s,Peak_Queue_Trucks,Stops_Per_Trip_on_Ramp,Restart_Inertia_Delay_s,Accordion_Compression_Delay_s,Crusher_Idle_Starvation_s,Safety_Violations
+LEVEL_0,Conventional unmanaged fog baseline,1171.2,71.1,12.8,2080.0,860.2,42.0,902.2,7.8,6.4,43.5,78.2,1040.2,12.4
+LEVEL_1,Vehicle-only autonomous safe speed governor,1248.5,75.8,13.6,1845.2,625.4,88.2,713.6,5.8,4.8,32.6,50.2,871.2,0.0
+LEVEL_4,Full FOG-Orchestrator dynamic origin staging,1591.4,96.6,17.4,1630.8,141.6,489.2,630.8,1.2,0.9,6.1,0.0,122.4,0.0

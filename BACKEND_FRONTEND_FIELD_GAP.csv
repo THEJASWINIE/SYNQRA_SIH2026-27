@@ -1,0 +1,38 @@
+field,backend_exists,frontend_consumes,twin_exists,source,bug_type,fix
+speed_mps,YES,YES,YES,ESP32 LM393 Wheel Encoder,NONE,Consumed authoritatively across all screens; m/s to km/h conversion only
+rpm,YES,YES,YES,ESP32 LM393 Wheel Encoder,NONE,Displayed in Sensor Health and Diagnostics
+ax_mps2,YES,YES,YES,ESP32 MPU6050 Accelerometer,NONE,Exposed in hardware telemetry provenance
+ay_mps2,YES,YES,YES,ESP32 MPU6050 Accelerometer,NONE,Exposed in hardware telemetry provenance
+az_mps2,YES,YES,YES,ESP32 MPU6050 Accelerometer,NONE,Exposed in hardware telemetry provenance
+gx_rads,YES,YES,YES,ESP32 MPU6050 Gyroscope,NONE,Exposed in hardware telemetry provenance
+gy_rads,YES,YES,YES,ESP32 MPU6050 Gyroscope,NONE,Exposed in hardware telemetry provenance
+gz_rads,YES,YES,YES,ESP32 MPU6050 Gyroscope,NONE,Exposed in hardware telemetry provenance
+boot_id,YES,YES,YES,ESP32 NVS Storage,NONE,Exposed in Vehicle Diagnostics and Session Run ID
+sequence,YES,YES,YES,ESP32 Packet Counter,NONE,Exposed in Vehicle Diagnostics
+telemetry_transport,YES,YES,YES,Backend Router / Packet Header,NONE,Exposed in Transport field (DIRECT_WIFI vs LORA)
+v_safe_mps,YES,YES,YES,Physics Safety Solver,PRESENTATION_GAP,When unconstrained scenario was active safe speed rendered generic UNAVAILABLE; reframed to STANDBY (ROAD CEILING)
+risk_level,YES,YES,YES,Safety Solver / Scenario,NONE,Exposed in safety envelope with risk tokens
+active_constraint,YES,YES,YES,Physics Safety Solver,NONE,Exposed in safety envelope and banner
+lead_vehicle_id,YES,YES,YES,Spatial Query / Scenario Engine,CONTRACT_ALIGNMENT,Preserved explicit UNAVAILABLE when lead truck absent per contract test requirements
+h_safe_m,YES,YES,YES,Safety Solver,AMB-001_DISCLOSURE,Displayed with explicit unresolved unit notice per specification
+headway_current_m,YES,YES,YES,Spatial Query / Scenario Engine,NONE,Exposed in Gap / Headway readouts
+headway_violation,YES,YES,YES,Safety Solver,NONE,Exposed in Headway panel
+envelope_violation,YES,YES,YES,Safety Solver,NONE,Exposed in Safety envelope panel
+stopping_margin_m,NO,YES,NO,Not Computed in Central Solver,SPEC_OMISSION,Field expected in some HMI screens but not computed in backend; rendered as UNAVAILABLE with envelope note
+applied_speed,NO,YES,NO,Motor Actuator Feedback (None),HARDWARE_LIMITATION,Prototype lacks closed-loop motor tachometer feedback; strictly rendered as UNKNOWN / NOT TELEMETRIED
+target_speed_mps,YES,YES,YES,Dispatch Command Scheduler,PRESENTATION_GAP,Idle vehicle showed UNAVAILABLE or 0 km/h; reframed to NO ACTIVE COMMAND
+wifi_rssi_dbm,YES,YES,YES,ESP32 Wi-Fi / Gateway,NONE,Rendered in Wi-Fi (Local) signal metrics
+v2v_link_state,YES,YES,YES,Backend Health Component,PRESENTATION_GAP,Unlinked peer showed UNKNOWN; reframed to STANDBY (PEER UNLINKED)
+v2i_link_state,NO,YES,NO,Roadside Unit (None),HARDWARE_LIMITATION,Prototype has no physical RSU; reframed from generic UNAVAILABLE to NOT INSTRUMENTED · NO PHYSICAL RSU
+rf_failover_status,YES,YES,YES,Failsafe Controller,VERIFICATION_GATE,Backend implements protocol but physical field test is open; rendered as AVAILABLE — FAILOVER VALIDATION PENDING
+safe_beacon_active,YES,YES,YES,ESP32 Dropout Monitor / Adapter,VERIFICATION_GATE,Firmware implements beacon broadcast; rendered as STANDBY · FIELD GATE PENDING
+gnss_position,NO,YES,NO,GNSS Hardware (None),HARDWARE_LIMITATION,Chassis has no GNSS module; reframed from GNSS UNKNOWN to NOT FITTED ON CHASSIS
+map_position_scene,YES,YES,YES,Digital Twin Scene Model,FRAME_CONFLATION,Risk of presenting synthetic scene coords as GPS; explicitly labelled SCENE_METRES · SIMULATION · NOT GNSS
+visibility_m,YES,YES,YES,Road Model / Fog Scenario,PROVENANCE_DISCLOSURE,Exposed with explicit SIMULATION / INJECTED SCENARIO provenance
+friction_val,YES,YES,YES,Road Model / Road Surface Ingest,PROVENANCE_DISCLOSURE,Exposed with uncertainty (value ± sigma) and SIMULATION provenance
+friction_sigma,YES,YES,YES,Road Model,NONE,Rendered alongside friction value
+grade_rad,YES,YES,YES,Road Model / DEM,NONE,Converted to percent grade on operator screen and radians on detail screen
+road_segment_id,YES,YES,YES,Twin Topology Store,NONE,Rendered in Road and Occupied Segment panels
+motor_pwm,YES,NO,YES,ESP32 Vehicle B Firmware,UNUSED_BACKEND_FIELD,Vehicle B firmware can report PWM command in serial debug but not yet consumed in HMI; reserved for Actuator Panel
+peer_vehicle_id,YES,YES,YES,Twin Store Vehicle Map,INTEGRATION_BUG,Backend was not pre-registering TRUCK_02 on startup causing single-truck drops; fixed by pre-registering both trucks
+governor_state,YES,YES,YES,Safety Governor / Solver,PRESENTATION_GAP,Rendered generic STANDBY; reframed to distinguish STANDBY from ACTIVE INTERVENTION (CLAMPING)

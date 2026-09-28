@@ -1,0 +1,8 @@
+{
+  "fault_id": "F15",
+  "fault_name": "Command Expiration Timeout",
+  "detected_state": "STALE_COMMAND",
+  "safety_transition": "Reject Stale Command",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.997271Z"
+}

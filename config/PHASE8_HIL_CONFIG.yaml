@@ -1,0 +1,101 @@
+# ==============================================================================
+# PHASE 8 HIL CONFIGURATION & PARAMETER LOCK
+# FOG-ORCHESTRATOR 2.0 — SIH 2026-27 (SIH26007)
+# ==============================================================================
+# This configuration defines the deterministic Hardware-in-the-Loop (HIL)
+# simulation parameters, isolated CAN/TWAI frame definitions, and timing budgets.
+#
+# EVIDENCE BOUNDARY:
+#   CAN frames are modeled using SAE J1939-compatible formats on bench ESP32 TWAI.
+#   These are project-defined HIL frames and do NOT represent OEM proprietary IDs.
+#   Physical BEML BH100 chassis CAN tapping remains UNVALIDATED.
+# ==============================================================================
+
+version: "2.0.0-phase8-hil"
+freeze_date: "2026-09-19"
+hash_target: "PHASE8_HIL_CANONICAL"
+
+vehicle:
+  model: "BEML BH100 (Rigid Dump Truck Class)"
+  gross_vehicle_weight_kg: 165500.0        # 165.5 tonnes canonical
+  empty_curb_weight_kg: 72000.0            # 72.0 tonnes tare
+  payload_capacity_kg: 93500.0             # 93.5 tonnes payload
+  rated_speed_mps: 13.8889                 # 50.0 km/h maximum haul road design ceiling
+  engine_idle_rpm: 650.0
+  engine_rated_rpm: 2100.0
+  tire_radius_m: 1.350
+  transmission_ratio_low: 5.60
+  transmission_ratio_high: 0.85
+  differential_ratio: 10.50
+
+kinematics:
+  emergency_deceleration_mps2: 2.7856      # Model-derived (-8% grade, mu=0.35, F_brake=550 kN)
+  service_deceleration_mps2: 1.2000        # Operational engineering assumption
+  standoff_buffer_m: 5.0000                # S_base canonical standoff clearance
+  dense_fog_blindout_threshold_m: 5.0000   # Visibility below which speed is forced to 0.0 m/s
+  dense_fog_hysteresis_exit_m: 5.2000      # Debounce clearing threshold (5.0m + 0.20m margin)
+  debounce_persistence_count: 2            # Consecutive observations required to exit STAGED
+
+can_twai:
+  bus_speed_bps: 250000                    # 250 kbps (SAE J1939 standard bit rate)
+  identifier_format: "29-bit Extended"
+  sample_point_percent: 87.5
+  wire_time_128bit_ms: 0.512               # 128 bits / 250 kbps = 0.512 ms wire transmission time
+  nominal_arbitration_latency_ms: 5.79     # Bench measured mean TWAI delivery latency
+  p95_latency_ms: 19.17                    # Bench measured P95 latency at 70% load
+  p99_latency_ms: 30.55                    # Bench measured P99 latency
+  conservative_latency_bound_ms: 50.00     # Formal engineering safety ceiling for CAN transport
+  frame_definitions:
+    engine_speed:
+      can_id_hex: "0x0CF00400"             # PGN 61444 (EEC1)
+      priority: 3
+      update_period_ms: 20
+      timeout_ms: 100
+      scaling: 0.125                       # 0.125 rpm / bit
+      unit: "rpm"
+    vehicle_speed:
+      can_id_hex: "0x18FEF100"             # PGN 65265 (CCVS)
+      priority: 6
+      update_period_ms: 50
+      timeout_ms: 150
+      scaling: 0.00390625                  # (1/256) km/h per bit
+      unit: "m/s"                          # Converted internally to SI m/s
+    brake_status:
+      can_id_hex: "0x18F0010B"             # PGN 61441 (EBC1)
+      priority: 6
+      update_period_ms: 50
+      timeout_ms: 200
+      unit: "kPa / percent"
+    retarder_status:
+      can_id_hex: "0x18F0000F"             # PGN 61440 (ERC1)
+      priority: 6
+      update_period_ms: 50
+      timeout_ms: 200
+      unit: "percent"
+    safety_command:
+      can_id_hex: "0x0CFF0101"             # PGN 65281 (Proprietary B - Local Governor Dispatch)
+      priority: 3
+      update_period_ms: 50
+      timeout_ms: 150
+      unit: "m/s"
+    vehicle_state:
+      can_id_hex: "0x18FF0201"             # PGN 65282 (Proprietary B - Twin Status)
+      priority: 6
+      update_period_ms: 100
+      timeout_ms: 300
+      unit: "state_bitfield"
+
+actuator_model:
+  tau_actuator_nominal_ms: 200.0           # Engineering assumption supported by literature
+  tau_actuator_delayed_ms: 300.0           # Degraded hydraulic response model
+  tau_actuator_ceiling_ms: 350.0           # Literature worst-case pneumatic build-up ceiling
+  non_response_timeout_ms: 500.0           # Maximum threshold before fault latching
+  rate_limit_mps2: 4.0                     # Physical jerk / rate limit ceiling
+
+timing_budget_ms:
+  t_sensor_acquisition_ms: 10.0
+  t_safety_decision_ms: 4.8
+  t_can_transport_ms: 19.17
+  t_actuator_response_ms: 200.0
+  t_total_reaction_ms: 233.97              # Total nominal control path reaction time
+  t_conservative_ceiling_ms: 410.0         # Upper bounded reaction ceiling (50ms CAN + 350ms Actuator + 10ms CPU)

@@ -1,0 +1,8 @@
+{
+  "fault_id": "F06",
+  "fault_name": "Duplicate Telemetry Packet",
+  "detected_state": "DUPLICATE",
+  "safety_transition": "Drop Frame Immediately",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.991655Z"
+}

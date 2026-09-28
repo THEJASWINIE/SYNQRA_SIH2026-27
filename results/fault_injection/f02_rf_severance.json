@@ -1,0 +1,8 @@
+{
+  "fault_id": "F02",
+  "fault_name": "Complete RF Severance",
+  "detected_state": "COMMUNICATION_LOSS",
+  "safety_transition": "Safe Beacon Active @ 2Hz",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.990156Z"
+}

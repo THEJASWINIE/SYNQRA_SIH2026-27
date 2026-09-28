@@ -1,0 +1,92 @@
+{
+  "trace_metadata": {
+    "version": "2.0.0",
+    "scenario_name": "KILLER_FOG_E2E_CAUSAL_TRACE",
+    "timestamp_iso": "2026-09-15T19:25:00Z",
+    "execution_mode": "HYBRID_SIMULATION_EMULATION",
+    "verification_status": "VERIFIED_PASS"
+  },
+  "step_1_environmental_disturbance": {
+    "event": "RAPID_FOG_INCURSION",
+    "visibility_m": 12.0,
+    "surface_state": "wet",
+    "friction_mu": 0.35,
+    "civil_grade_pct": -8.0,
+    "physics_grade_pct": 8.0,
+    "grade_convention_verified": "CIVIL_DOWNHILL_TO_PHYSICS_FORWARD_GRAVITY"
+  },
+  "step_2_vehicle_parameters": {
+    "vehicle_id": "TRUCK_02",
+    "reference_model": "BEML BH100 Mining Dump Truck",
+    "gross_mass_kg": 165500.0,
+    "payload_tonnes": 91.5,
+    "tare_weight_kg": 74000.0,
+    "braking_system": "Hydraulic Caliper + Retarder"
+  },
+  "step_3_physics_solver": {
+    "solver": "fog_safe.safety.solve_safe_speed",
+    "v_safe_mps": 4.382,
+    "v_safe_kmh": 15.77,
+    "effective_deceleration_mps2": 2.747,
+    "stopping_distance_m": 7.0,
+    "safety_margin_m": 5.0,
+    "safe_headway_m": 12.0,
+    "primary_constraint": "v_stop",
+    "candidate_limits_mps": {
+      "v_stop": 4.381511252138895,
+      "v_retarder": 12.571434321226377,
+      "v_traction": 9.80933114759633,
+      "v_curve": Infinity,
+      "v_mine": 13.88888888888889
+    }
+  },
+  "step_4_road_capacity_and_queue": {
+    "road_id": "ROAD_03_INT1_TO_SWITCH1",
+    "theoretical_kinematic_capacity_vph": 700.5,
+    "practical_road_capacity_vph": 180.0,
+    "shovel_arrival_rate_vph": 18.0,
+    "crusher_service_capacity_vph": 10.0,
+    "predicted_queue_length": 1.33,
+    "bottleneck_severity_index": 1.0,
+    "bottleneck_status": "ACTIVE_CRITICAL"
+  },
+  "step_5_central_orchestration_decision": {
+    "recommended_action": "HOLD",
+    "target_speed_mps": 0.0,
+    "reason_code": "BOTTLENECK_THROTTLING_DENSE_FOG",
+    "slot_allocation": "SLOT_HOLD_AT_BUFFER_2"
+  },
+  "step_6_command_gateway": {
+    "gateway_status": "ACCEPTED",
+    "gateway_accepted": true,
+    "authoritative_v_safe_enforced": true
+  },
+  "step_7_local_safety_governor": {
+    "governor_authority": "TIER_1_LOCAL_AUTONOMOUS",
+    "local_v_safe_mps": 4.382,
+    "applied_speed_mps": 0.0,
+    "ack_status": "ACCEPTED",
+    "governor_clamped": false,
+    "safety_invariant_v_command_le_v_safe": true
+  },
+  "step_8_telemetry_and_twin_update": {
+    "telemetry_packet_raw": "STATE,TRUCK_02,42,0.0,0.0,0,0,16384,0,0,0",
+    "ingestion_status": true,
+    "ingestion_reason": "ACCEPTED",
+    "updated_twin_rpm": 0.0,
+    "provenance": "HARDWARE_EMULATED",
+    "timestamp_sync": "WALL_CLOCK_MONOTONIC"
+  },
+  "causal_chain_proof": [
+    "1. Rapid fog incursion reduced effective visibility R_effective from 50.0m to 12.0m on civil grade -8.0%",
+    "2. Under wet friction (mu=0.35), stopping distance constraint S_stop(v) + S_margin(v) <= R_effective engaged",
+    "3. Physics solver reduced safe speed v_safe from 13.89 m/s to 4.382 m/s (15.77 km/h), with exact S_stop = 7.00m and S_margin = 5.00m",
+    "4. Center-to-center safe headway expanded to 22.52m (H_safe 12.00m + vehicle length 10.52m), giving kinematic capacity of 700.5 vph and practical road capacity of 180.0 vph",
+    "5. Downstream Crusher C1 dumping service capacity is limited to 10.0 vph (service time 360s per vehicle)",
+    "6. Shovel arrival rate (18.0 vph) exceeded Crusher service capacity (10.0 vph), with queue accumulation rate of 8.0 vph",
+    "7. Digital twin predicted queue growth at Crusher (+1.33 vehicles over 600s horizon)",
+    "8. Central orchestrator issued HOLD command to upstream TRUCK_02 at buffer zone",
+    "9. Local safety governor verified Tier-1 constraint (v_command <= v_safe) and executed standstill hold",
+    "10. Ingestion boundary recorded telemetry in TwinStateStore, confirming zero safety violations"
+  ]
+}

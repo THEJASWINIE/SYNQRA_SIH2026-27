@@ -1,0 +1,5 @@
+domain,provenance,evidence_level,status
+ESP32 TWAI Hardware Transceiver,Physical bench testing with CAN transceivers (VP230 / SN65HVD230),BENCH_MEASURED,GREEN
+J1939 Frame Packing / Unpacking,C / Python implementation of PGN 61444 (EEC1) & PGN 65265 (Cruise/Speed),BENCH_MEASURED,GREEN
+Wire Arbitration Latency,CAN 2.0B / J1939 wire transit time (< 2.0 ms at 250 kbps),BENCH_MEASURED,GREEN
+Live BEML BH100 Chassis Bus Logging,Physical tap into BH100 OEM harness inside NMDC Bailadila Deposit 5,FIELD_UNVALIDATED,OPEN

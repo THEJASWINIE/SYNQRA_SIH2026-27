@@ -1,0 +1,41 @@
+{
+  "project": "FOG-SAFE Physics-Constrained Safe-Speed Optimization",
+  "reference_vehicle": "BEML BH100 Mining Dumper",
+  "operational_context": "NMDC Limited (BIOM-Kirandul, BIOM-Bacheli, Donimalai)",
+  "validation_status": "PASSED",
+  "key_metrics": {
+    "test7_worst_case_v_safe_kmh": 6.9958303058630325,
+    "test7_worst_case_is_safe": true,
+    "test9_identifiability_passed": true,
+    "test11_mc_v_safe_mean_kmh": 18.798556006215374,
+    "test11_mc_v_safe_p5_kmh": 11.817989360582851,
+    "test11_mc_s_stop_p95_m": 16.013499619105367,
+    "test12_throughput_improvement_pct": 25.995931517862523,
+    "test12_fog_safe_safety_violations": 0,
+    "test12_static_policy_safety_violations": 0
+  },
+  "equations": {
+    "longitudinal_dynamics": "m*dv/dt = F_drive + m*g*sin(theta) - C_rr*m*g*cos(theta) - 0.5*rho*Cd*A*v^2 - F_retarder - F_brake",
+    "effective_deceleration": "a_dec = [ min(F_brake_max, mu*m*g*cos(theta)) + C_rr*m*g*cos(theta) + F_aero - m*g*sin(theta) ] / m",
+    "safe_stopping_speed": "v_stop = -a_dec*tau + sqrt( a_dec^2*tau^2 + 2*a_dec*(R_effective - S_margin) )",
+    "retarder_continuous_speed": "(m*g*sin(theta) - C_rr*m*g*cos(theta) - 0.5*rho*Cd*A*v^2)*v <= P_retarder_max",
+    "safe_speed_optimizer": "v_safe = min(v_stop, v_retarder, v_traction, v_curve, v_mine)",
+    "safe_headway": "H_safe = v_f*tau + v_f^2/(2*a_f) - v_l^2/(2*a_l) + S_margin",
+    "inverse_friction_estimator": "mu_meas = [ g*sin(theta) - C_rr*g*cos(theta) - F_retarder/m - F_aero/m - a_x ] / [ g*cos(theta) ]"
+  },
+  "parameters": {
+    "mass_empty_kg": 74000.0,
+    "mass_loaded_kg": 165000.0,
+    "payload_rated_kg": 91000.0,
+    "retarder_power_max_kw": 1200.0,
+    "mu_prior": 0.35,
+    "c_rr_default": 0.02,
+    "tau_total_default_s": 0.8,
+    "v_mine_limit_kmh": 20.0
+  },
+  "limitations": [
+    "Lateral dynamic rollover instability not fully coupled with longitudinal dynamic load transfer.",
+    "Tire slip curve linearity assumed under transient brake onset.",
+    "Friction estimation requires measured retarder torque and road grade input to remain identifiable."
+  ]
+}

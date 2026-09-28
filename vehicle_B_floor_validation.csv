@@ -1,0 +1,7 @@
+trial_id,commanded_distance_m,encoder_start_pulse,encoder_end_pulse,pulse_delta,K_cal_ppr,wheel_diameter_m,estimated_distance_m,external_measured_distance_m,absolute_error_m,percentage_error,measurement_method,validation_status,notes
+B_0.5_T1,0.5,0,93,93,34.58,0.060,0.5069,UNMEASURED,N/A,N/A,BENCH_ROTATION_ONLY,FAIL_UNVERIFIED_FLOOR_MOTION,Chassis elevated on testbench; no physical floor tape measure performed
+B_0.5_T2,0.5,93,185,92,34.58,0.060,0.5015,UNMEASURED,N/A,N/A,BENCH_ROTATION_ONLY,FAIL_UNVERIFIED_FLOOR_MOTION,Chassis elevated on testbench; no physical floor tape measure performed
+B_0.5_T3,0.5,185,278,93,34.58,0.060,0.5069,UNMEASURED,N/A,N/A,BENCH_ROTATION_ONLY,FAIL_UNVERIFIED_FLOOR_MOTION,Chassis elevated on testbench; no physical floor tape measure performed
+B_1.0_T1,1.0,0,185,185,34.58,0.060,1.0084,UNMEASURED,N/A,N/A,BENCH_ROTATION_ONLY,FAIL_UNVERIFIED_FLOOR_MOTION,Chassis elevated on testbench; no physical floor tape measure performed
+B_1.0_T2,1.0,185,368,183,34.58,0.060,0.9975,UNMEASURED,N/A,N/A,BENCH_ROTATION_ONLY,FAIL_UNVERIFIED_FLOOR_MOTION,Chassis elevated on testbench; no physical floor tape measure performed
+B_1.0_T3,1.0,368,552,184,34.58,0.060,1.0030,UNMEASURED,N/A,N/A,BENCH_ROTATION_ONLY,FAIL_UNVERIFIED_FLOOR_MOTION,Chassis elevated on testbench; no physical floor tape measure performed

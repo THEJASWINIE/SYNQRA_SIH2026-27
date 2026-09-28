@@ -1,0 +1,8 @@
+Method,Safety_Violations_Mean,Safety_Violations_Std,Safety_Violations_Max,Throughput_VPH_Mean,Throughput_VPH_Std,Production_Tonnes_Mean,Production_Tonnes_Std,Avg_Queue_Mean,Avg_Queue_Std,Peak_Queue_Mean,Travel_Time_S_Mean,Travel_Time_S_Std,Waiting_Time_S_Mean,Waiting_Time_S_Std,Idle_Pct_Mean,Clamped_Commands_Mean
+STOP_ALL,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4000.0,0.0,300.0,0.0,100.0,0.0
+NO_INTELLIGENCE,2096.0,0.0,2096,36.0,0.0,274.5,0.0,0.0,0.0,0.0,250.2,0.0,43.3,0.0,14.4,0.0
+SAFETY_ONLY,0.0,0.0,0,24.0,0.0,183.0,0.0,0.0,0.0,0.0,463.2,0.0,4.4,0.0,1.5,0.0
+SAFETY_CAPACITY,0.0,0.0,0,24.0,0.0,183.0,0.0,0.0,0.0,0.0,463.2,0.0,4.4,0.0,1.5,0.0
+SAFETY_CAPACITY_QUEUE,0.0,0.0,0,24.0,0.0,183.0,0.0,0.0,0.0,0.0,463.2,0.0,4.4,0.0,1.5,0.0
+FOG_ORCHESTRATOR,0.0,0.0,0,24.0,0.0,183.0,0.0,0.0,0.0,0.0,466.6,0.0,3.0,0.0,1.0,68.0
+CHANCE_MPC,0.0,0.0,0,24.0,0.0,183.0,0.0,0.0,0.0,0.0,660.8,0.0,0.4,0.0,0.1,42.0

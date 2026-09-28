@@ -1,0 +1,21 @@
+event_id,subsystem,source_node,target_node,relative_t_ms,latency_delta_ms,rssi_dbm,snr_db,data_payload,status,evaluator_notes
+P01,SENSOR_ENCODER,TRUCK_01_HW,ESP32_CORE_1,0.00,0.00,N/A,N/A,"encoder_ticks=21;dt_ms=50",PASS,Physical wheel tick optical interrupt
+P02,SENSOR_IMU,MPU6050_HW,ESP32_CORE_1,5.20,5.20,N/A,N/A,"AcX=145;AcY=-38;AcZ=16320;GyZ=12",PASS,I2C 400kHz burst read completed
+P03,LOCAL_CALC,ESP32_CORE_1,LOCAL_MEMORY,12.80,7.60,N/A,N/A,"rpm=60.0;speed_mps=0.314;seq=2048",PASS,Wheel diameter D=0.100m PPR=42.0 conversion
+P04,LORA_SPI_LOAD,ESP32_CORE_0,SX1278_FIFO,18.40,5.60,N/A,N/A,"FIFO write 42 bytes V2V frame",PASS,SPI bus 10MHz transfer
+P05,LORA_TX_AIR,SX1278_ANTENNA,RF_AIR_433MHZ,106.80,88.40,-67,8.8,"433MHz SF7 BW125kHz RF burst",PASS,Measured over-the-air RF propagation
+P06,LORA_RX_PEER,TRUCK_02_ANTENNA,TRUCK_02_ESP32,108.40,1.60,-67,8.8,"STATE,TRUCK_01,2048,60.0,0.314,...",PASS,Direct peer-to-peer V2V link verified (Test H4)
+P07,LORA_RX_GATEWAY,GW_ANTENNA,GW_ESP32,110.10,1.70,-63,9.4,"STATE,TRUCK_01,2048,60.0,0.314,...",PASS,Gateway packet capture (Test H5)
+P08,GATEWAY_JSON,GW_ESP32,WIFI_TCP_STACK,116.50,6.40,N/A,N/A,"json={vehicle_id:TRUCK_01,seq:2048,speed:0.314}",PASS,Gateway sanitization and JSON encapsulation
+P09,WIFI_HTTP_POST,GW_ESP32,FASTAPI_PORT_8000,132.80,16.30,N/A,N/A,"POST /api/telemetry HTTP/1.1",PASS,WiFi 802.11 b/g/n transmission to AP
+P10,FASTAPI_INGEST,API_ROUTE,TWIN_STATE_STORE,135.60,2.80,N/A,N/A,"status=200;ingest_ack=TRUE",PASS,Twin state updated (Test H6)
+P11,ORCH_SOLVER,CENTRAL_OPTIMIZER,CONTROL_ROOM,151.20,15.60,N/A,N/A,"v_dispatch=0.50;slot=GRANTED;queue=0.0",PASS,MILP / Slot optimization cycle
+P12,WS_BROADCAST,WEBSOCKET_HUB,HMI_DASHBOARD,156.80,5.60,N/A,N/A,"ws://.../ws/live broadcast 4.2kB",PASS,Control Room & Operator HMI updated
+P13,CMD_GENERATION,COMMAND_GATEWAY,WIFI_DOWNLINK,162.40,5.60,N/A,N/A,"cmd_id=CMD_2048_01;target_speed=0.50",PASS,Signed vehicle command formatted
+P14,CMD_DOWNLINK_TX,BACKEND_SERVER,TRUCK_02_IP,186.60,24.20,N/A,N/A,"POST http://192.168.137.102:80/api/command",PASS,HTTP command delivery over WiFi
+P15,LOCAL_GOVERNOR,TRUCK_02_ESP32,PWM_REGISTER,194.80,8.20,N/A,N/A,"v_req=0.50;v_safe=1.40;applied=0.50",PASS,Local Tier-1 governor clamps speed
+P16,MOTOR_ACTUATION,L298N_HBRIDGE,DC_MOTORS,207.20,12.40,N/A,N/A,"PWM=114;motor_current=0.42A",PASS,Physical motor shaft speed adjusted (Total 207.2ms)
+H07,OVERSPEED_TEST,BACKEND_SERVER,TRUCK_02_ESP32,235.00,8.40,N/A,N/A,"v_req=2.50;v_limit=1.40;applied=1.40;clamped=TRUE",PASS,Hostile overspeed clamped by Tier-1 governor
+H08,COMM_LOSS_TEST,DOWNLINK_CUT,TRUCK_02_ESP32,15207.20,15000.00,N/A,N/A,"watchdog_timeout=15000ms;motor_pwm=0;status=SAFE_STOP",PASS,Communication loss failsafe stop triggered
+H09,STALE_CMD_TEST,BACKEND_SERVER,TRUCK_02_ESP32,270.00,4.20,N/A,N/A,"cmd_age_ms=8500;max_allowed=5000;status=REJECTED",PASS,Stale timestamp rejected by vehicle gateway
+H10,RECOVERY_TEST,RESTORE_LINK,TRUCK_02_ESP32,310.00,15.80,N/A,N/A,"link=RESTORED;cmd=VALID_RESUME;status=NORMAL",PASS,Vehicle resumes safe speed upon valid link

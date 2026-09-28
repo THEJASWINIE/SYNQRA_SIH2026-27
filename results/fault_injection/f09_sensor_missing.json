@@ -1,0 +1,8 @@
+{
+  "fault_id": "F09",
+  "fault_name": "Visibility Sensor Missing",
+  "detected_state": "MISSING",
+  "safety_transition": "Floor R_eff = 8.0m",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.993914Z"
+}

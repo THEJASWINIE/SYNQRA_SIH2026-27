@@ -1,0 +1,20 @@
+Field Name,Phase 1 Source,Phase 2 Source,Data Type,Unit,Coordinate System,Timestamp Format,Update Rate,Required / Optional,Compatible?,Transformation Required?,Required Action / Adapter
+vehicle_id,TRUCK_01 / TRUCK_02,vehicle_1..6,string,-,-,-,2.0 Hz / 10.0 Hz,Required,NO,YES,Vehicle ID Mapper Adapter
+timestamp,System POSIX time,Simulation time,float,seconds,-,Unix epoch vs Sim start,2.0 Hz / 10.0 Hz,Required,NO,YES,Time Synchronization Adapter
+sequence_number,SEQ integer,seq integer,int,count,-,-,2.0 Hz / 10.0 Hz,Required,YES,NO,Pass through
+rpm,Wheel sensor pulses/sec,Derived from motor model,float,rpm,-,-,2.0 Hz / 10.0 Hz,Optional,NO,YES,RPM to linear speed converter (v = RPM * 2pi * r / 60)
+speed_mps,Derived linear speed,Kinematic speed,float,m/s,-,-,2.0 Hz / 10.0 Hz,Required,PARTIAL,YES,Scale prototype speed to heavy dumper dynamics
+acceleration_x,MPU6050 raw LSB / 16384 * 9.81,Vehicle ax,float,m/s^2,Vehicle Frame,Real-time,2.0 Hz / 10.0 Hz,Required,YES,NO,Scale LSB to physical m/s^2
+acceleration_y,MPU6050 raw LSB / 16384 * 9.81,Vehicle ay,float,m/s^2,Vehicle Frame,Real-time,2.0 Hz / 10.0 Hz,Required,YES,NO,Scale LSB to physical m/s^2
+acceleration_z,MPU6050 raw LSB / 16384 * 9.81,Not modeled (2D),float,m/s^2,Vehicle Frame,Real-time,2.0 Hz / 10.0 Hz,Optional,PARTIAL,YES,Ignore Z axis for 2D mine planar physics
+gyroscope_z,MPU6050 GyZ rad/s,Yaw rate,float,rad/s,Vehicle Frame,Real-time,2.0 Hz / 10.0 Hz,Required,YES,NO,Direct mapping to yaw rate
+position_x,Not available (No GPS),Map X coordinate,float,meters,Global Mine Grid,Real-time,Missing in P1,Required for P2,NO,YES,Coordinate Estimator / Dead Reckoning Adapter
+position_y,Not available (No GPS),Map Y coordinate,float,meters,Global Mine Grid,Real-time,Missing in P1,Required for P2,NO,YES,Coordinate Estimator / Dead Reckoning Adapter
+road_segment_id,Not available,Road segment ID,string,-,Mine Topology Graph,-,Missing in P1,Required for P2,NO,YES,Map Matcher / Node Binding Adapter
+communication_status,ONLINE/STALE/OFFLINE,Derived from heartbeat,string,-,-,-,2.0 Hz / 10.0 Hz,Required,YES,NO,Pass through telemetry health state
+safe_speed,Local governor limit,Analytical 5-constraint solver,float,m/s,-,-,On demand,Required,PARTIAL,YES,Enforce LOCAL SAFETY AUTHORITY rule (min(req, local))
+visibility_distance,Not available,Spatio-temporal fog model,float,meters,-,-,Missing in P1,Provided by P2,PARTIAL,NO,Digital Twin feeds weather visibility to HMI
+friction_coefficient,Not available,Road surface model,float,unitless,-,-,Missing in P1,Provided by P2,PARTIAL,NO,Digital Twin feeds surface friction mu to HMI
+command_id,CMD_xxx string,cmd_xxx string,string,-,-,-,On demand,Required,YES,NO,Pass through for ACK correlation
+command_action,TARGET_SPEED/HOLD/STOP,SPEED/HOLD/STOP,string,-,-,-,On demand,Required,YES,NO,Action string normalizer
+ack_status,ACCEPTED/CLAMPED/REJECTED,ACCEPTED/CLAMPED/REJECTED,string,-,-,-,On demand,Required,YES,NO,Pass through ACK status to Digital Twin

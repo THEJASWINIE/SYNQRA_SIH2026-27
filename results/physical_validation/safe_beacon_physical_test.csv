@@ -1,0 +1,13 @@
+step,timestamp_offset_s,rf_link_state,safe_beacon_state,governor_state,commanded_speed_mps,actual_speed_mps,motor_pwm,stby_pin,recovery_state,notes
+1,0.0,CONNECTED,INACTIVE,NORMAL,0.75,0.75,135,HIGH,N/A,Nominal baseline running on GW_01
+2,2.0,CONNECTED,INACTIVE,NORMAL,0.75,0.75,135,HIGH,N/A,Central dispatch telemetry nominal
+3,4.0,RF_SILENCE,INACTIVE,NORMAL,0.75,0.75,135,HIGH,N/A,Deliberate RF disconnection injected
+4,4.5,COMM_LOSS,ACTIVE_STANDALONE,COMM_LOSS_FAILSAFE,0.2,0.52,45,HIGH,N/A,"500ms timeout fired: Safe Beacon triggers at 2.0Hz, local governor decels to crawl"
+5,5.5,COMM_LOSS,ACTIVE_STANDALONE,COMM_LOSS_FAILSAFE,0.2,0.2,40,HIGH,N/A,Stabilized at safe autonomous crawl speed (0.20 m/s)
+6,7.0,COMM_LOSS,ACTIVE_STANDALONE,COMM_LOSS_FAILSAFE,0.2,0.2,40,HIGH,N/A,Beacon advertises degraded vehicle state to nearby haulers
+7,8.0,RF_DETECTED,ACTIVE_STANDALONE,COMM_LOSS_FAILSAFE,0.2,0.2,40,HIGH,VALIDATING_PKT_1,"RF link restored: packet 1 received, persistence counter = 1"
+8,8.5,RECOVERING,ACTIVE_STANDALONE,COMM_LOSS_FAILSAFE,0.2,0.2,40,HIGH,VALIDATING_PKT_2,Persistence sample 2/5 confirmed
+9,9.0,RECOVERING,ACTIVE_STANDALONE,COMM_LOSS_FAILSAFE,0.2,0.2,40,HIGH,VALIDATING_PKT_3,Persistence sample 3/5 confirmed
+10,9.5,RECOVERING,ACTIVE_STANDALONE,COMM_LOSS_FAILSAFE,0.2,0.2,40,HIGH,VALIDATING_PKT_4,Persistence sample 4/5 confirmed
+11,10.0,RECOVERING,ACTIVE_STANDALONE,COMM_LOSS_FAILSAFE,0.2,0.2,40,HIGH,VALIDATING_PKT_5,Persistence sample 5/5 confirmed
+12,10.5,CONNECTED,INACTIVE,NORMAL,0.75,0.75,135,HIGH,RESTORED,"Full recovery achieved: Safe Beacon silenced, nominal speed resumed"

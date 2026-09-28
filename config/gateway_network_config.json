@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "system": "FOG-ORCHESTRATOR 2.0 DSSS/PN Gateway Network",
+    "site": "NMDC Bailadila Deposit 5, Bacheli Complex",
+    "version": "1.0.0",
+    "layer": "RESEARCH_AND_SIMULATION_MODEL_LAYER",
+    "physical_hardware_disclaimer": "Physical bench prototype operates on SX1278 CSS-LoRa 433MHz; DSSS PN sequence correlation is an architectural model."
+  },
+  "parameters": {
+    "switch_margin_score": 0.15,
+    "min_correlation_threshold": 0.40,
+    "degraded_correlation_threshold": 0.60,
+    "fail_timeout_seconds": 1.50,
+    "beacon_period_seconds": 0.200,
+    "min_signal_rssi_dbm": -115.0,
+    "persistence_count": 3,
+    "degraded_packet_loss_threshold": 0.25,
+    "max_packet_loss_threshold": 0.75
+  },
+  "gateways": [
+    {
+      "gateway_id": "GW-01",
+      "pn_sequence_id": "PN-A",
+      "pn_chip_length": 127,
+      "location_description": "Deposit 5 Pit Rim North Mast (Elevated 1245m)",
+      "frequency_mhz": 433.175,
+      "nominal_tx_power_dbm": 20.0
+    },
+    {
+      "gateway_id": "GW-02",
+      "pn_sequence_id": "PN-B",
+      "pn_chip_length": 127,
+      "location_description": "Deposit 5 Primary Crusher Hopper Overlook (Elevated 1280m)",
+      "frequency_mhz": 433.375,
+      "nominal_tx_power_dbm": 20.0
+    },
+    {
+      "gateway_id": "GW-03",
+      "pn_sequence_id": "PN-C",
+      "pn_chip_length": 127,
+      "location_description": "Haul Ramp Switchback 3 Relay Tower (Elevated 1210m)",
+      "frequency_mhz": 433.575,
+      "nominal_tx_power_dbm": 20.0
+    },
+    {
+      "gateway_id": "GW-04",
+      "pn_sequence_id": "PN-D",
+      "pn_chip_length": 127,
+      "location_description": "South Pit Bottom Loading Shovel Sector (Elevated 1175m)",
+      "frequency_mhz": 433.775,
+      "nominal_tx_power_dbm": 20.0
+    }
+  ]
+}

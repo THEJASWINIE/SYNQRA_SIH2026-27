@@ -1,0 +1,100 @@
+file,line_num,keyword,context_line,classification
+01_PHASE7_3_2_EXECUTIVE_SUMMARY.md,14,first,"This phase guarantees that every headline metric is derived from traceable first-principles physics,",AUDITED_USAGE
+01_PHASE7_3_2_EXECUTIVE_SUMMARY.md,45,first,* **Space Headway**: Rebuilt from first principles:,AUDITED_USAGE
+01_PHASE7_3_2_EXECUTIVE_SUMMARY.md,64,eliminates,* **Causal Mechanism**: Staging trucks at flat shovel benches eliminates stop-start accordion shockw,AUDITED_USAGE
+01_PHASE7_3_3_EXECUTIVE_SUMMARY.md,11,first,1. **Physical Derivation of Emergency Deceleration:** First-principles longitudinal force balance de,AUDITED_USAGE
+01_PHASE7_3_3_EXECUTIVE_SUMMARY.md,16,eliminates,6. **Causal Shockwave Delay Validation:** Confirming that Level 4 dynamic staging eliminates ramp ac,AUDITED_USAGE
+01_PHASE7_3_3_EXECUTIVE_SUMMARY.md,26,first,| **Emergency Deceleration (Canonical)** | $2.7856\text{ m/s}^2$ | **GREEN** | First-principles forc,AUDITED_USAGE
+01_PHASE7_3_3_EXECUTIVE_SUMMARY.md,27,first,| **Emergency Deceleration (Legacy Model)** | $2.7466\text{ m/s}^2$ | **GREEN** | First-principles f,AUDITED_USAGE
+01_PHASE7_3_EXECUTIVE_SUMMARY.md,52,certified,1. **Latency Decoupling Formally Certified:**,AUDITED_USAGE
+01_PHASE7_3_EXECUTIVE_SUMMARY.md,59,certified,"Dissected historical 3,294 TPH and 2,745 TPH as transient initial-queue discharge bursts. Certified ",AUDITED_USAGE
+02_EMERGENCY_DECELERATION_DERIVATION.md,11,first,This audit provides the complete first-principles physical derivation of this deceleration from the ,AUDITED_USAGE
+02_EMERGENCY_DECELERATION_DERIVATION.md,15,first,## 2. First-Principles Longitudinal Force Balance,AUDITED_USAGE
+02_EMERGENCY_DECELERATION_DERIVATION.md,90,first,| **A. Physically Derived Deceleration** | $2.7856\text{ m/s}^2$ (Canonical) / $2.7466\text{ m/s}^2$,AUDITED_USAGE
+02_INDEPENDENT_PHYSICS_CROSSCHECK.md,9,first,"To guarantee absolute numerical integrity, an independent reference calculation oracle was developed",AUDITED_USAGE
+02_INDEPENDENT_PHYSICS_CROSSCHECK.md,76,first,* **Conclusion**: The production quadratic solver in `fog_safe/safety.py` is algebraically identical,AUDITED_USAGE
+02_PARAMETER_RECONCILIATION.md,25,certified,"| `mass_empty_kg` | 74,000.0 | **74,000.0** | kg | **KEEP** | L2 | BEML BH100 Technical Specificatio",AUDITED_USAGE
+02_PARAMETER_RECONCILIATION.md,35,certified,"| `crusher_service_tph` | 1,647.0 | **1,647.0** | TPH | **KEEP** | L3/L4 Physical | 200 s dump cycle",AUDITED_USAGE
+03_BRAKE_FORCE_FORENSIC_AUDIT.md,48,certified,"- Thus, $550\text{ kN}$ is the certified rated total rim braking capacity of the vehicle's brake sys",AUDITED_USAGE
+03_SAFE_SPEED_RECALCULATION.md,1,first,# 03 — SAFE SPEED FIRST-PRINCIPLES RECALCULATION,AUDITED_USAGE
+03_SAFE_SPEED_RECALCULATION.md,10,first,### 1. First-Principles Analytical Quadratic Derivation,AUDITED_USAGE
+03_SAFE_SPEED_RECALCULATION.md,12,first,The safe speed envelope is derived strictly from first principles without hard-coding or heuristic b,AUDITED_USAGE
+05_FINAL_HEADWAY_CAPACITY.md,7,first,### 1. Space Headway Formulation from First Principles,AUDITED_USAGE
+06_KILLER_EXPERIMENT_RECALCULATED.md,69,guaranteed,* **Operational Behavior**: Integrates closed-loop Digital Twin state with origin slot allocation. T,AUDITED_USAGE
+06_LONG_HORIZON_STEADY_STATE.md,13,first,2. **Window 2 ($600\text{--}1200\text{ s}$)**: First wave arrival at crusher pocket; queue stabiliza,AUDITED_USAGE
+06_LONG_HORIZON_STEADY_STATE.md,34,first,*\*Note: Window 1 throughput is unrepresentative because trucks are en route from shovel to crusher ,AUDITED_USAGE
+07_FINAL_KILLER_EXPERIMENT.md,31,guaranteed,"- Coordinated slot reservation meters truck departures directly at shovel loading bays, holding truc",AUDITED_USAGE
+07_FINAL_KILLER_EXPERIMENT.md,59,guaranteed,1. **Zero Violations Guaranteed at Levels 1–4**:,AUDITED_USAGE
+07_FINAL_KILLER_EXPERIMENT.md,60,eliminates,The Tier-1 Local Safety Governor eliminates $100\%$ of overspeed and safety violations ($12.4 \to 0.,AUDITED_USAGE
+07_KILLER_EXPERIMENT_FINAL.md,58,eliminates,Introducing the onboard local safety governor eliminates all 12.4 collision and overspeed violations,AUDITED_USAGE
+08_LONG_HORIZON_THROUGHPUT_FINAL.md,18,first,- **Warmup Window ($0\text{--}600\text{ s}$):** Completely excluded from throughput accounting. Init,AUDITED_USAGE
+08_STATISTICAL_VALIDATION.md,56,eliminates,| **Peak Haul Road Queue Size** | **-4.6 trucks** | **$t = -31.8$** | **$4.1 \times 10^{-22}$** | **,AUDITED_USAGE
+08_THROUGHPUT_FORENSIC_AUDIT.md,71,certified,"Because throughput remains invariant within a tight $\pm 0.7\%$ band across all time windows, **$1,5",AUDITED_USAGE
+08_WAITING_CAUSALITY_AUDIT.md,39,guaranteed,"* In Level 4, FOG-Orchestrator holds trucks at the shovel bench ($W_{\text{origin}} = 489.2\text{ s}",AUDITED_USAGE
+09_MONTE_CARLO_FINAL.md,20,collision-free,"> *This statement must NOT be converted into ""100% real-world safety certification"" or ""absolute col",OVERSTATED_IF_UNQUALIFIED
+09_THROUGHPUT_FINAL_AUDIT.md,39,first,- Trucks arrive in bunches. A bunch of 3 trucks arrives together; the first dumps while the trailing,AUDITED_USAGE
+11_COMMUNICATION_EVIDENCE_AUDIT.md,37,100% safe,| **75%** | 129 / 500 | **25.8%** | Severe Impairment | `DEGRADED_COMMUNICATION` | **0** | Dispatch ,OVERSTATED_IF_UNQUALIFIED
+11_FINAL_PARAMETER_EVIDENCE.md,29,first,| **PHYSICS** | Emergency Deceleration | $2.7856\text{ m/s}^2$ | **GREEN** | DERIVED_MODEL | First-p,AUDITED_USAGE
+11_FINAL_PARAMETER_EVIDENCE.md,51,field validated,"1. **No Real-World Claims:** Never claim ""field validated at Bailadila"" — all Bailadila figures are ",SUPPORTED_RETRACTION
+12_FINAL_CLAIM_FREEZE.md,20,first,1. **Physical Force Derivation:** Net emergency deceleration on an $-8\%$ ramp is derived from first,AUDITED_USAGE
+12_FINAL_CLAIM_FREEZE.md,55,field validated,"5. **""Bailadila Field Validated"":** RETRACTED. All parameters are simulation models, bench measureme",SUPPORTED_RETRACTION
+12_HARDWARE_EVIDENCE_MATRIX.md,32,certified,"| **BH100 Gross Operating Weight** | `mass_loaded_kg` | 165,500 kg | **L2** | BEML BH100 Technical S",AUDITED_USAGE
+12_HARDWARE_EVIDENCE_MATRIX.md,33,certified,"| **BH100 Unladen Tare Mass** | `mass_empty_kg` | 74,000 kg | **L2** | BEML BH100 Technical Spec | O",AUDITED_USAGE
+12_SIMULATOR_INTEGRITY_FINAL.md,65,certified,"All simulation mechanics, equations of motion, unit conversions, and queue boundaries are certified",AUDITED_USAGE
+13_PHASE7_3_3_FINAL_GATE.md,41,first,| 1 | **Emergency Deceleration** | **GREEN** | First-principles force balance on $-8\%$ ramp ($2.785,AUDITED_USAGE
+13_SIMULATOR_INTEGRITY_AUDIT.md,35,certified,## 3. Certified Simulation Invariants,AUDITED_USAGE
+14_CONTRADICTION_REGISTER_FINAL.md,70,certified,C-10   BH100 Mass     Conflicting GVW specifications:   Resolved to certified OEM specification: Tar,AUDITED_USAGE
+14_CONTRADICTION_REGISTER_FINAL.md,113,production increase,"* **The Error**: Benchmark summaries reported mine capacity as $3,294\text{ TPH}$ under Level 4, rep",AUDITED_USAGE
+14_FINAL_BH100_EVIDENCE.md,19,certified,"| **Gross Operating Weight**| $165,500.0$| $\text{kg}$ | Certified GVW | $74.0\text{ t} + 91.5\text{",AUDITED_USAGE
+15_FINAL_EVIDENCE_MATRIX.md,23,certified,"| **EVM-01** | Vehicle Mass Specification | BEML BH100 Gross Operating Weight is 165,500 kg (74.0 t ",AUDITED_USAGE
+16_FINAL_PARAMETER_RECONCILIATION.md,15,certified,"| **`mass_empty_kg`** | 74,000.0 | 74,000.0 | kg | Tare weight with standard body & cab | OEM_DOCUME",AUDITED_USAGE
+16_FINAL_PARAMETER_RECONCILIATION.md,16,certified,"| **`payload_rated_kg`** | 91,500.0 | 91,500.0 | kg | Rated payload capacity (91.5 tonnes) | OEM_DOC",AUDITED_USAGE
+16_FINAL_PARAMETER_RECONCILIATION.md,17,certified,"| **`mass_loaded_kg`** | 165,000.0 | 165,500.0 | kg | $m_{\text{empty}} + m_{\text{payload}} = 74.0\",AUDITED_USAGE
+17_FINAL_CLAIM_CORRECTION.md,17,eliminates,"| **1** | *""Eliminates all collision risk in mine fog.""* | **""Maintained non-colliding trajectories ",AUDITED_USAGE
+17_FINAL_CLAIM_CORRECTION.md,18,guaranteed,"| **2** | *""100% safety guaranteed under low visibility.""*| **""Zero safety-invariant violations obse",AUDITED_USAGE
+17_FINAL_CLAIM_CORRECTION.md,19,instant recovery,"| **3** | *""FOG-Orchestrator delivers instant recovery after fog clears.""* | **""Achieved multi-stage",AUDITED_USAGE
+17_FINAL_CLAIM_CORRECTION.md,25,eliminates,"| **9** | *""DSSS with Gold codes deployed on hardware transceivers.""* | **""Physical hardware transce",AUDITED_USAGE
+17_FINAL_CLAIM_CORRECTION.md,37,eliminates,"2. **RETRACTED**: *""FOG-Orchestrator eliminates 77.1% of total waiting across the mine.""*",SUPPORTED_RETRACTION
+17_FINAL_PARAMETER_FREEZE.md,11,certified,"| **`mass_empty_kg`** | 74,000.0 | **74,000.0** | $\text{kg}$ | Fixed chassis mass | OEM_REFERENCE |",AUDITED_USAGE
+17_FINAL_PARAMETER_FREEZE.md,13,certified,"| **`mass_loaded_kg`** | 165,500.0 | **165,500.0** | $\text{kg}$ | $m = m_{\text{tare}} + m_{\text{l",AUDITED_USAGE
+18_PHASE7_3_1_FINAL_GATE.md,85,certified,"**YES.** Sourced from certified BEML OEM brochures: tare $74.0\text{ t}$, payload $91.5\text{ t}$, G",AUDITED_USAGE
+phase6_contradiction_audit.md,57,first,1. *Command Resumption ($< 1.0\text{ s}$):* First valid telemetry packet accepted and new dispatch c,AUDITED_USAGE
+phase6_contradiction_audit.md,67,guaranteed,"- **Forensic Finding:** In safety engineering, absolute universal collision avoidance cannot be guar",SUPPORTED_RETRACTION
+phase6_contradiction_audit.md,68,guaranteed,"- **Resolution:** Replace ""collision avoidance guaranteed"" with:",SUPPORTED_RETRACTION
+phase6_contradiction_audit.md,81,production increase,"### 8. ""Production Increase"" (Actual Basis)",AUDITED_USAGE
+phase6_contradiction_audit.md,132,field validated,"### 14. ""Field Validated"" (Laboratory vs. Real Mine In-Pit Trials)",OVERSTATED_IF_UNQUALIFIED
+phase6_contradiction_audit.md,133,field validated,"- **Original Claim:** ""Field validated at open-cast iron ore mine.""",OVERSTATED_IF_UNQUALIFIED
+phase6_contradiction_audit.md,135,field validated,"- **Resolution:** Expunge all occurrences of ""field validated."" Replace with:",OVERSTATED_IF_UNQUALIFIED
+phase6_contradiction_audit.md,151,production increase,| **8** | Production Increase | Overall Boost | Fog-Shutdown Avoidance | **CLARIFIED** |,SUPPORTED_RETRACTION
+phase6_contradiction_audit.md,157,field validated,| **14**| Field Validated | Pit Validated | Laboratory Bench Validated Only | **EXPUNGED FIELD CLAIM,OVERSTATED_IF_UNQUALIFIED
+phase6_final_gate.md,32,field validated,| **9** | **Claim Defensibility & Integrity** | **`GREEN`** | All 14 contradictions forensically aud,OVERSTATED_IF_UNQUALIFIED
+phase7_1_forensic_evidence_audit.md,65,first,"│  L6   │ ENGINEERING ASSUMPTION    │ First-principles physics, stated bounds │",AUDITED_USAGE
+phase7_1_forensic_evidence_audit.md,139,certified,"- Certified continuous retarding absorption capacity is rated at approximately **$1,200\text{ kW}$**",AUDITED_USAGE
+phase7_2_e10_fleet_orchestration.md,30,collision-free,| **Safety Invariant Violations** | 14.2 incidents | 0.0 | **0.0** | Perfect collision-free operatio,OVERSTATED_IF_UNQUALIFIED
+phase7_2_e11_recovery.md,10,instant recovery,"## 1. Prohibition of ""Instant Recovery"" Claims",SUPPORTED_RETRACTION
+phase7_2_e11_recovery.md,33,first,└─── Stage 5: t_first_post_halt_dump = 195.00 s (First arrival at crusher),AUDITED_USAGE
+phase7_2_e11_recovery.md,46,first,| **$t_{\text{first\_post\_halt\_dump}}$** | First Crusher Dump Arrival | **195.00 s** | Travel time,AUDITED_USAGE
+phase7_2_e2_actuator_validation.md,15,certified,> Direct hydraulic/pneumatic pressure transducer logging and high-frequency wheel deceleration telem,AUDITED_USAGE
+phase7_2_physical_validation_master.md,44,certified,The following items cannot be definitively certified until physical on-site deployment at NMDC Baila,AUDITED_USAGE
+phase7_2_physical_validation_master.md,203,first,5. $t_{\text{first\_post\_halt\_dump}} = 195.00\text{ s}$ (Arrival at crusher pocket),AUDITED_USAGE
+phase7_2_physical_validation_master.md,274,instant recovery,"| **Recovery Description** | Used ""instant recovery"" terminology | Decomposed into 5 distinct milest",AUDITED_USAGE
+phase7_2_physical_validation_master.md,373,field validated,"- **""Bailadila Deposit-5 Field Validated"":** REMOVED (Physical mine access pending).",OVERSTATED_IF_UNQUALIFIED
+phase7_2_physical_validation_master.md,375,guaranteed,"- **""Zero Collision Risk Guaranteed"":** REMOVED (Replace with ""tested non-colliding operational enve",AUDITED_USAGE
+phase7_deep_research_master.md,20,first,"| L6 | ENGINEERING ASSUMPTION | First-principles derivation, documented rationale |",AUDITED_USAGE
+AGENTS.md,204,first,# 4. EXISTING SYSTEM FIRST,AUDITED_USAGE
+BAILADILA_DEPOSIT5_SOURCE_VERIFICATION.md,41,first,"| Coordinate order | Latitude first (N), then Longitude (E); each min → max |",AUDITED_USAGE
+CLAUDE.md,204,first,# 4. EXISTING SYSTEM FIRST,AUDITED_USAGE
+CONTRADICTION_REGISTER.md,87,first,Initial simulation conditions where 6 loaded trucks were initialized directly at the crusher dump ho,AUDITED_USAGE
+EXECUTIVE_SUMMARY.md,81,eliminates,3. Adversarial audits confirm that Tier 2 Virtual Slot Reservation eliminates switchback deadlocks a,AUDITED_USAGE
+FINAL_CLAIM_FREEZE.md,30,first,Derived from first-principles longitudinal force balance on -8% ramp.,AUDITED_USAGE
+FINAL_CLAIM_FREEZE.md,106,field validated,"* ""Bailadila Field Validated"":",OVERSTATED_IF_UNQUALIFIED
+FINAL_EVIDENCE_MATRIX.md,22,certified,"| **EVM-01** | Vehicle Mass Specification | BEML BH100 Gross Operating Weight is 165,500 kg (74.0 t ",AUDITED_USAGE
+FRONTEND_IMPLEMENTATION_BASELINE.md,11,first,## 0. FIRST FINDING — THE CITED SPECIFICATION IS NOT IN THIS REPOSITORY,AUDITED_USAGE
+FRONTEND_IMPLEMENTATION_BASELINE.md,105,zero risk,"- **A — Keep S1–S7, map the spec onto it.** Zero risk, zero test churn. The spec's S3 and",OVERSTATED_IF_UNQUALIFIED
+LIVE_TWO_VEHICLE_HARDWARE_VERIFICATION_REPORT.md,52,first,| Disconnect | — | — | **NOT VERIFIED** | requires a connected vehicle first |,AUDITED_USAGE
+PARAMETER_RECONCILIATION_FINAL.md,14,certified,"| **`mass_empty_kg`** | 74,000.0 | 74,000.0 | kg | Tare weight with standard body & cab | OEM_DOCUME",AUDITED_USAGE
+PARAMETER_RECONCILIATION_FINAL.md,15,certified,"| **`payload_rated_kg`** | 91,500.0 | 91,500.0 | kg | Rated payload capacity (91.5 tonnes) | OEM_DOC",AUDITED_USAGE
+PARAMETER_RECONCILIATION_FINAL.md,16,certified,"| **`mass_loaded_kg`** | 165,000.0 | 165,500.0 | kg | $m_{\text{empty}} + m_{\text{payload}} = 74.0\",AUDITED_USAGE
+PHYSICAL_POSITIONING_INTEGRATION_REPORT.md,46,first,## 3. FIRST-CLASS SOFTWARE CONTRACT ARCHITECTURE,AUDITED_USAGE
+SIMULATOR_INTEGRITY_FINAL.md,65,certified,"All simulation mechanics, equations of motion, unit conversions, and queue boundaries are certified",AUDITED_USAGE
+TELEMETRY_QUALITY_SPEC.md,15,first,- **`RECOVERING`**: First telemetry packet after `STALE` or `OFFLINE` state (`should_update_twin: Tr,AUDITED_USAGE

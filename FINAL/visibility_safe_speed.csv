@@ -1,0 +1,10 @@
+visibility_m,effective_range_m,available_stopping_m,safe_speed_mps,safe_speed_kmh,reaction_distance_m,braking_distance_m,stopping_distance_m,safety_buffer_m,total_envelope_m,clearance_margin_m,vehicle_state,commanded_speed_mps,production_eligibility,governing_constraint
+100.0,100.0,95.0,11.111,40.0,4.8566,22.1594,27.016,5.0,32.016,67.984,NORMAL_GOVERNED,11.111,FULL_PRODUCTION,Mine speed limit cap (40 km/h)
+50.0,50.0,45.0,11.111,40.0,4.8566,22.1594,27.016,5.0,32.016,17.984,NORMAL_GOVERNED,11.111,FULL_PRODUCTION,Mine speed limit cap (40 km/h)
+25.0,25.0,20.0,9.4082,33.87,4.1123,15.8877,20.0,5.0,25.0,0.0,FOG_RESTRICTED_CRAWL,9.4082,REDUCED_SPEED_PRODUCTION,Kinematic stopping sight distance envelope
+12.0,12.0,7.0,5.1449,18.52,2.2488,4.7512,7.0,5.0,12.0,-0.0,FOG_RESTRICTED_CRAWL,5.1449,REDUCED_SPEED_PRODUCTION,Kinematic stopping sight distance envelope
+10.0,10.0,5.0,4.1989,15.12,1.8353,3.1647,5.0,5.0,10.0,0.0,FOG_RESTRICTED_CRAWL,4.1989,REDUCED_SPEED_PRODUCTION,Kinematic stopping sight distance envelope
+8.0,8.0,3.0,3.0481,10.97,1.3323,1.6677,3.0,5.0,8.0,0.0,FOG_RESTRICTED_CRAWL,3.0481,REDUCED_SPEED_PRODUCTION,Kinematic stopping sight distance envelope
+5.0,5.0,0.0,0.0,0.0,0.0,0.0,0.0,5.0,0.0,5.0,CONTROLLED_STOP_STAGED,0.0,ZERO_THROUGHPUT_STAGED,Sightline within safety buffer (R_eff <= S_base)
+4.0,4.0,0.0,0.0,0.0,0.0,0.0,0.0,5.0,0.0,4.0,CONTROLLED_STOP_STAGED,0.0,ZERO_THROUGHPUT_STAGED,Sightline within safety buffer (R_eff <= S_base)
+3.0,3.0,0.0,0.0,0.0,0.0,0.0,0.0,5.0,0.0,3.0,CONTROLLED_STOP_STAGED,0.0,ZERO_THROUGHPUT_STAGED,Sightline within safety buffer (R_eff <= S_base)

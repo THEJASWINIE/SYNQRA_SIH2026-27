@@ -1,0 +1,8 @@
+{
+  "fault_id": "F13",
+  "fault_name": "Digital Twin Backend Crash",
+  "detected_state": "DISCONNECTED",
+  "safety_transition": "Autonomous Local Fail-Safe Halt",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.996104Z"
+}

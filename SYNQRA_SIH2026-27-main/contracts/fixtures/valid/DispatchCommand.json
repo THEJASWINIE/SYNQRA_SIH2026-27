@@ -1,0 +1,13 @@
+{
+  "command_id": "C-1",
+  "vehicle_id": "V-1",
+  "route_id": null,
+  "departure_time": null,
+  "target_speed": null,
+  "slot_id": null,
+  "reason_code": "PLACEHOLDER",
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "state": "RECOMMENDED",
+  "limiting_variables": null,
+  "route_node_ids": null
+}

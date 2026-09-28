@@ -1,0 +1,7 @@
+category,budget_component,value_ms,class,standard_or_evidence,compliance_evaluation,action_or_mitigation
+REGULATORY_CEILING,DGMS Technical Circular 06/2020 Statutory Limit,800.0,REQUIREMENT,DGMS Statutory Circular,PASS (Compliance Ceiling),Upper response ceiling for open-pit HEMM collision avoidance
+PROTOTYPE_LOCAL,Prototype On-Vehicle Autonomous Loop,31.3,MEASURED_L3,Chassis Bench Oscilloscope,PASS (31.3ms << 800ms),"Sensor -> Governor -> TB6612 -> Motor (Nominal 31.3ms, P99 37.8ms)"
+PROTOTYPE_FULL,Prototype Full RF Remote Command Loop,124.4,MEASURED_L3,Full 11-Stage Measurement Chain,PASS (124.4ms << 800ms),Sensor -> LoRa -> Gateway -> FOG -> Downlink -> CAN -> Motor
+HEMM_NOMINAL,HEMM Full Remote Chain with Hydraulic Buildup,424.4,HYBRID_L2_L3,Measured Link (124.4ms) + Modeled Hydraulics (250ms) + Tire (50ms),PASS (424.4ms < 800ms),Meets DGMS requirement with 375.6ms safety margin
+HEMM_CASCADE_OLD,HEMM Cascade Failure with Default 500ms Timeout,935.0,MODELLED_L2,Cascade Failure Injection (500ms timeout + 45ms CAN + 390ms Brake),FAIL (Exceeds by 135ms),BREACH: Waiting 500ms for dead gateway pushes reaction to 935ms
+HEMM_CASCADE_MITIGATED,HEMM Cascade Failure with 200ms Fog Timeout,595.0,MODELLED_L2,Mitigation CONFIG_REV_9_1_04 (200ms timeout + 45ms CAN + 350ms Brake),PASS (595.0ms < 800ms),COMPLIANT: 200ms timeout restores DGMS compliance under catastrophic loss

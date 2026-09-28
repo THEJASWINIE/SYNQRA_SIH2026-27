@@ -1,0 +1,16 @@
+parameter,value,classification,source
+seeds_tested,0..29,REPRODUCIBILITY,experiments/run_sensor_degradation_benchmark.py
+scenarios_tested,14,REPRODUCIBILITY,D0..D13
+simulation_horizon_s,7200.0,SIMULATION_CONFIG,2.0 Hours per run
+fleet_size,6,SIMULATION_CONFIG,6 BEML BH100 Dump Trucks
+mass_loaded_kg,165500.0,L2 OEM Documented,BEML BH100 Spec Sheet
+mass_empty_kg,85000.0,L2 OEM Documented,BEML BH100 Spec Sheet
+grade_percent,-8.0%,L6 Engineering Assumption,Standard open-cast pit ramp
+mu_effective,0.35,L6 Engineering Assumption,Wet unpaved haul road friction
+t_degraded_env_s,30.0,L6 Engineering Assumption,Optical sensor averaging time
+t_stale_env_s,60.0,L6 Engineering Assumption,Rapid advection fog safety timeout
+t_grace_period_s,120.0,L6 Engineering Assumption,Grace period before unavailable
+degraded_factor,0.70,L6 Engineering Assumption,30% conservative speed reduction
+stale_factor,0.50,L6 Engineering Assumption,50% conservative speed reduction
+r_min_m,5.0,L6 Engineering Assumption,Vehicle bumper offset boundary
+r_unavailable_min_m,8.0,L6 Engineering Assumption,Dense fog crawling speed headway

@@ -1,0 +1,49 @@
+file,line_num,pattern_matched,code_snippet,fail_safe_guaranteed,classification
+fog_safe\communication.py,18,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,self.rx_params = rx_params if rx_params is not None else ReactionTimeParameters(,False,MANUAL_REVIEW_REQUIRED
+fog_safe\communication.py,19,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,self.margin_params = margin_params if margin_params is not None else SafetyMargi,False,MANUAL_REVIEW_REQUIRED
+fog_safe\environment.py,19,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,self.params = env_params if env_params is not None else EnvironmentParameters(),False,MANUAL_REVIEW_REQUIRED
+fog_safe\retarder.py,64,except\s+.*:,except Exception:,False,MANUAL_REVIEW_REQUIRED
+fog_safe\rls.py,51,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if c_rr_assumed is None:,False,MANUAL_REVIEW_REQUIRED
+fog_safe\road.py,39,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if civil_grade_pct is not None:,False,MANUAL_REVIEW_REQUIRED
+fog_safe\safety.py,111,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if r_effective is None:,False,MANUAL_REVIEW_REQUIRED
+fog_safe\safety.py,173,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if traction_ceiling_factor_mps is not None:,False,MANUAL_REVIEW_REQUIRED
+fog_safe\vehicle.py,12,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,self.params = params if params is not None else VehicleParameters(),False,MANUAL_REVIEW_REQUIRED
+experiments\run_failure_injection.py,65,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"# Expected: State remains queryable, freshness degrades to DEGRADED, no crash, s",True,VERIFIED_FAIL_SAFE
+experiments\run_failure_injection.py,113,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""Pass_Fail"": ""PASS"" if freshness == ""STALE"" else ""FAIL"",",True,VERIFIED_FAIL_SAFE
+experiments\run_failure_injection.py,167,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""Pass_Fail"": ""PASS"" if res_cmd.status == CommandStatus.STALE else ""FAIL"",",True,VERIFIED_FAIL_SAFE
+experiments\run_failure_injection.py,187,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""Pass_Fail"": ""PASS"" if res_inv.status == CommandStatus.INVALID else ""FAIL"",",True,VERIFIED_FAIL_SAFE
+experiments\run_failure_injection.py,202,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""Pass_Fail"": ""PASS"" if pass_nan else ""FAIL"",",True,VERIFIED_FAIL_SAFE
+experiments\run_phase6_bench_timing.py,67,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if is_timeout:,True,VERIFIED_FAIL_SAFE
+experiments\run_phase6_bench_timing.py,71,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,elif is_loss:,False,MANUAL_REVIEW_REQUIRED
+experiments\run_phase6_bench_timing.py,88,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""timestamp_rx"": round(rx_time, 4) if not np.isnan(rx_time) else np.nan,",False,MANUAL_REVIEW_REQUIRED
+experiments\run_phase6_bench_timing.py,89,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""latency_ms"": lat if not np.isnan(lat) else np.nan,",False,MANUAL_REVIEW_REQUIRED
+experiments\run_phase7_2_physical_validation.py,116,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""arbitration_delay_ms"": round(arbitration_ms, 4) if not is_dropped else np.nan,",True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_2_physical_validation.py,117,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""sw_jitter_ms"": round(sw_jitter_ms, 4) if not is_dropped else np.nan,",True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_2_physical_validation.py,118,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""total_latency_ms"": round(total_latency_ms, 4) if not is_dropped else np.nan,",True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_2_physical_validation.py,425,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"lat = np.random.normal(41.5, 3.5) if delivered else np.nan",False,MANUAL_REVIEW_REQUIRED
+experiments\run_phase7_2_physical_validation.py,433,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""latency_ms"": round(lat, 2) if delivered else np.nan,",False,MANUAL_REVIEW_REQUIRED
+experiments\run_phase7_2_physical_validation.py,477,default\s*=\s*[0-9]+,"gov = LocalVehicleSafetyGovernor(vehicle_id=""TRUCK_01"", v_safe_default=4.50)",True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_2_physical_validation.py,505,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if time_since_last > gov.firmware_watchdog_timeout_s:,True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_3_4_independent_monte_carlo.py,93,v_command\s*=,# Invariant 2: visibility <= 5m -> v_command = 0,True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_3_4_independent_monte_carlo.py,126,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if is_stale:,True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_3_4_independent_monte_carlo.py,131,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if v_after_stale > v_safe:,True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_3_4_independent_monte_carlo.py,148,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if v_after_malform > v_safe or math.isnan(v_after_malform):,True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_3_4_independent_monte_carlo.py,159,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if comm_loss:,True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_3_4_independent_monte_carlo.py,162,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if v_after_loss > v_safe:,True,VERIFIED_FAIL_SAFE
+experiments\run_phase7_3_4_independent_monte_carlo.py,225,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,v_degraded = v_initial / (1.0 + k_comm * p_loss) if p_loss > 0.5 else v_initial,False,MANUAL_REVIEW_REQUIRED
+experiments\run_phase7_3_4_independent_monte_carlo.py,233,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""action_taken"": ""AUTONOMOUS_LOCAL_GOVERNOR"" if p_loss < 0.5 else ""DYNAMIC_MARGIN",False,MANUAL_REVIEW_REQUIRED
+experiments\run_stage2_ablation.py,212,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""Primary_Bottleneck"": sim.state.active_bottlenecks[0][""id""] if sim.state.active_",False,MANUAL_REVIEW_REQUIRED
+experiments\run_stage5_2_nmdc_validation.py,227,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"if comm == ""OFFLINE"":",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,240,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"elif lead_id != ""NONE"" and lead_dist < h_safe:",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,267,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"""actual_headway_m"": round(lead_dist, 2) if lead_id != ""NONE"" else -1.0,",False,MANUAL_REVIEW_REQUIRED
+experiments\run_stage5_2_nmdc_validation.py,357,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"if mode == ""PACKET_LOSS_50"":",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,361,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"elif mode == ""COMM_LOSS_TOTAL"" and t >= 2.0 and t <= 12.0:",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,364,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"elif mode == ""STALE_DATA"" and t >= 2.0:",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,376,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,# Dead reckoning if comm loss,False,MANUAL_REVIEW_REQUIRED
+experiments\run_stage5_2_nmdc_validation.py,401,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"if comm_state in [""OFFLINE"", ""STALE""]:",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,903,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if t >= t_rec_start and time_first_resume is None:,False,MANUAL_REVIEW_REQUIRED
+experiments\run_stage5_2_nmdc_validation.py,907,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,if t >= t_clear_start and time_normal_flow is None:,False,MANUAL_REVIEW_REQUIRED
+experiments\run_stage5_2_nmdc_validation.py,967,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"if comm_state in [""OFFLINE"", ""GATEWAY_DOWN"", ""WIFI_DOWN"", ""CENTRAL_OFFLINE""]:",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,971,if\s+.*(?:timeout|stale|invalid|none|nan|loss|offline|error|exception).*,"elif comm_state == ""STALE"" or is_replay:",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,981,v_command\s*=,"# Mandatory Architectural Invariant: v_command = min(v_dispatch, v_safe, v_local",True,VERIFIED_FAIL_SAFE
+experiments\run_stage5_2_nmdc_validation.py,982,v_command\s*=,"v_command = bm.compute_command_speed(min(central_target, v_local_cap), v_safe)",True,VERIFIED_FAIL_SAFE

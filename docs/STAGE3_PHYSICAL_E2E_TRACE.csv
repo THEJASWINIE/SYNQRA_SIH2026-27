@@ -1,0 +1,21 @@
+stage_index,subsystem,node_id,event_description,relative_timestamp_ms,stage_latency_ms,rssi_dbm,snr_db,data_payload,status,notes
+1,PHYSICAL_SENSOR,TRUCK_01,Optical Encoder slot interrupt and MPU-6050 sample,0.00,0.00,N/A,N/A,"pulses=21;AcX=120;AcY=-45;AcZ=16380",VALID,Raw physical sensor interrupt triggered
+2,LOCAL_FIRMWARE,TRUCK_01,ESP32 FreeRTOS sensor aggregation & speed calculation,18.50,18.50,N/A,N/A,"rpm=60.0;speed_mps=0.314;seq=1042",VALID,RPM and SI speed calculated on Core 1
+3,LORA_TX,TRUCK_01,SX1278 SPI write and RF packet transmission start,24.20,5.70,N/A,N/A,"STATE,TRUCK_01,1042,60.0,0.314,120,-45,16380",VALID,LoRa 433MHz SF7 BW125kHz airtime begins
+4,LORA_AIRTIME,RF_MEDIUM,Over-the-air packet propagation,112.60,88.40,-68,8.5,"42 bytes transmitted over RF",VALID,Measured RF airtime
+5,LORA_RX_V2V,TRUCK_02,TRUCK_02 receives V2V broadcast from TRUCK_01,114.20,1.60,-68,8.5,"Direct V2V sequence 1042 stored in peer table",VALID,Direct peer-to-peer V2V link verified (Test H3)
+6,LORA_RX_GW,LORA_GATEWAY,Gateway ESP32 SX1278 DIO0 interrupt & payload read,115.80,1.60,-64,9.2,"STATE,TRUCK_01,1042,60.0,0.314,...",VALID,Gateway packet capture (Test H4)
+7,GATEWAY_PARSE,LORA_GATEWAY,Gateway sanitization deduplication and JSON formatting,122.40,6.60,N/A,N/A,"json={vehicle_id:TRUCK_01,seq:1042,speed:0.314}",VALID,Gateway transport verification
+8,WIFI_TX,LORA_GATEWAY,HTTP POST to FastAPI backend endpoint /api/telemetry,128.10,5.70,N/A,N/A,"POST http://192.168.137.1:8000/api/telemetry",VALID,WiFi 802.11b/g/n transmission
+9,BACKEND_INGEST,FASTAPI_CORE,FastAPI route handler receives packet and authenticates,144.50,16.40,N/A,N/A,"HTTP 200 OK returned to Gateway",VALID,Gateway to backend link verified (Test H5)
+10,STATE_STORE,TWIN_STORE,TwinStateStore update with freshness and quality score,147.20,2.70,N/A,N/A,"trucks[TRUCK_01].last_telemetry=147.20;freshness=LIVE",VALID,Authoritative Digital Twin updated
+11,CONTROL_ORCH,FOG_ORCHESTRATOR,Physics & dispatch solver evaluates capacity & envelope,162.80,15.60,N/A,N/A,"v_safe=0.50;v_dispatch=0.50;slot=GRANTED",VALID,Central orchestration cycle
+12,WS_BROADCAST,WEBSOCKET_HUB,WebSocket broadcast to Control Room and Operator HMI,168.40,5.60,N/A,N/A,"ws://.../ws/live state broadcast to 2 clients",VALID,HMI display updated
+13,CMD_GENERATION,CMD_GATEWAY,Command Gateway formats signed vehicle dispatch command,174.10,5.70,N/A,N/A,"cmd_id=CMD_1042_01;target_speed=0.50;seq=58",VALID,Command path initiated (Test H6)
+14,CMD_DOWNLINK,WIFI_DOWNLINK,HTTP POST /api/command to TRUCK_02 command server,198.30,24.20,N/A,N/A,"POST http://192.168.137.102:80/api/command",VALID,Command delivered to vehicle
+15,LOCAL_GOVERNOR,TRUCK_02,Tier-1 safety governor checks envelope and clamps speed,205.60,7.30,N/A,N/A,"requested=0.50;limit=1.40;applied=0.50;clamped=FALSE",VALID,Local governor authority verified
+16,MOTOR_ACTUATION,TRUCK_02,L298N PWM applied and drive motor adjusts shaft speed,218.00,12.40,N/A,N/A,"target_pwm=114;applied_pwm=114",VALID,Physical motor actuation complete
+H7_TEST,OVERSPEED_TEST,TRUCK_02,Central server requests 2.50 m/s (> 1.40 m/s limit),245.00,8.20,N/A,N/A,"requested=2.50;limit=1.40;applied=1.40;clamped=TRUE",PASS,Overspeed clamped by Tier-1 governor (Test H7)
+H8_TEST,COMM_LOSS_TEST,TRUCK_02,Command downlink severed; 15000 ms watchdog expires,15218.00,15000.00,N/A,N/A,"watchdog_expired=TRUE;pwm=0;status=FAILSAFE_STOP",PASS,Communication loss failsafe stop verified (Test H8)
+H9_TEST,STALE_CMD_TEST,TRUCK_02,Replay of command with timestamp > 5000 ms in past,280.00,4.10,N/A,N/A,"cmd_age=8200ms;status=REJECTED_STALE",PASS,Stale command rejected by Gateway/Vehicle (Test H9)
+H10_TEST,DEDUP_CMD_TEST,TRUCK_02,Replay of identical command_id CMD_1042_01,295.00,3.80,N/A,N/A,"cmd_id=CMD_1042_01;status=REJECTED_DUPLICATE",PASS,Duplicate command rejected by Gateway (Test H10)

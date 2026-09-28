@@ -1,0 +1,8 @@
+{
+  "fault_id": "F17",
+  "fault_name": "Safe Beacon Transmit Fault",
+  "detected_state": "BEACON_FAULT",
+  "safety_transition": "Optical Roof Strobe Fallback",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.998395Z"
+}

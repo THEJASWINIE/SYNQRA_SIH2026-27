@@ -1,0 +1,8 @@
+{
+  "fault_id": "F12",
+  "fault_name": "Sensor Cross-Source Inconsistency",
+  "detected_state": "INCONSISTENT",
+  "safety_transition": "Minimum Speed Clamp",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:20.995524Z"
+}

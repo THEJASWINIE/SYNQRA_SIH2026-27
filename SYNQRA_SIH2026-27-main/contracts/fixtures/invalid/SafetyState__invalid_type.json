@@ -1,0 +1,13 @@
+{
+  "vehicle_id": "V-1",
+  "timestamp": "2026-01-01T00:00:00.000Z",
+  "v_safe": 0.0,
+  "h_safe": 0.0,
+  "actual_speed": "fast",
+  "headway_current": null,
+  "lead_vehicle_id": null,
+  "active_constraint": "NONE",
+  "risk_level": "LOW",
+  "headway_violation": null,
+  "envelope_violation": null
+}

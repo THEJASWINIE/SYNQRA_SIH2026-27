@@ -1,0 +1,440 @@
+{
+  "timestamp": "2026-09-24 08:25:10 UTC",
+  "phase": "PHASE_9_1_HOSTILE_RED_TEAM",
+  "latency_audit": {
+    "stages": {
+      "T_sensor": {
+        "nom": 15.0,
+        "p95": 24.5,
+        "p99": 28.0,
+        "max": 31.2,
+        "class": "A (Measured)"
+      },
+      "T_mcu": {
+        "nom": 2.5,
+        "p95": 4.8,
+        "p99": 6.2,
+        "max": 8.0,
+        "class": "A (Measured)"
+      },
+      "T_RF": {
+        "nom": 38.5,
+        "p95": 41.2,
+        "p99": 48.5,
+        "max": 55.0,
+        "class": "A (Measured)"
+      },
+      "T_gateway": {
+        "nom": 8.2,
+        "p95": 14.8,
+        "p99": 18.2,
+        "max": 20.4,
+        "class": "A (Measured)"
+      },
+      "T_orchestrator": {
+        "nom": 32.0,
+        "p95": 48.2,
+        "p99": 56.4,
+        "max": 62.0,
+        "class": "A (Measured)"
+      },
+      "T_governor": {
+        "nom": 20.0,
+        "p95": 45.0,
+        "p99": 50.0,
+        "max": 50.0,
+        "class": "B (HIL Measured)"
+      },
+      "T_CAN": {
+        "nom": 6.3,
+        "p95": 22.4,
+        "p99": 50.0,
+        "max": 54.8,
+        "class": "B (HIL Measured)"
+      },
+      "T_actuator": {
+        "nom": 200.0,
+        "p95": 250.0,
+        "p99": 300.0,
+        "max": 350.0,
+        "class": "F (Assumed)"
+      }
+    },
+    "full_loop_nominal_ms": 322.5,
+    "full_loop_p95_ms": 450.9,
+    "full_loop_p99_ms": 557.3,
+    "full_loop_max_ms": 631.4,
+    "local_loop_nominal_ms": 243.8,
+    "local_loop_p99_ms": 434.2,
+    "dgms_standard_ms": 800.0,
+    "margin_p99_ms": 242.7
+  },
+  "actuator_audit": {
+    "a_dec_mps2": 2.64,
+    "results_8m_vis": [
+      {
+        "actuator_delay_ms": 250,
+        "tau_total_s": 0.4371,
+        "s_stop_m": 3.885,
+        "residual_margin_m": -0.885,
+        "safe": false
+      },
+      {
+        "actuator_delay_ms": 300,
+        "tau_total_s": 0.4871,
+        "s_stop_m": 4.061,
+        "residual_margin_m": -1.061,
+        "safe": false
+      },
+      {
+        "actuator_delay_ms": 350,
+        "tau_total_s": 0.5371,
+        "s_stop_m": 4.237,
+        "residual_margin_m": -1.237,
+        "safe": false
+      },
+      {
+        "actuator_delay_ms": 400,
+        "tau_total_s": 0.5871,
+        "s_stop_m": 4.413,
+        "residual_margin_m": -1.413,
+        "safe": false
+      },
+      {
+        "actuator_delay_ms": 500,
+        "tau_total_s": 0.6871,
+        "s_stop_m": 4.765,
+        "residual_margin_m": -1.765,
+        "safe": false
+      },
+      {
+        "actuator_delay_ms": 750,
+        "tau_total_s": 0.9371,
+        "s_stop_m": 5.645,
+        "residual_margin_m": -2.645,
+        "safe": false
+      },
+      {
+        "actuator_delay_ms": 1000,
+        "tau_total_s": 1.1871,
+        "s_stop_m": 6.525,
+        "residual_margin_m": -3.525,
+        "safe": false
+      }
+    ],
+    "results_12m_vis": [
+      {
+        "actuator_delay_ms": 250,
+        "tau_total_s": 0.4371,
+        "s_stop_m": 5.802,
+        "residual_margin_m": 1.198,
+        "safe": true
+      },
+      {
+        "actuator_delay_ms": 300,
+        "tau_total_s": 0.4871,
+        "s_stop_m": 6.027,
+        "residual_margin_m": 0.973,
+        "safe": true
+      },
+      {
+        "actuator_delay_ms": 350,
+        "tau_total_s": 0.5371,
+        "s_stop_m": 6.252,
+        "residual_margin_m": 0.748,
+        "safe": true
+      },
+      {
+        "actuator_delay_ms": 400,
+        "tau_total_s": 0.5871,
+        "s_stop_m": 6.477,
+        "residual_margin_m": 0.523,
+        "safe": true
+      },
+      {
+        "actuator_delay_ms": 500,
+        "tau_total_s": 0.6871,
+        "s_stop_m": 6.927,
+        "residual_margin_m": 0.073,
+        "safe": true
+      },
+      {
+        "actuator_delay_ms": 750,
+        "tau_total_s": 0.9371,
+        "s_stop_m": 8.052,
+        "residual_margin_m": -1.052,
+        "safe": false
+      },
+      {
+        "actuator_delay_ms": 1000,
+        "tau_total_s": 1.1871,
+        "s_stop_m": 9.177,
+        "residual_margin_m": -2.177,
+        "safe": false
+      }
+    ],
+    "failure_threshold_8m_ms": 250,
+    "failure_threshold_12m_ms": 750,
+    "exact_actuator_failure_threshold_8m_ms": -1.4
+  },
+  "can_audit": {
+    "10%": {
+      "bus_load_pct": 10,
+      "mean_latency_ms": 0.57,
+      "p99_latency_ms": 1.82,
+      "packet_loss_pct": 0.0,
+      "timeout_threshold_150ms_exceeded": false,
+      "p99_exceeds_50ms_budget": false
+    },
+    "25%": {
+      "bus_load_pct": 25,
+      "mean_latency_ms": 0.63,
+      "p99_latency_ms": 2.02,
+      "packet_loss_pct": 0.0,
+      "timeout_threshold_150ms_exceeded": false,
+      "p99_exceeds_50ms_budget": false
+    },
+    "50%": {
+      "bus_load_pct": 50,
+      "mean_latency_ms": 0.81,
+      "p99_latency_ms": 2.59,
+      "packet_loss_pct": 0.0,
+      "timeout_threshold_150ms_exceeded": false,
+      "p99_exceeds_50ms_budget": false
+    },
+    "75%": {
+      "bus_load_pct": 75,
+      "mean_latency_ms": 1.35,
+      "p99_latency_ms": 4.32,
+      "packet_loss_pct": 0.0,
+      "timeout_threshold_150ms_exceeded": false,
+      "p99_exceeds_50ms_budget": false
+    },
+    "90%": {
+      "bus_load_pct": 90,
+      "mean_latency_ms": 2.97,
+      "p99_latency_ms": 9.5,
+      "packet_loss_pct": 0.0,
+      "timeout_threshold_150ms_exceeded": false,
+      "p99_exceeds_50ms_budget": false
+    },
+    "95%": {
+      "bus_load_pct": 95,
+      "mean_latency_ms": 5.13,
+      "p99_latency_ms": 17.95,
+      "packet_loss_pct": 2.1,
+      "timeout_threshold_150ms_exceeded": false,
+      "p99_exceeds_50ms_budget": false
+    },
+    "99%": {
+      "bus_load_pct": 99,
+      "mean_latency_ms": 27.65,
+      "p99_latency_ms": 34.56,
+      "packet_loss_pct": 12.5,
+      "timeout_threshold_150ms_exceeded": false,
+      "p99_exceeds_50ms_budget": false
+    }
+  },
+  "beacon_audit": {
+    "circular_dependency": {
+      "claim": "Safe Beacon alerts Control Room of communication loss",
+      "attack": "If Uplink to Gateway is severed, can the same vehicle transmit its beacon to Control Room?",
+      "finding": "CIRCULAR DEPENDENCY DETECTED. Vehicle cannot reach Control Room via dead Gateway.",
+      "true_mechanism": "Control Room detects vehicle offline via INCOMING TELEMETRY TIMEOUT (Heartbeat loss at Gateway). The 433 MHz Safe Beacon only reaches peer HEMMs within line-of-sight RF range (0-300m).",
+      "status": "CONTRADICTED_IN_WORDING / CLARIFIED"
+    },
+    "rf_coexistence": {
+      "primary_carrier_mhz": 433.0,
+      "safe_beacon_carrier_mhz": 433.0,
+      "transceiver_count": 1,
+      "modulation": "LoRa CSS (SF7/BW125)",
+      "half_duplex_collision_risk": "CRITICAL. A single SX1278 transceiver cannot transmit Safe Beacon and receive Gateway downlink packets simultaneously.",
+      "receiver_blocking_during_tx": "YES (TX silences RX for 38.5 ms airtime per packet)",
+      "coexistence_requirement": "MANDATORY OPEN SAFETY DEPENDENCY. Production requires either: (a) Dual-transceiver architecture (Radio 1 for Gateway, Radio 2 for Safe Beacon), OR (b) Strict Time-Division Multiple Access (TDMA) slot reservation.",
+      "open_safety_dependency": true
+    }
+  },
+  "dsss_audit": {
+    "sigma_0.02": {
+      "noise_std": 0.02,
+      "flaps_per_1000_cycles": 0,
+      "flapping_rate_pct": 0.0,
+      "stable": true
+    },
+    "sigma_0.05": {
+      "noise_std": 0.05,
+      "flaps_per_1000_cycles": 0,
+      "flapping_rate_pct": 0.0,
+      "stable": true
+    },
+    "sigma_0.1": {
+      "noise_std": 0.1,
+      "flaps_per_1000_cycles": 5,
+      "flapping_rate_pct": 0.5,
+      "stable": false
+    },
+    "sigma_0.15": {
+      "noise_std": 0.15,
+      "flaps_per_1000_cycles": 10,
+      "flapping_rate_pct": 1.0,
+      "stable": false
+    },
+    "sigma_0.2": {
+      "noise_std": 0.2,
+      "flaps_per_1000_cycles": 23,
+      "flapping_rate_pct": 2.3,
+      "stable": false
+    },
+    "sigma_0.3": {
+      "noise_std": 0.3,
+      "flaps_per_1000_cycles": 33,
+      "flapping_rate_pct": 3.3,
+      "stable": false
+    }
+  },
+  "sensor_bias_audit": {
+    "results": [
+      {
+        "injected_bias_m": 1.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 6.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      },
+      {
+        "injected_bias_m": 3.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 8.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      },
+      {
+        "injected_bias_m": 5.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 10.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      },
+      {
+        "injected_bias_m": 7.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 12.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      },
+      {
+        "injected_bias_m": 10.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 15.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      },
+      {
+        "injected_bias_m": 15.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 20.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      },
+      {
+        "injected_bias_m": 20.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 25.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      },
+      {
+        "injected_bias_m": 30.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 35.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      },
+      {
+        "injected_bias_m": 50.0,
+        "true_visibility_m": 5.0,
+        "reported_visibility_m": 55.0,
+        "plausibility_rejected": false,
+        "statistical_rejected": false,
+        "detected": false,
+        "hazard_classification": "CRITICAL_SIGHTLINE_VIOLATION"
+      }
+    ],
+    "total_tested": 9,
+    "undetected_unsafe_count": 9,
+    "unobservability_verdict": "CONFIRMED: Single-channel additive bias within valid range [0.5, 2000]m is FUNDAMENTALLY UNOBSERVABLE without secondary reference."
+  },
+  "cascade_audit": {
+    "cascade_trace": [
+      {
+        "t_ms": 0.0,
+        "subsystem": "Sensor Health",
+        "event": "Visibility dropped to null",
+        "state": "UNAVAILABLE",
+        "action": "Floor R_eff = 8.0m"
+      },
+      {
+        "t_ms": 500.0,
+        "subsystem": "Safe Beacon Controller",
+        "event": "Gateway heartbeat timeout (500ms)",
+        "state": "COMMUNICATION_LOST",
+        "action": "Activate Safe Beacon @ 2Hz"
+      },
+      {
+        "t_ms": 520.0,
+        "subsystem": "Local Safety Governor",
+        "event": "Remote speed dispatch rejected",
+        "state": "AUTONOMOUS_LOCAL_CONTROL",
+        "action": "Calculate local v_safe"
+      },
+      {
+        "t_ms": 540.0,
+        "subsystem": "Local Safety Governor",
+        "event": "Blindout condition verified",
+        "state": "HALT_DEMAND",
+        "commanded_speed_mps": 0.0
+      },
+      {
+        "t_ms": 585.0,
+        "subsystem": "CAN Bus",
+        "event": "Brake command frame delivered to ECU",
+        "can_latency_ms": 45.0,
+        "state": "DELIVERED"
+      },
+      {
+        "t_ms": 935.0,
+        "subsystem": "Chassis Brake Actuator",
+        "event": "Full hydraulic braking pressure achieved",
+        "actuator_lag_ms": 350.0,
+        "state": "FULL_BRAKING"
+      }
+    ],
+    "vehicle_survived_safe": true,
+    "local_governor_acted_independently": true,
+    "worst_reaction_latency_ms": 935.0,
+    "critical_finding": "Vehicle halts safely. However, full braking response takes 935 ms (exceeding 800 ms DGMS target) due to combined 500ms comm timeout + 45ms CAN delay + 350ms hydraulic buildup."
+  },
+  "failure_thresholds": {
+    "actuator_delay_failure_threshold_8m_ms": -1.4,
+    "can_bus_load_p99_budget_threshold_pct": 90.0,
+    "dsss_noise_flapping_threshold_sigma": 0.15,
+    "sensor_bias_undetectable_threshold_m": 0.5,
+    "cascade_reaction_worst_case_ms": 935.0
+  }
+}

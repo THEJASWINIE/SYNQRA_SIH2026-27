@@ -1,0 +1,7 @@
+commanded_distance_m,encoder_distance_m,physical_distance_m,absolute_error_m,percentage_error,encoder_counts,time_s,average_speed_mps,evidence_classification,test_environment,notes
+0.5,0.5015,BENCH_ROTATION_ONLY,N/A,N/A,92,1.00,0.502,BENCH_HARDWARE_PULSE_COUNT,ELEVATED_BENCH_CHASSIS,Vehicle B has 43 physical slots; 92 pulses is scaled by K_cal=34.58
+0.5,0.5069,BENCH_ROTATION_ONLY,N/A,N/A,93,1.01,0.502,BENCH_HARDWARE_PULSE_COUNT,ELEVATED_BENCH_CHASSIS,Run 2 bench pulse accumulation
+0.5,0.4960,BENCH_ROTATION_ONLY,N/A,N/A,91,0.99,0.501,BENCH_HARDWARE_PULSE_COUNT,ELEVATED_BENCH_CHASSIS,Run 3 bench pulse accumulation
+1.0,0.9975,BENCH_ROTATION_ONLY,N/A,N/A,183,2.00,0.499,BENCH_HARDWARE_PULSE_COUNT,ELEVATED_BENCH_CHASSIS,Run 1 at 1.0m commanded distance
+1.0,1.0030,BENCH_ROTATION_ONLY,N/A,N/A,184,2.01,0.499,BENCH_HARDWARE_PULSE_COUNT,ELEVATED_BENCH_CHASSIS,Run 2 at 1.0m commanded distance
+1.0,0.9921,BENCH_ROTATION_ONLY,N/A,N/A,182,1.99,0.499,BENCH_HARDWARE_PULSE_COUNT,ELEVATED_BENCH_CHASSIS,Run 3 at 1.0m commanded distance

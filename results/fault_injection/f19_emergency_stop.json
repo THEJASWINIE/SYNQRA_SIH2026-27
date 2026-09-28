@@ -1,0 +1,8 @@
+{
+  "fault_id": "F19",
+  "fault_name": "Hardware E-Stop Activated",
+  "detected_state": "HARDWARE_ESTOP",
+  "safety_transition": "TB6612 STBY Pulled Low (Halt < 2ms)",
+  "execution_status": "PASS",
+  "timestamp": "2026-09-24T09:34:21.000777Z"
+}

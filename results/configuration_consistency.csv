@@ -1,0 +1,17 @@
+parameter,expected_value,firmware_A,firmware_B,backend,operator_HMI,control_room_HMI,digital_twin,status
+wheel_diameter_D,0.060 m,0.060 m,0.060 m,0.060 m,0.060 m,0.060 m,0.060 m,CONSISTENT
+raw_encoder_ppr_A,42.0,42.0,N/A,42.0,N/A,N/A,42.0,CONSISTENT
+raw_encoder_ppr_B,43.0,N/A,43.0,43.0,N/A,N/A,43.0,CONSISTENT
+effective_calibration_K,34.58,34.58,34.58,34.58,N/A,N/A,34.58,CONSISTENT_PROD_DIFFERS_CALIB_SKETCH
+rf_airtime_component,38.5 ms,38.5 ms (Assumed),38.5 ms (Assumed),38.5 ms (Budgeted),N/A,N/A,38.5 ms,CONFIGURED_ONLY
+stale_telemetry_threshold,3.0 s,N/A,N/A,3.0 s,3.0 s,3.0 s,3.0 s,CONSISTENT
+offline_telemetry_threshold,10.0 s,N/A,N/A,10.0 s,10.0 s,10.0 s,10.0 s,CONSISTENT
+command_timeout_failsafe,15.0 s,N/A,15.0 s (COMMAND_TIMEOUT_MS),15.0 s,N/A,N/A,15.0 s,CONSISTENT
+max_prototype_speed,1.40 m/s,N/A,1.40 m/s,1.40 m/s,1.40 m/s,1.40 m/s,1.40 m/s,CONSISTENT
+default_continuous_speed,0.50 m/s,N/A,0.50 m/s,0.50 m/s,N/A,N/A,0.50 m/s,CONSISTENT
+vehicle_id_A,TRUCK_01,TRUCK_01,REMOTE: TRUCK_01,TRUCK_01,TRUCK_01,TRUCK_01,TRUCK_01,CONSISTENT
+vehicle_id_B,TRUCK_02,REMOTE: TRUCK_02,TRUCK_02,TRUCK_02,TRUCK_02,TRUCK_02,TRUCK_02,CONSISTENT
+lora_frequency,433.0 MHz,433E6,433E6,N/A (Gateway 433E6),N/A,N/A,N/A,CONSISTENT
+motor_pwm_frequency,1000 Hz,1000 Hz (LEDC),1000 Hz (LEDC),N/A,N/A,N/A,N/A,CONSISTENT
+motor_pwm_resolution,8 bit (0-255),8 bit (0-255),8 bit (0-255),N/A,N/A,N/A,N/A,CONSISTENT
+stopping_distance_model,Kinematic + Reaction,N/A,N/A,S=v*tau+v^2/(2a),N/A,Displayed,Enforced,CONSISTENT

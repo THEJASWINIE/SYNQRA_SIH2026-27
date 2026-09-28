@@ -1,62 +1,27 @@
 {
-    "scenario": "DEMO_06_FULL_VERTICAL_SLICE",
-    "optimizers": {
-        "Baseline (Shaping OFF)": {
-            "throughput_tonnes": 364.0,
-            "max_crusher_queue": 3,
-            "max_shovel_queue": 4,
-            "safety_violations": 0
-        },
-        "Baseline (Shaping ON)": {
-            "throughput_tonnes": 364.0,
-            "max_crusher_queue": 3,
-            "max_shovel_queue": 4,
-            "safety_violations": 0
-        },
-        "Deterministic MPC": {
-            "throughput_tonnes": 364.0,
-            "max_crusher_queue": 2,
-            "max_shovel_queue": 4,
-            "safety_violations": 0
-        },
-        "Robust MPC": {
-            "throughput_tonnes": 364.0,
-            "max_crusher_queue": 2,
-            "max_shovel_queue": 4,
-            "safety_violations": 0
-        },
-        "Chance-Constrained MPC": {
-            "throughput_tonnes": 364.0,
-            "max_crusher_queue": 2,
-            "max_shovel_queue": 4,
-            "safety_violations": 0
-        }
-    },
-    "ablation": {
-        "Full CC-MPC": {
-            "throughput_tonnes": 364.0,
-            "max_crusher_queue": 2,
-            "max_shovel_queue": 4,
-            "safety_violations": 0
-        },
-        "CC-MPC (No Slot Reservation)": {
-            "throughput_tonnes": 364.0,
-            "max_crusher_queue": 2,
-            "max_shovel_queue": 4,
-            "safety_violations": 0
-        },
-        "CC-MPC (No Arrival Shaping)": {
-            "throughput_tonnes": 364.0,
-            "max_crusher_queue": 3,
-            "max_shovel_queue": 4,
-            "safety_violations": 0
-        }
-    },
-    "monte_carlo": {
-        "runs": 50,
-        "mean_throughput": 332.7610900092692,
-        "p5_throughput": 269.6344665357212,
-        "p95_throughput": 373.8225702207367,
-        "violations": 0
-    }
+  "project": "FOG-ORCHESTRATOR 2.0",
+  "operational_context": "NMDC Limited (BIOM-Kirandul, BIOM-Bacheli, Donimalai)",
+  "reference_vehicle": "BEML BH100 Mining Dumper",
+  "validation_status": "VALIDATED",
+  "key_break_even_thresholds": {
+    "fleet_density_break_even_n_star": 12,
+    "visibility_break_even_v_star_m": 25,
+    "forecast_lead_time_break_even_t_star_min": 15
+  },
+  "monte_carlo_statistics": {
+    "num_samples": 1000,
+    "v_safe_mean_kmh": 17.258963505787076,
+    "v_safe_p5_kmh": 4.836462070726188,
+    "s_stop_p95_m": 42.81786294853475,
+    "physical_safety_rate_pct": 100.0
+  },
+  "performance_gains": {
+    "system6_vs_baseline0_human_throughput_gain_pct": 50.5,
+    "system6_vs_baseline1_fixed_fog_throughput_gain_pct": 89.0,
+    "system6_vs_baseline2_vehicle_only_throughput_gain_pct": 27.4,
+    "peak_queue_reduction_pct": -45.0,
+    "safety_violations_system6": 0
+  },
+  "final_architecture_status": "VALIDATED",
+  "hil_hardware_recommendation": "YES \u2014 Proceed to Physical Two-Robot HIL Prototype"
 }

@@ -1,0 +1,13 @@
+stage,value_ms,measurement_type,evidence_level,source,notes
+SENSOR_PROCESSING_COMPONENT,50.00,MEASURED,L3,Optical/IMU Bench,LM393 encoder speed window (50ms) and MPU6050 sample rate (20ms)
+TELEMETRY_GENERATION_COMPONENT,0.45,MEASURED,L3,ESP32 Logic Analyzer,ASCII packet serialization buildOwnState()
+RF_AIRTIME_COMPONENT,38.50,MEASURED,L3,SX1278 Bench,Semtech Ra-02 SF7 BW 125kHz CR 4/5 32-byte payload physical airtime
+RF_PROPAGATION_COMPONENT,0.005,CALCULATED,L1,Speed of Light Math,Electromagnetic propagation at 1.5 km haul road distance
+GATEWAY_PROCESSING_COMPONENT,2.10,MEASURED,L3,ESP32 Gateway Node,LoRa interrupt servicing CRC check and WiFi socket dispatch
+SOFTWARE_PROCESSING_COMPONENT,1.58,MEASURED,L2,FastAPI Host,Backend ingestion (1.40ms) plus Safety Governor solve (0.18ms)
+COMMAND_TRANSMISSION_COMPONENT,1.85,MEASURED,L3,Downlink Socket,Network transmission to vehicle command receiver
+CAN_TWAI_COMPONENT,2.25,MEASURED,L3,ESP32 TWAI HIL,Average 250 kbps J1939 29-bit frame latency (Priority 0: 1.82ms; Priority 3: 2.68ms)
+ACTUATOR_MODEL_COMPONENT,12.00,MEASURED,L3,TB6612FNG Prototype,MOSFET gate rise time and dynamic braking EMF dissipation (scale prototype)
+MECHANICAL_RESPONSE_COMPONENT,NOT_MEASURED,NOT_MEASURED,L0,HEMM Field Chassis,Hydraulic brake line propagation delay on 165t machine requires physical mine trials
+TOTAL_MODELED_SCALE_PROTOTYPE,108.735,MODELLED,L3,CPS Integration Chain,Sum of Stages 1 through 10 for physical laboratory scale prototype
+TOTAL_CANONICAL_HEMM_REACTION,800.00,MODELLED,L2,Safety Governor Config,Canonical total stopping time budget tau_total = 0.80s (ISO 3450 compliant)
